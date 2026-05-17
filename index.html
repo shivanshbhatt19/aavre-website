@@ -33,7 +33,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(245,240,232,0.92);
+    background: transparent;
+    transition: background 0.3s;
+  }
+
+  nav.scrolled {
+    background: rgba(13,13,13,0.92);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(184,154,90,0.15);
   }
@@ -43,44 +48,69 @@
     font-size: 1.6rem;
     font-weight: 400;
     letter-spacing: 0.12em;
-    color: var(--ink);
+    color: var(--cream);
     text-decoration: none;
   }
 
   .nav-logo span { color: var(--gold); }
 
   .nav-cta {
-    background: var(--ink);
-    color: var(--cream);
+    background: var(--gold);
+    color: var(--ink);
     text-decoration: none;
     padding: 0.6rem 1.5rem;
     font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s;
   }
 
-  .nav-cta:hover { background: var(--gold); color: var(--ink); }
+  .nav-cta:hover { background: var(--gold-light); }
 
   /* HERO */
   .hero {
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding-top: 80px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
   }
 
-  .hero-left {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 5rem 3rem 5rem 4rem;
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 25%;
+    filter: brightness(0.55) saturate(0.8);
+  }
+
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(13,13,13,0.95) 0%,
+      rgba(13,13,13,0.5) 35%,
+      rgba(13,13,13,0.1) 70%,
+      transparent 100%
+    );
+  }
+
+  .hero-content {
     position: relative;
+    z-index: 2;
+    padding: 6rem 4rem;
+    max-width: 780px;
   }
 
   .hero-eyebrow {
-    font-family: var(--sans);
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.22em;
@@ -98,15 +128,16 @@
     width: 2rem;
     height: 1px;
     background: var(--gold);
+    flex-shrink: 0;
   }
 
   .hero-title {
     font-family: var(--serif);
-    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-size: clamp(4rem, 7vw, 7rem);
     font-weight: 300;
-    line-height: 1.05;
-    color: var(--ink);
-    margin-bottom: 2rem;
+    line-height: 1.0;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
   }
 
   .hero-title em {
@@ -116,16 +147,16 @@
 
   .hero-sub {
     font-size: 1rem;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 380px;
-    margin-bottom: 3rem;
+    color: rgba(245,240,232,0.65);
+    line-height: 1.75;
+    max-width: 440px;
+    margin-bottom: 2.5rem;
   }
 
   .hero-prices {
     display: flex;
-    gap: 2rem;
-    margin-bottom: 3rem;
+    gap: 2.5rem;
+    margin-bottom: 2.5rem;
   }
 
   .price-card {
@@ -134,23 +165,25 @@
   }
 
   .price-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.25rem;
+    color: rgba(245,240,232,0.45);
+    margin-bottom: 0.2rem;
   }
 
   .price-amount {
     font-family: var(--serif);
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 400;
-    color: var(--ink);
+    color: var(--cream);
+    line-height: 1;
   }
 
   .price-note {
-    font-size: 0.75rem;
-    color: var(--muted);
+    font-size: 0.72rem;
+    color: rgba(245,240,232,0.4);
+    margin-top: 0.2rem;
   }
 
   .hero-actions {
@@ -178,65 +211,41 @@
 
   .btn-secondary {
     font-size: 0.82rem;
-    font-weight: 500;
+    font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: rgba(245,240,232,0.55);
     text-decoration: none;
     border-bottom: 1px solid transparent;
     transition: color 0.2s, border-color 0.2s;
   }
 
-  .btn-secondary:hover { color: var(--ink); border-color: var(--ink); }
-
-  .hero-right {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-image-wrap {
-    position: absolute;
-    inset: 0;
-  }
-
-  .hero-image-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    filter: brightness(0.88) saturate(0.9);
-    background: #e8dfc8;
-  }
-
-  .hero-image-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(13,13,13,0.18) 0%, transparent 60%);
-  }
+  .btn-secondary:hover { color: var(--cream); border-color: rgba(245,240,232,0.4); }
 
   .hero-badge {
     position: absolute;
-    bottom: 2.5rem;
-    left: 2rem;
-    background: rgba(245,240,232,0.95);
-    border: 1px solid rgba(184,154,90,0.3);
+    bottom: 3rem;
+    right: 4rem;
+    background: rgba(13,13,13,0.5);
+    border: 1px solid rgba(184,154,90,0.35);
     padding: 1rem 1.5rem;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
+    z-index: 2;
   }
 
   .hero-badge-text {
     font-family: var(--serif);
     font-size: 0.95rem;
     font-style: italic;
-    color: var(--ink);
+    color: var(--cream);
   }
 
   .hero-badge-sub {
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 0.2rem;
+    color: rgba(245,240,232,0.45);
+    margin-top: 0.25rem;
   }
 
   /* TRUST BAR */
@@ -248,6 +257,7 @@
     gap: 4rem;
     align-items: center;
     flex-wrap: wrap;
+    border-top: 1px solid rgba(184,154,90,0.2);
   }
 
   .trust-item {
@@ -423,18 +433,11 @@
     font-family: var(--serif);
   }
 
-  .service-card.dark {
-    background: var(--ink);
-  }
-
-  .service-card.dark .service-title,
-  .service-card.dark .service-desc,
-  .service-card.dark .service-features li { color: var(--cream); }
-
-  .service-card.dark .service-features li { color: rgba(245,240,232,0.65); }
-
+  .service-card.dark { background: var(--ink); }
+  .service-card.dark .service-title { color: var(--cream); }
+  .service-card.dark .service-desc { color: rgba(245,240,232,0.6); }
+  .service-card.dark .service-features li { color: rgba(245,240,232,0.55); }
   .service-card.dark .service-price { color: var(--gold-light); }
-
   .service-card.dark::before { background: var(--gold); }
 
   /* WHY */
@@ -443,10 +446,7 @@
     padding: 8rem 4rem;
   }
 
-  .why-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+  .why-inner { max-width: 1200px; margin: 0 auto; }
 
   .why-heading {
     font-family: var(--serif);
@@ -538,10 +538,7 @@
     max-width: 600px;
   }
 
-  .cta-heading em {
-    font-style: italic;
-    color: var(--gold);
-  }
+  .cta-heading em { font-style: italic; color: var(--gold); }
 
   .cta-sub {
     font-size: 0.95rem;
@@ -569,7 +566,7 @@
   .cta-note {
     margin-top: 1.5rem;
     font-size: 0.78rem;
-    color: rgba(245,240,232,0.35);
+    color: rgba(245,240,232,0.3);
     letter-spacing: 0.08em;
   }
 
@@ -593,10 +590,7 @@
 
   .footer-logo span { color: var(--gold); }
 
-  .footer-links {
-    display: flex;
-    gap: 2rem;
-  }
+  .footer-links { display: flex; gap: 2rem; }
 
   .footer-links a {
     color: rgba(245,240,232,0.45);
@@ -629,9 +623,7 @@
   /* RESPONSIVE */
   @media (max-width: 900px) {
     nav { padding: 1.2rem 1.5rem; }
-    .hero { grid-template-columns: 1fr; min-height: auto; }
-    .hero-left { padding: 4rem 1.5rem 3rem; }
-    .hero-right { height: 55vw; min-height: 280px; }
+    .hero-content { padding: 4rem 1.5rem; }
     .hero-badge { display: none; }
     .trust-bar { padding: 1rem 1.5rem; gap: 1.5rem; }
     .story { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
@@ -650,18 +642,22 @@
     .hero-prices { gap: 1.2rem; }
     .trust-bar { justify-content: flex-start; gap: 1rem; }
     .trust-item { font-size: 0.72rem; }
+    .hero-title { font-size: 3.2rem; }
   }
 </style>
 
 <!-- NAV -->
-<nav>
+<nav id="main-nav">
   <a href="#" class="nav-logo">AA<span>V</span>RE</a>
   <a href="https://wa.me/919414343817?text=Hi%2C%20I%27d%20like%20to%20book%20a%20cab" class="nav-cta" target="_blank">Book Now</a>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-left">
+  <div class="hero-bg">
+    <img src="image01.png" alt="Aavre EV cab at Udaipur Airport" loading="eager">
+  </div>
+  <div class="hero-content">
     <div class="hero-eyebrow">Udaipur's EV Cab Service</div>
     <h1 class="hero-title">
       Rides you<br>can <em>trust.</em>
@@ -687,15 +683,9 @@
       <a href="#services" class="btn-secondary">See services ↓</a>
     </div>
   </div>
-  <div class="hero-right">
-    <div class="hero-image-wrap">
-      <img src="image01.png" alt="Aavre EV cab in Udaipur" loading="eager">
-      <div class="hero-image-overlay"></div>
-    </div>
-    <div class="hero-badge">
-      <div class="hero-badge-text">100% Electric · Zero emissions</div>
-      <div class="hero-badge-sub">Good for you, better for Udaipur</div>
-    </div>
+  <div class="hero-badge">
+    <div class="hero-badge-text">100% Electric · Zero emissions</div>
+    <div class="hero-badge-sub">Good for you, better for Udaipur</div>
   </div>
 </section>
 
@@ -829,3 +819,10 @@
   </div>
   <div class="footer-copy">© Aavre 2026. All rights reserved.</div>
 </footer>
+
+<script>
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+</script>
