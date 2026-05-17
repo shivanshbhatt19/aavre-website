@@ -1,0 +1,829 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0d;
+    --cream: #f5f0e8;
+    --sand: #e8dfc8;
+    --gold: #b89a5a;
+    --gold-light: #d4b87a;
+    --muted: #6b6560;
+    --white: #ffffff;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(245,240,232,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(184,154,90,0.15);
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--gold); }
+
+  .nav-cta {
+    background: var(--ink);
+    color: var(--cream);
+    text-decoration: none;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--gold); color: var(--ink); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 80px;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 3rem 5rem 4rem;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 2rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 380px;
+    margin-bottom: 3rem;
+  }
+
+  .hero-prices {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .price-card {
+    border-left: 2px solid var(--gold);
+    padding-left: 1.2rem;
+  }
+
+  .price-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .price-amount {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .price-note {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--ink);
+    text-decoration: none;
+    padding: 1rem 2.5rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .btn-secondary {
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .btn-secondary:hover { color: var(--ink); border-color: var(--ink); }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.88) saturate(0.9);
+  }
+
+  .hero-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(13,13,13,0.18) 0%, transparent 60%);
+  }
+
+  .hero-badge {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 2rem;
+    background: rgba(245,240,232,0.95);
+    border: 1px solid rgba(184,154,90,0.3);
+    padding: 1rem 1.5rem;
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-badge-text {
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  .hero-badge-sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  /* TRUST BAR */
+  .trust-bar {
+    background: var(--ink);
+    padding: 1.25rem 4rem;
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--sand);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+  }
+
+  .trust-item svg { opacity: 0.7; flex-shrink: 0; }
+
+  /* STORY */
+  .story {
+    padding: 8rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .story-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .story-number {
+    font-family: var(--serif);
+    font-size: 7rem;
+    line-height: 1;
+    color: var(--sand);
+    font-weight: 300;
+    margin-bottom: 1rem;
+  }
+
+  .story-tagline {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .story-body h2 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+
+  .story-body p {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.85;
+    margin-bottom: 1rem;
+  }
+
+  /* SERVICES */
+  .services {
+    padding: 0 4rem 8rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--sand);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .service-card {
+    background: var(--white);
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+
+  .service-card:hover { transform: translateY(-4px); }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-icon {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .service-title {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 0.4rem;
+    color: var(--ink);
+  }
+
+  .service-price {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    color: var(--gold);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-desc {
+    font-size: 0.92rem;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  .service-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .service-features li {
+    font-size: 0.82rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .service-features li::before {
+    content: '—';
+    color: var(--gold);
+    font-family: var(--serif);
+  }
+
+  .service-card.dark {
+    background: var(--ink);
+  }
+
+  .service-card.dark .service-title,
+  .service-card.dark .service-desc,
+  .service-card.dark .service-features li { color: var(--cream); }
+
+  .service-card.dark .service-features li { color: rgba(245,240,232,0.65); }
+
+  .service-card.dark .service-price { color: var(--gold-light); }
+
+  .service-card.dark::before { background: var(--gold); }
+
+  /* WHY */
+  .why {
+    background: var(--sand);
+    padding: 8rem 4rem;
+  }
+
+  .why-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .why-heading {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    margin-bottom: 4rem;
+    max-width: 600px;
+    line-height: 1.15;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+
+  .why-item {
+    padding: 2rem 0;
+    border-top: 1px solid rgba(13,13,13,0.15);
+  }
+
+  .why-num {
+    font-family: var(--serif);
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .why-title {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+    color: var(--ink);
+  }
+
+  .why-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 8rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: 'AAVRE';
+    position: absolute;
+    font-family: var(--serif);
+    font-size: 22vw;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.03);
+    white-space: nowrap;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .cta-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-heading {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+  }
+
+  .cta-heading em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .cta-sub {
+    font-size: 0.95rem;
+    color: rgba(245,240,232,0.55);
+    margin-bottom: 3rem;
+  }
+
+  .btn-wa {
+    background: #25D366;
+    color: var(--white);
+    text-decoration: none;
+    padding: 1.1rem 3rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .btn-wa:hover { background: #1da851; transform: translateY(-2px); }
+
+  .cta-note {
+    margin-top: 1.5rem;
+    font-size: 0.78rem;
+    color: rgba(245,240,232,0.35);
+    letter-spacing: 0.08em;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    border-top: 1px solid rgba(184,154,90,0.15);
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    color: var(--cream);
+    text-decoration: none;
+  }
+
+  .footer-logo span { color: var(--gold); }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .footer-links a {
+    color: rgba(245,240,232,0.45);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--gold); }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: rgba(245,240,232,0.25);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow { animation: fadeUp 0.6s ease both; }
+  .hero-title { animation: fadeUp 0.7s 0.1s ease both; }
+  .hero-sub { animation: fadeUp 0.7s 0.2s ease both; }
+  .hero-prices { animation: fadeUp 0.7s 0.3s ease both; }
+  .hero-actions { animation: fadeUp 0.7s 0.4s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { padding: 4rem 1.5rem 3rem; }
+    .hero-right { height: 55vw; min-height: 280px; }
+    .hero-badge { display: none; }
+    .trust-bar { padding: 1rem 1.5rem; gap: 1.5rem; }
+    .story { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; }
+    .story-number { font-size: 5rem; }
+    .services { padding: 0 1.5rem 4rem; }
+    .services-grid { grid-template-columns: 1fr; }
+    .why { padding: 4rem 1.5rem; }
+    .why-grid { grid-template-columns: 1fr 1fr; }
+    .cta-section { padding: 5rem 1.5rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.5rem; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+  }
+
+  @media (max-width: 560px) {
+    .why-grid { grid-template-columns: 1fr; }
+    .hero-prices { gap: 1.2rem; }
+    .trust-bar { justify-content: flex-start; gap: 1rem; }
+    .trust-item { font-size: 0.72rem; }
+  }
+</style>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">AA<span>V</span>RE</a>
+  <a href="https://wa.me/919414343817?text=Hi%2C%20I%27d%20like%20to%20book%20a%20cab" class="nav-cta" target="_blank">Book Now</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Udaipur's EV Cab Service</div>
+    <h1 class="hero-title">
+      Rides you<br>can <em>trust.</em>
+    </h1>
+    <p class="hero-sub">Airport transfers and full-day city tours. Book directly on WhatsApp — no apps, no middlemen, no waiting.</p>
+    <div class="hero-prices">
+      <div class="price-card">
+        <div class="price-label">Airport Transfer</div>
+        <div class="price-amount">₹499</div>
+        <div class="price-note">Flat rate, city-wide</div>
+      </div>
+      <div class="price-card">
+        <div class="price-label">Full-Day Cab</div>
+        <div class="price-amount">₹2,500</div>
+        <div class="price-note">10 hrs · 180 km</div>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <a href="https://wa.me/919414343817?text=Hi%2C%20I%27d%20like%20to%20book%20a%20cab" class="btn-primary" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Book on WhatsApp
+      </a>
+      <a href="#services" class="btn-secondary">See services ↓</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image-wrap">
+      <img src="https://www.aavre.in/assets/images/image01.jpg" alt="Aavre EV cab in Udaipur" loading="eager">
+      <div class="hero-image-overlay"></div>
+    </div>
+    <div class="hero-badge">
+      <div class="hero-badge-text">100% Electric · Zero emissions</div>
+      <div class="hero-badge-sub">Good for you, better for Udaipur</div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    Fixed prices · no negotiation ever
+  </div>
+  <div class="trust-item">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    6 airbags · dashcam · GPS tracked
+  </div>
+  <div class="trust-item">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    Pre-confirmed bookings
+  </div>
+  <div class="trust-item">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    If we fail, your next ride is free
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story">
+  <div class="story-aside">
+    <div class="story-label">Our Story</div>
+    <div class="story-number">10</div>
+    <div class="story-tagline">years of flying in and out of Udaipur</div>
+  </div>
+  <div class="story-body">
+    <h2>We got tired of bad cab experiences.<br>So we fixed it.</h2>
+    <p>Udaipur is our home. For a decade, we dealt with the same frustrations — drivers negotiating fares mid-booking, unclean cabs, someone glued to their phone the whole ride.</p>
+    <p>You're already exhausted from travelling. The last thing you need is that. So we built the experience we always wanted: clean EVs, fixed prices, drivers who actually drive. That's Aavre.</p>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-header">
+    <span class="section-label">Our Services</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <span class="service-icon">✈️</span>
+      <div class="service-title">Airport Transfer</div>
+      <div class="service-price">Flat ₹499</div>
+      <p class="service-desc">Udaipur airport to anywhere in the city. Fixed price, confirmed before you travel, no negotiation ever. Pre-booking required at least 2 hours before pickup.</p>
+      <ul class="service-features">
+        <li>AC cab with luggage space</li>
+        <li>GPS tracked, 6 airbags</li>
+        <li>If we can't honour — next ride free</li>
+      </ul>
+    </div>
+    <div class="service-card dark">
+      <span class="service-icon">🚗</span>
+      <div class="service-title">Full-Day Cab</div>
+      <div class="service-price">₹2,500 for 10 hrs & 180 km</div>
+      <p class="service-desc">Explore Udaipur, Kumbhalgarh, Chittorgarh — or wherever the day takes you. One driver, one clean cab, total transparency.</p>
+      <ul class="service-features">
+        <li>₹10/km beyond included distance</li>
+        <li>₹100/hr beyond included hours</li>
+        <li>Clean AC EV, professional driver</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why">
+  <div class="why-inner">
+    <div class="section-header">
+      <span class="section-label">Why Aavre</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="why-heading">Every detail designed around you.</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="why-num">01</div>
+        <div class="why-title">Pre-confirmed bookings</div>
+        <p class="why-desc">Your ride is locked in before you travel. No last-minute stress, no availability roulette.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-num">02</div>
+        <div class="why-title">Fixed prices, always</div>
+        <p class="why-desc">Zero negotiation, ever. What you see is what you pay — no surge, no surprises.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-num">03</div>
+        <div class="why-title">5-star safety</div>
+        <p class="why-desc">6 airbags, dashcam, and GPS on every ride. You're in safe hands from the moment we pick you up.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-num">04</div>
+        <div class="why-title">Our guarantee</div>
+        <p class="why-desc">Can't honour a confirmed booking? Your next airport ride is completely on us.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-num">05</div>
+        <div class="why-title">100% Electric</div>
+        <p class="why-desc">Good for you, better for Udaipur. Every ride is zero-emission — travel guilt-free.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-num">06</div>
+        <div class="why-title">No apps, no middlemen</div>
+        <p class="why-desc">Just WhatsApp. Book directly, talk to us directly. Simple as it should be.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-label">Ready to ride?</div>
+  <h2 class="cta-heading">Your next Udaipur ride, <em>sorted.</em></h2>
+  <p class="cta-sub">Book on WhatsApp in under a minute. No app. No account. No hassle.</p>
+  <a href="https://wa.me/919414343817?text=Hi%2C%20I%27d%20like%20to%20book%20a%20cab" class="btn-wa" target="_blank">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Book on WhatsApp
+  </a>
+  <p class="cta-note">No registration required · Instant confirmation · Available 24/7</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">AA<span>V</span>RE</a>
+  <div class="footer-links">
+    <a href="https://wa.me/919414343817" target="_blank">WhatsApp</a>
+    <a href="mailto:hello@aavre.in">Email</a>
+  </div>
+  <div class="footer-copy">© Aavre 2026. All rights reserved.</div>
+</footer>
