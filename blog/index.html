@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Guides for Udaipur — Aavre Blog</title>
+<meta name="description" content="Travel guides, airport tips and day trip ideas for visitors to Udaipur. Written by the team at Aavre Cabs.">
+<link rel="canonical" href="https://aavre.in/blog/">
+<meta property="og:title" content="Travel Guides for Udaipur — Aavre Blog">
+<meta property="og:description" content="Travel guides, airport tips and day trip ideas for visitors to Udaipur. Written by the team at Aavre Cabs.">
+<meta property="og:url" content="https://aavre.in/blog/">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --slate: #2c2f35;
+    --slate-deep: #1e2026;
+    --gold: #c9a96e;
+    --gold-light: #dfc08e;
+    --cream: #f7f3ec;
+    --cream-dark: #ede7da;
+    --muted: #8a8d94;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--cream); color: var(--slate); -webkit-font-smoothing: antialiased; }
+
+  nav { background: var(--slate-deep); padding: 0 3rem; height: 68px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(201,169,110,0.12); }
+  .nav-logo { font-family: var(--serif); font-size: 1.4rem; font-weight: 500; letter-spacing: 0.18em; color: var(--cream); text-decoration: none; text-transform: uppercase; }
+  .nav-logo span { color: var(--gold); }
+  .nav-cta { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-deep); background: var(--gold); text-decoration: none; padding: 0.55rem 1.4rem; transition: background 0.2s; }
+  .nav-cta:hover { background: var(--gold-light); }
+
+  .blog-hero { background: var(--slate-deep); padding: 5rem 4rem 4rem; }
+  .blog-hero-inner { max-width: 900px; margin: 0 auto; }
+  .blog-hero-eyebrow { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+  .blog-hero h1 { font-family: var(--serif); font-size: clamp(2.2rem, 4vw, 3.5rem); font-weight: 500; color: var(--cream); line-height: 1.15; margin-bottom: 1rem; }
+  .blog-hero p { font-size: 1rem; font-weight: 300; color: rgba(247,243,236,0.5); line-height: 1.75; max-width: 500px; }
+
+  .blog-list { max-width: 900px; margin: 0 auto; padding: 4rem 4rem 6rem; }
+
+  .blog-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--cream-dark);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .blog-card:first-child { border-top: 1px solid var(--cream-dark); }
+
+  .blog-card:hover .blog-card-title { color: var(--gold); }
+
+  .blog-card-tag { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+  .blog-card-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 500; color: var(--slate-deep); line-height: 1.25; margin-bottom: 0.75rem; transition: color 0.2s; }
+  .blog-card-excerpt { font-size: 0.88rem; font-weight: 300; color: var(--muted); line-height: 1.8; }
+  .blog-card-meta { font-size: 0.72rem; color: var(--muted); margin-top: 1rem; }
+
+  .blog-card-arrow {
+    font-size: 1.5rem;
+    color: var(--cream-dark);
+    margin-top: 0.5rem;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .blog-card:hover .blog-card-arrow { color: var(--gold); transform: translateX(4px); }
+
+  footer { background: var(--slate-deep); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(201,169,110,0.1); flex-wrap: wrap; gap: 1rem; }
+  .footer-logo { font-family: var(--serif); font-size: 1.1rem; letter-spacing: 0.14em; color: var(--cream); text-decoration: none; text-transform: uppercase; }
+  .footer-logo span { color: var(--gold); }
+  .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .footer-links a { font-size: 0.72rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(247,243,236,0.35); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-copy { font-size: 0.7rem; color: rgba(247,243,236,0.18); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    .blog-hero { padding: 4rem 1.5rem 3rem; }
+    .blog-list { padding: 3rem 1.5rem 4rem; }
+    .blog-card { grid-template-columns: 1fr; }
+    .blog-card-arrow { display: none; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">AA<span>V</span>RE</a>
+  <a href="https://wa.me/919414343817?text=Hi%2C%20I%27d%20like%20to%20book%20a%20cab" class="nav-cta" target="_blank">Book a Cab</a>
+</nav>
+
+<div class="blog-hero">
+  <div class="blog-hero-inner">
+    <div class="blog-hero-eyebrow">From the road</div>
+    <h1>Travel guides for visiting Udaipur well.</h1>
+    <p>Practical, honest guides written by people who know Udaipur from the inside. No filler, no sponsored recommendations.</p>
+  </div>
+</div>
+
+<div class="blog-list">
+  <a href="/blog/best-day-trips-from-udaipur.html" class="blog-card">
+    <div>
+      <div class="blog-card-tag">Travel Guide</div>
+      <div class="blog-card-title">The best day trips from Udaipur you should not miss</div>
+      <div class="blog-card-excerpt">Kumbhalgarh, Chittorgarh, Ranakpur, Nathdwara. Three of Rajasthan's most spectacular destinations are all within a comfortable day's drive from Udaipur.</div>
+      <div class="blog-card-meta">May 2026 &nbsp; 6 min read</div>
+    </div>
+    <div class="blog-card-arrow">→</div>
+  </a>
+
+  <a href="/blog/udaipur-airport-guide.html" class="blog-card">
+    <div>
+      <div class="blog-card-tag">Airport Guide</div>
+      <div class="blog-card-title">Everything first-time visitors need to know about Udaipur airport</div>
+      <div class="blog-card-excerpt">Maharana Pratap Airport is small, warm and easy to navigate. Here is what to expect when you land and how to get to the city without the usual hassle.</div>
+      <div class="blog-card-meta">May 2026 &nbsp; 5 min read</div>
+    </div>
+    <div class="blog-card-arrow">→</div>
+  </a>
+
+  <a href="/blog/udaipur-travel-tips.html" class="blog-card">
+    <div>
+      <div class="blog-card-tag">Travel Tips</div>
+      <div class="blog-card-title">Getting around Udaipur without the stress</div>
+      <div class="blog-card-excerpt">From the old city to the lake palaces, Udaipur rewards those who plan their transport well. Here is how to do it right.</div>
+      <div class="blog-card-meta">May 2026 &nbsp; 5 min read</div>
+    </div>
+    <div class="blog-card-arrow">→</div>
+  </a>
+</div>
+
+<footer>
+  <a href="/" class="footer-logo">AA<span>V</span>RE</a>
+  <div class="footer-links">
+    <a href="https://wa.me/919414343817" target="_blank">WhatsApp</a>
+    <a href="mailto:info@aavre.in">info@aavre.in</a>
+    <a href="/">Home</a>
+  </div>
+  <div class="footer-copy">© Aavre 2026. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
