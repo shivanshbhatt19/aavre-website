@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aavre Cabs Udaipur — Airport Transfer &amp; Full Day Cab Service</title>
-<meta name="description" content="Book reliable cabs in Udaipur. Flat ₹499 airport transfer, ₹2500 full-day cab. Fixed prices, no negotiation, pre-confirmed bookings. Book on WhatsApp.">
+<meta name="description" content="Book reliable cabs in Udaipur. Airport transfers from ₹499, outstation routes, full day and half day hire. Fixed prices, no negotiation, pre-confirmed bookings. Book on WhatsApp.">
 <meta name="keywords" content="cab service Udaipur, airport transfer Udaipur, taxi Udaipur, Udaipur cab booking, airport taxi Udaipur, Udaipur to airport cab, best cab Udaipur">
 <link rel="canonical" href="https://aavre.in/">
 <meta property="og:title" content="Aavre Cabs Udaipur — Rides You Can Trust">
-<meta property="og:description" content="Flat ₹499 airport transfer. ₹2500 full-day cab. Fixed prices, pre-confirmed. Book on WhatsApp.">
+<meta property="og:description" content="Airport transfers from ₹499. Outstation routes, full day and half day hire. Fixed prices, pre-confirmed. Book on WhatsApp.">
 <meta property="og:url" content="https://aavre.in/">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://aavre.in/image01.png">
@@ -143,7 +143,7 @@
   }
 
   .hero-left {
-    background: var(--slate-deep);
+    background: linear-gradient(135deg, #1a1f2e 0%, #1e2538 60%, #1c2235 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -565,6 +565,211 @@
     align-items: flex-start;
     gap: 0.75rem;
     font-weight: 300;
+  }
+
+  /* ── PRICING TABS ── */
+  .pricing-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(201,169,110,0.2);
+  }
+
+  .ptab {
+    background: none;
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .ptab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .ptab.active { color: var(--gold); }
+  .ptab.active::after { opacity: 1; }
+  .ptab:hover { color: var(--gold-light); }
+
+  .ptab-content { display: none; }
+  .ptab-content.active { display: block; }
+
+  .tab-intro {
+    font-size: 0.93rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 1.75rem;
+    max-width: 560px;
+  }
+
+  .pricing-table {
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .pt-row {
+    display: grid;
+    grid-template-columns: 1fr 90px;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(201,169,110,0.08);
+    gap: 12px;
+  }
+
+  .pt-row:last-child { border-bottom: none; }
+
+  .pt-head {
+    background: rgba(201,169,110,0.06);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(201,169,110,0.6);
+  }
+
+  .pt-highlight { background: rgba(201,169,110,0.04); }
+
+  .pt-route {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--cream);
+    margin-bottom: 2px;
+  }
+
+  .pt-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .pt-zone {
+    font-size: 0.82rem;
+  }
+
+  .pt-limit {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .pt-price {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--cream);
+    text-align: right;
+  }
+
+  .pt-anchor {
+    color: var(--gold);
+    font-size: 1.05rem;
+  }
+
+  .zone-pill {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .zone-pill.city {
+    background: rgba(100,160,255,0.12);
+    color: #7eb8f7;
+  }
+
+  .zone-pill.out {
+    background: rgba(201,169,110,0.12);
+    color: var(--gold-light);
+  }
+
+  .tab-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .tab-note {
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.55;
+  }
+
+  .tab-note::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .btn-book {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--slate-deep);
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-book:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .custom-card {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    background: rgba(201,169,110,0.06);
+    border: 1px solid rgba(201,169,110,0.15);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .custom-icon {
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .custom-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .custom-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
   }
 
   .service-features li::before {
@@ -1075,12 +1280,26 @@
   }
 
   @media (max-width: 560px) {
-    .hero-headline { font-size: 2.9rem; }
+    .hero-headline { font-size: 2.6rem; line-height: 1.15; }
     .hero-prices { flex-direction: column; gap: 0; }
     .price-pill:first-child { border-right: none; border-bottom: 1px solid rgba(201,169,110,0.2); }
     .trust-item { font-size: 0.7rem; }
     .why-grid { grid-template-columns: 1fr; }
     .why-item { border-right: none !important; }
+
+    /* Pricing table mobile */
+    .pricing-tabs { overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(201,169,110,0.2); }
+    .ptab { padding: 0.7rem 1.1rem; font-size: 0.8rem; flex-shrink: 0; }
+    .pricing-table { border-radius: 8px; }
+    .pt-row { padding: 12px 14px; gap: 8px; }
+    .pt-route { font-size: 0.85rem; }
+    .pt-sub { font-size: 0.73rem; }
+    .pt-price { font-size: 0.92rem; }
+    .pt-anchor { font-size: 0.98rem; }
+    .tab-intro { font-size: 0.87rem; }
+    .tab-note { font-size: 0.77rem; }
+    .btn-book { width: 100%; text-align: center; padding: 1rem; }
+    .custom-card { flex-direction: column; gap: 0.75rem; }
   }
 </style>
 </head>
@@ -1102,19 +1321,19 @@
   <div class="hero-left">
     <div class="hero-tag">Udaipur's most trusted cab service</div>
     <h1 class="hero-headline">
-      A ride that<br>feels <em>exactly</em><br>right.
+      A ride that<br>feels <em>exactly&nbsp;right.</em>
     </h1>
     <p class="hero-sub">Fixed prices. Pre-confirmed bookings. Professional drivers. No apps, no negotiation, no surprises. Just a clean, comfortable cab waiting for you.</p>
     <div class="hero-prices">
       <div class="price-pill">
         <div class="price-pill-label">Airport Transfer</div>
         <div class="price-pill-amount">₹499</div>
-        <div class="price-pill-note">Flat rate, anywhere in the city</div>
+        <div class="price-pill-note">City flat rate, outstation from ₹1,200</div>
       </div>
       <div class="price-pill">
-        <div class="price-pill-label">Full-Day Cab</div>
-        <div class="price-pill-amount">₹2,500</div>
-        <div class="price-pill-note">10 hours and 180 km included</div>
+        <div class="price-pill-label">Day Hire</div>
+        <div class="price-pill-amount">₹1,500</div>
+        <div class="price-pill-note">Half day from ₹1,500, full day ₹2,500</div>
       </div>
     </div>
     <div class="hero-ev-callout">
@@ -1168,32 +1387,113 @@
   <div class="services-inner">
     <div class="services-header">
       <div class="section-eyebrow" style="color: rgba(201,169,110,0.7);">What we offer</div>
-      <h2>Simple services.<br>No hidden complexity.</h2>
+      <h2>Fixed prices.<br>Every route, every time.</h2>
     </div>
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-number">01</div>
-        <div class="service-name">Airport Transfer</div>
-        <div class="service-rate">Flat ₹499 anywhere in the city</div>
-        <p class="service-desc">Udaipur airport to anywhere in the city. Fixed price, confirmed before you travel. Pre-booking required at least 2 hours before pickup.</p>
-        <ul class="service-features">
-          <li>AC cab with luggage space</li>
-          <li>5 star safety rated fleet with 6 airbags, dashcam and GPS</li>
-          <li>If we cannot honour your booking, your next ride is on us*</li>
-        </ul>
-      </div>
-      <div class="service-card">
-        <div class="service-number">02</div>
-        <div class="service-name">Full-Day Cab</div>
-        <div class="service-rate">₹2,500 for 10 hrs and 180 km</div>
-        <p class="service-desc">Explore Udaipur, Kumbhalgarh, Chittorgarh or wherever the day takes you. One driver, one clean cab, complete transparency on pricing.</p>
-        <ul class="service-features">
-          <li>₹10 per km beyond included distance</li>
-          <li>₹100 per hour beyond included hours</li>
-          <li>Professional driver, clean AC cab, zero surprises</li>
-        </ul>
-      </div>
+
+    <!-- Tab navigation -->
+    <div class="pricing-tabs">
+      <button class="ptab active" onclick="switchTab('airport', this)">Airport Transfer</button>
+      <button class="ptab" onclick="switchTab('dayhire', this)">Day Hire</button>
+      <button class="ptab" onclick="switchTab('custom', this)">Custom Route</button>
     </div>
+
+    <!-- Airport Transfer Tab -->
+    <div class="ptab-content active" id="tab-airport">
+      <p class="tab-intro">One way, pickup or drop. Same price either way. Flat rate, no surge, no negotiation.</p>
+      <div class="pricing-table">
+        <div class="pt-row pt-head">
+          <span>Route</span>
+          <span class="pt-price">Fare</span>
+        </div>
+        <div class="pt-row pt-highlight">
+          <div>
+            <div class="pt-route">Within Udaipur city</div>
+            <div class="pt-sub">Any point within 35 km of the airport</div>
+          </div>
+          <span class="pt-price pt-anchor">₹499</span>
+        </div>
+        <div class="pt-row">
+          <div>
+            <div class="pt-route">Nathdwara</div>
+          </div>
+          <span class="pt-price">₹1,200</span>
+        </div>
+        <div class="pt-row">
+          <div>
+            <div class="pt-route">Kumbhalgarh</div>
+          </div>
+          <span class="pt-price">₹2,000</span>
+        </div>
+        <div class="pt-row">
+          <div>
+            <div class="pt-route">Ranakpur</div>
+          </div>
+          <span class="pt-price">₹2,200</span>
+        </div>
+        <div class="pt-row">
+          <div>
+            <div class="pt-route">Chittorgarh</div>
+          </div>
+          <span class="pt-price">₹2,000</span>
+        </div>
+      </div>
+      <div class="tab-notes">
+        <div class="tab-note">Seats up to 4 passengers. With 4 guests, we fit 2 medium check-in bags (up to 15 kg each), 1 cabin bag (up to 7 kg), and a couple of backpacks comfortably.</div>
+        <div class="tab-note">All transfers include 30 minutes of free waiting. Beyond that, the trip converts to a full day hire at ₹2,500. Difference settled at trip end.</div>
+        <div class="tab-note">Flat rate 24/7. No night surcharge, ever.</div>
+      </div>
+      <a href="https://wa.me/919414343817?text=Hi%2C%20I%20want%20to%20book%20an%20airport%20transfer" class="btn-book" target="_blank" rel="noopener">Book on WhatsApp</a>
+    </div>
+
+    <!-- Day Hire Tab -->
+    <div class="ptab-content" id="tab-dayhire">
+      <p class="tab-intro">Your cab, your day. One driver, wherever you want to go. Kumbhalgarh, Ranakpur, city sightseeing or all three.</p>
+      <div class="pricing-table">
+        <div class="pt-row pt-head">
+          <span>Type</span>
+          <span class="pt-price">Fare</span>
+        </div>
+        <div class="pt-row">
+          <div>
+            <div class="pt-route">Half Day Hire</div>
+            <div class="pt-sub">5 hrs / 100 km. Extends beyond 5 hrs? Converts to full day at trip end</div>
+          </div>
+          <span class="pt-price">₹1,500</span>
+        </div>
+        <div class="pt-row pt-highlight">
+          <div>
+            <div class="pt-route">Full Day Hire</div>
+            <div class="pt-sub">10 hrs / 180 km. ₹10/km and ₹100/hr beyond included</div>
+          </div>
+          <span class="pt-price">₹2,500</span>
+        </div>
+      </div>
+      <div class="tab-notes">
+        <div class="tab-note">Overage charges on km and hours are settled at trip end with full transparency.</div>
+        <div class="tab-note">Seats up to 4 passengers with luggage. Fewer passengers means more room for bags.</div>
+      </div>
+      <a href="https://wa.me/919414343817?text=Hi%2C%20I%20want%20to%20book%20a%20day%20hire" class="btn-book" target="_blank" rel="noopener">Book on WhatsApp</a>
+    </div>
+
+    <!-- Custom Tab -->
+    <div class="ptab-content" id="tab-custom">
+      <p class="tab-intro">Heading somewhere not on our standard list? Jodhpur, Mount Abu, Jaipur, or anywhere else in Rajasthan. Tell us where and we will quote you a fixed price before you commit.</p>
+      <div class="custom-card">
+        <div class="custom-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        </div>
+        <div class="custom-text">
+          <div class="custom-title">Tell us your destination</div>
+          <div class="custom-desc">Share your pickup point, destination, date, and number of passengers. We will come back with a fixed price, no hidden charges.</div>
+        </div>
+      </div>
+      <div class="tab-notes">
+        <div class="tab-note">We cover all major destinations across Rajasthan and Gujarat. No route is too far.</div>
+        <div class="tab-note">All custom quotes are fixed before you confirm. What we quote is what you pay.</div>
+      </div>
+      <a href="https://wa.me/919414343817?text=Hi%2C%20I%20have%20a%20custom%20route%20enquiry" class="btn-book" target="_blank" rel="noopener">Request a Quote</a>
+    </div>
+
   </div>
 </section>
 
@@ -1358,6 +1658,13 @@
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 60);
   });
+
+  function switchTab(tabName, btn) {
+    document.querySelectorAll('.ptab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.ptab').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    btn.classList.add('active');
+  }
 </script>
 </body>
 </html>
