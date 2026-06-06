@@ -903,54 +903,56 @@
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .founder-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .founder-photo {
-    width: 100%;
-    height: 220px;
+    width: 56px;
+    height: 56px;
     flex-shrink: 0;
+    border-radius: 50%;
     background: var(--slate-mid);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    border: 1.5px solid rgba(201,169,110,0.25);
   }
 
   .founder-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top;
+    object-position: center 15%;
   }
 
   .founder-photo-inner {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    opacity: 0.3;
+    gap: 0.3rem;
+    opacity: 0.25;
   }
 
-  .founder-photo-inner svg { width: 2rem; height: 2rem; }
+  .founder-photo-inner svg { width: 1.2rem; height: 1.2rem; }
+  .founder-photo-inner span { display: none; }
 
-  .founder-photo-inner span {
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--cream);
-    text-align: center;
-  }
-
+  .founder-meta { display: flex; flex-direction: column; gap: 0.4rem; }
   .founder-info { flex: 1; width: 100%; }
 
   .founder-name {
     font-family: var(--serif);
-    font-size: 1.4rem;
+    font-size: 1.15rem;
     font-weight: 500;
     color: var(--cream);
     margin-bottom: 0.2rem;
+    line-height: 1.2;
   }
 
   .founder-role {
@@ -964,14 +966,15 @@
 
   .founder-badge {
     display: inline-block;
-    font-size: 0.68rem;
+    font-size: 0.62rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--gold);
     border: 1px solid rgba(201,169,110,0.3);
     padding: 0.25rem 0.65rem;
     margin-bottom: 1rem;
+    white-space: nowrap;
   }
 
   .founder-bio {
@@ -1265,7 +1268,6 @@
 
     .founders { padding: 4rem 1.5rem; }
     .founders-grid { grid-template-columns: 1fr; }
-    .founder-photo { height: 260px; }
 
     .blog { padding: 4rem 1.5rem; }
     .blog-grid { grid-template-columns: 1fr; }
@@ -1477,7 +1479,7 @@
 
     <!-- Custom Tab -->
     <div class="ptab-content" id="tab-custom">
-      <p class="tab-intro">Heading somewhere not on our standard list? Jodhpur, Mount Abu, Jaipur, or anywhere else in Rajasthan. Tell us where and we will quote you a fixed price before you commit.</p>
+      <p class="tab-intro">Have a specific route in mind that is not on our standard list? Tell us where you need to go and we will come back with a fixed price before you commit.</p>
       <div class="custom-card">
         <div class="custom-icon">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
@@ -1488,7 +1490,6 @@
         </div>
       </div>
       <div class="tab-notes">
-        <div class="tab-note">We cover all major destinations across Rajasthan and Gujarat. No route is too far.</div>
         <div class="tab-note">All custom quotes are fixed before you confirm. What we quote is what you pay.</div>
       </div>
       <a href="https://wa.me/919414343817?text=Hi%2C%20I%20have%20a%20custom%20route%20enquiry" class="btn-book" target="_blank" rel="noopener">Request a Quote</a>
@@ -1552,38 +1553,50 @@
     </div>
     <div class="founders-grid">
       <div class="founder-card">
-        <div class="founder-photo">
-          <img src="/bharat-kumar-bhatt.jpg" alt="Bharat Kumar Bhatt" />
+        <div class="founder-top">
+          <div class="founder-photo">
+            <img src="/bharat-kumar-bhatt.jpg" alt="Bharat Kumar Bhatt" />
+          </div>
+          <div class="founder-meta">
+            <div class="founder-name">Bharat Kumar Bhatt</div>
+            <div class="founder-badge">40+ years in Operations and Supply Chain</div>
+          </div>
         </div>
         <div class="founder-info">
-          <div class="founder-name">Bharat Kumar Bhatt</div>
-          <div class="founder-badge">40+ years in Operations and Supply Chain</div>
           <p class="founder-bio">Born and raised in Udaipur, Bharat has spent decades flying in and out of this city for work. That firsthand experience of what travellers go through, trip after trip, is what makes his contribution to Aavre so grounded. He brings operational depth that comes only from doing, not just planning.</p>
         </div>
       </div>
       <div class="founder-card">
-        <div class="founder-photo">
-          <div class="founder-photo-inner">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Photo coming soon</span>
+        <div class="founder-top">
+          <div class="founder-photo">
+            <div class="founder-photo-inner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Photo coming soon</span>
+            </div>
+          </div>
+          <div class="founder-meta">
+            <div class="founder-name">Shivansh Bhatt</div>
+            <div class="founder-badge">IIM Ahmedabad</div>
           </div>
         </div>
         <div class="founder-info">
-          <div class="founder-name">Shivansh Bhatt</div>
-          <div class="founder-badge">IIM Ahmedabad</div>
           <p class="founder-bio">Shivansh grew up in Udaipur and has spent years studying how electric vehicles are reshaping urban transport across India. At Aavre he oversees finances, customer experience and the technology that keeps everything running quietly in the background. His belief is simple: the best ride is one you never have to think about.</p>
         </div>
       </div>
       <div class="founder-card">
-        <div class="founder-photo">
-          <div class="founder-photo-inner">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Photo coming soon</span>
+        <div class="founder-top">
+          <div class="founder-photo">
+            <div class="founder-photo-inner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Photo coming soon</span>
+            </div>
+          </div>
+          <div class="founder-meta">
+            <div class="founder-name">Diksha Shresth</div>
+            <div class="founder-badge">IIM Kozhikode</div>
           </div>
         </div>
         <div class="founder-info">
-          <div class="founder-name">Diksha Shresth</div>
-          <div class="founder-badge">IIM Kozhikode</div>
           <p class="founder-bio">Diksha grew up in Jodhpur with a sharp eye for how businesses position themselves and why some connect while others do not. She brings strategic clarity and a marketer's instinct to Aavre, making sure the brand stands for something real rather than just something polished.</p>
         </div>
       </div>
