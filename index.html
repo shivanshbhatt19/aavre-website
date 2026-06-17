@@ -820,20 +820,11 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0;
-    border-top: 1px solid var(--cream-dark);
   }
 
   .why-item {
     padding: 2.5rem 2rem 2.5rem 0;
-    border-right: 1px solid var(--cream-dark);
   }
-
-  .why-item:last-child,
-  .why-item:nth-child(3) { border-right: none; }
-
-  .why-item:nth-child(4),
-  .why-item:nth-child(5),
-  .why-item:nth-child(6) { border-top: 1px solid var(--cream-dark); }
 
   .why-num {
     font-family: var(--serif);
@@ -1199,9 +1190,6 @@
     .blog-grid { grid-template-columns: 1fr 1fr; }
     .blog-grid .blog-card:last-child { display: none; }
     .why-grid { grid-template-columns: 1fr 1fr; }
-    .why-item:nth-child(2) { border-right: none; }
-    .why-item:nth-child(3) { border-top: 1px solid var(--cream-dark); border-right: 1px solid var(--cream-dark); }
-    .why-item:nth-child(4) { border-right: none; }
   }
 
   @media (max-width: 900px) {
@@ -1286,7 +1274,6 @@
     .price-pill:first-child { border-right: none; border-bottom: 1px solid rgba(201,169,110,0.2); }
     .trust-item { font-size: 0.7rem; }
     .why-grid { grid-template-columns: 1fr; }
-    .why-item { border-right: none !important; }
 
     /* Pricing table mobile */
     .pricing-tabs { overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(201,169,110,0.2); }
