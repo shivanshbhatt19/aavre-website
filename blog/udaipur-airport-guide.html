@@ -33,6 +33,54 @@
   "keywords": "Udaipur airport, Maharana Pratap Airport, airport transfer Udaipur, cab from Udaipur airport, Udaipur airport to city"
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How far is Udaipur airport from the city?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Maharana Pratap Airport is about 22 kilometres from the city centre, a drive of 30 to 45 minutes depending on traffic."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much is a cab from Udaipur airport?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Airport transfers within the city are a single flat fare for any point within 35 km of the airport, agreed before your ride with no surge and no night charge. You can see the current fare on our services page."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When should I book my airport cab?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pre book and confirm your pickup the evening before, especially for early morning or late night flights, so your car is arranged and waiting when you land."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the airport fare fixed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. It is a flat fare with no surge and no night charge, agreed before your ride, so there are no surprises when you arrive."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I book an airport cab?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Book directly with Aavre on WhatsApp. Send your flight details and we confirm the ride and the fare before you travel."
+      }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -94,6 +142,15 @@
     footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
     .footer-links { justify-content: center; }
   }
+  /* FAQ */
+  .blog-faq { margin: 3rem 0 1rem; }
+  .blog-faq .faq-item { border-top: 1px solid var(--cream-dark); }
+  .blog-faq .faq-item:last-child { border-bottom: 1px solid var(--cream-dark); }
+  .blog-faq summary { list-style: none; cursor: pointer; padding: 1.25rem 2.5rem 1.25rem 0; position: relative; font-family: var(--serif); font-size: 1.15rem; color: var(--slate-deep); font-weight: 500; }
+  .blog-faq summary::-webkit-details-marker { display: none; }
+  .blog-faq summary::after { content: ""; position: absolute; right: 0.3rem; top: 1.5rem; width: 9px; height: 9px; border-right: 2px solid var(--gold); border-bottom: 2px solid var(--gold); transform: rotate(45deg); transition: transform 0.25s ease; }
+  .blog-faq .faq-item[open] summary::after { transform: rotate(-135deg); }
+  .blog-faq .faq-item p { padding: 0 0 1.4rem; margin: 0; }
 </style>
 </head>
 <body>
@@ -139,6 +196,31 @@
 
   <h2>The drive into the city</h2>
   <p>The road from the airport to the city centre passes through some genuinely beautiful Rajasthani countryside. It takes between 30 and 45 minutes depending on traffic, and the approach into Udaipur offers your first glimpse of the Aravalli hills surrounding the city. It is a good introduction.</p>
+
+  <h2>Common questions</h2>
+
+  <div class="blog-faq">
+    <details class="faq-item">
+      <summary>How far is Udaipur airport from the city?</summary>
+      <p>Maharana Pratap Airport is about 22 kilometres from the city centre, a drive of 30 to 45 minutes depending on traffic.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How much is a cab from Udaipur airport?</summary>
+      <p>Airport transfers within the city are a single flat fare for any point within 35 km of the airport, agreed before your ride with no surge and no night charge. You can see the current fare on our services page.</p>
+    </details>
+    <details class="faq-item">
+      <summary>When should I book my airport cab?</summary>
+      <p>Pre book and confirm your pickup the evening before, especially for early morning or late night flights, so your car is arranged and waiting when you land.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Is the airport fare fixed?</summary>
+      <p>Yes. It is a flat fare with no surge and no night charge, agreed before your ride, so there are no surprises when you arrive.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How do I book an airport cab?</summary>
+      <p>Book directly with Aavre on WhatsApp. Send your flight details and we confirm the ride and the fare before you travel.</p>
+    </details>
+  </div>
 
   <p>Read more from Aavre: <a href="/blog/best-day-trips-from-udaipur.html" style="color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold);">The best day trips from Udaipur</a> and <a href="/blog/udaipur-travel-tips.html" style="color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold);">Getting around Udaipur without the stress</a>.</p>
 </div>
