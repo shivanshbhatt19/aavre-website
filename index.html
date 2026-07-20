@@ -1692,6 +1692,310 @@
   </div>
 </section>
 
+<!-- REVIEWS -->
+<style>
+  .reviews { background: var(--slate-deep); padding: 7rem 4rem; overflow: hidden; }
+  .reviews-inner { max-width: 880px; margin: 0 auto; }
+  .reviews-head { text-align: center; margin-bottom: 1.75rem; }
+  .reviews-head .section-eyebrow { color: rgba(201,169,110,0.7); justify-content: center; }
+  .reviews-head h2 { font-family: var(--serif); font-weight: 500; font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--cream); line-height: 1.15; margin-top: 8px; }
+
+  /* aggregate rating strip */
+  .rev-agg { display: flex; align-items: center; justify-content: center; gap: 0.85rem; margin-bottom: 3.25rem; flex-wrap: wrap; }
+  .rev-agg-score { font-family: var(--serif); font-size: 1.6rem; color: var(--gold); line-height: 1; }
+  .rev-agg .rev-stars svg { width: 19px; height: 19px; }
+  .rev-agg-count { font-size: 0.85rem; color: var(--muted-light); }
+
+  .rev-viewport { position: relative; }
+  .rev-track { display: flex; transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1); }
+  .rev-slide { min-width: 100%; }
+
+  .rev-card {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    background: linear-gradient(160deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 3px;
+    padding: 3.5rem 3.25rem 2.25rem;
+    transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+  }
+  .rev-card::before {
+    content: "\201C";
+    position: absolute;
+    top: 1.1rem; left: 2.75rem;
+    font-family: var(--serif);
+    font-size: 5.5rem;
+    line-height: 1;
+    color: var(--gold);
+    opacity: 0.16;
+    pointer-events: none;
+  }
+  .rev-card:hover { border-color: rgba(201,169,110,0.5); transform: translateY(-2px); box-shadow: 0 18px 40px rgba(0,0,0,0.28); }
+
+  .rev-stars { display: inline-flex; gap: 3px; }
+  .rev-stars svg { width: 17px; height: 17px; fill: var(--gold); display: block; }
+  .rev-card .rev-stars { margin-bottom: 1.4rem; }
+
+  .rev-text {
+    font-family: var(--serif);
+    font-size: 1.24rem;
+    line-height: 1.72;
+    color: var(--cream);
+    font-weight: 400;
+    position: relative;
+  }
+
+  .rev-foot { display: flex; align-items: center; gap: 0.9rem; margin-top: 2.25rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.09); }
+  .rev-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(201,169,110,0.14);
+    border: 1px solid rgba(201,169,110,0.4);
+    color: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 1rem; flex-shrink: 0;
+  }
+  .rev-name { font-size: 0.95rem; font-weight: 500; color: var(--cream); letter-spacing: 0.01em; }
+  .rev-meta { font-size: 0.76rem; color: var(--muted); margin-top: 3px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .rev-controls { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 2.5rem; }
+  .rev-arrow {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid rgba(201,169,110,0.3);
+    background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+  .rev-arrow:hover { border-color: var(--gold); background: rgba(201,169,110,0.12); }
+  .rev-arrow span { width: 7px; height: 7px; border-top: 1.5px solid var(--gold); border-right: 1.5px solid var(--gold); display: block; }
+  .rev-arrow.prev span { transform: rotate(-135deg); margin-left: 3px; }
+  .rev-arrow.next span { transform: rotate(45deg); margin-right: 3px; }
+
+  .rev-dots { display: flex; gap: 7px; align-items: center; }
+  .rev-dots button {
+    width: 22px; height: 2px; padding: 0;
+    border: none; cursor: pointer; border-radius: 2px;
+    background: rgba(201,169,110,0.25);
+    transition: background 0.3s ease, width 0.3s ease;
+  }
+  .rev-dots button.active { background: var(--gold); width: 38px; }
+
+  .reviews-cta { text-align: center; margin-top: 2.75rem; }
+  .reviews-cta a {
+    color: var(--gold); font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; border-bottom: 1px solid rgba(201,169,110,0.3);
+    padding-bottom: 3px; transition: border-color 0.25s ease;
+  }
+  .reviews-cta a:hover { border-color: var(--gold); }
+
+  @media (max-width: 900px) {
+    .reviews { padding: 5rem 1.5rem; }
+    .rev-card { padding: 3rem 1.75rem 1.75rem; }
+    .rev-card::before { left: 1.4rem; font-size: 4.5rem; }
+    .rev-text { font-size: 1.08rem; line-height: 1.68; }
+    .rev-agg { margin-bottom: 2.5rem; }
+  }
+</style>
+<section class="reviews" id="reviews">
+  <div class="reviews-inner">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="revStar" viewBox="0 0 24 24">
+        <path d="M12 1.8l3.09 6.26 6.91 1.01-5 4.87 1.18 6.88L12 17.58l-6.18 3.24L7 13.94l-5-4.87 6.91-1.01L12 1.8z"/>
+      </symbol>
+    </svg>
+
+    <div class="reviews-head">
+      <div class="section-eyebrow">Guest reviews</div>
+      <h2>What our guests say.</h2>
+    </div>
+
+    <div class="rev-agg">
+      <span class="rev-agg-score">5.0</span>
+      <span class="rev-stars" aria-label="5 out of 5 stars">
+        <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+      </span>
+      <span class="rev-agg-count">rated on Google</span>
+    </div>
+
+    <div class="rev-viewport">
+      <div class="rev-track" id="revTrack">
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">Aavre is by far the best rental cab service I have ever used, and it is so fairly priced as well. My assigned driver knew all the perfect spots and hidden gems that are actually hidden and not ruined yet by InstaReelers. Will book it again whenever I'm back in Udaipur. 11/10, exceeded expectations, highly recommended.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">S</div>
+              <div>
+                <div class="rev-name">Srijan Gautam</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">I booked my first family trip to Haldighati and Nathdwara temple from Udaipur. The cab was on time, neat and clean. The driver had a very warm personality and he also took amazing pictures. We ended our one day trip with lots of memories and already planned our next trip. If you are looking for trips in and around Udaipur I would definitely recommend.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">V</div>
+              <div>
+                <div class="rev-name">Vipin Dwivedi</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">Aavre cabs is one of the most professional cab services in Udaipur. Very clean EV cars, and the driver we got was extremely friendly, helpful and professional. He gave us so much information and clicked insane pictures of us. Overall I would highly recommend Aavre cabs to anyone who visits Udaipur. Their prices are the best compared to other cab services by far.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">A</div>
+              <div>
+                <div class="rev-name">Anirudh Srinath</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">We booked their cab for our entire 3 day Udaipur trip, and everything was really smooth from start to finish. They picked us up from the airport and took us everywhere we wanted to go, including Chittorgarh, Kumbhalgarh, and around Udaipur. The cab was always clean, the driver was friendly and helpful, and he was always on time. The pricing was also very reasonable for the service we got.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">V</div>
+              <div>
+                <div class="rev-name">Vishakha Singla</div>
+                <div class="rev-meta">Google review</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">We booked this cab service for our Udaipur trip, and honestly, we couldn't have asked for a better experience. We were three women traveling together, so safety was a big concern for us, but from day one, our driver was polite, respectful, and made us feel completely at ease. The cab was always clean and comfortable, and every ride was smooth. What we really appreciated was the quality of service we got for the price. It was absolutely worth it.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">M</div>
+              <div>
+                <div class="rev-name">Manavi Yadav</div>
+                <div class="rev-meta">Google review</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">We booked this cab service for our Udaipur trip, and it turned out to be a great choice. The cab was spotlessly clean and very comfortable throughout the journey. Our driver was friendly, helpful, and made sure everything went smoothly. The service was excellent, especially considering the price. Overall, it was a hassle free experience, and I'd definitely recommend them to anyone planning a trip.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">S</div>
+              <div>
+                <div class="rev-name">Shreya Yadav</div>
+                <div class="rev-meta">Google review</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">Seamless and hassle free experience. The booking experience was hassle free, cab arrived on time and the driver was very professional. The driving was also very safe. Would recommend Aavre Cabs to anyone planning for a relaxed and stress free experience.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">K</div>
+              <div>
+                <div class="rev-name">Kshitij Bapat</div>
+                <div class="rev-meta">Google review</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="rev-controls">
+      <button class="rev-arrow prev" id="revPrev" aria-label="Previous review"><span></span></button>
+      <div class="rev-dots" id="revDots"></div>
+      <button class="rev-arrow next" id="revNext" aria-label="Next review"><span></span></button>
+    </div>
+
+    <div class="reviews-cta">
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">Read all reviews on Google</a>
+    </div>
+  </div>
+</section>
+<script>
+(function () {
+  var track = document.getElementById('revTrack');
+  if (!track) return;
+  var slides = track.children;
+  var total = slides.length;
+  var dotsWrap = document.getElementById('revDots');
+  var index = 0;
+  var timer = null;
+
+  for (var i = 0; i < total; i++) {
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', 'Review ' + (i + 1));
+    (function (n) { b.addEventListener('click', function () { go(n); reset(); }); })(i);
+    dotsWrap.appendChild(b);
+  }
+
+  function render() {
+    track.style.transform = 'translateX(' + (-index * 100) + '%)';
+    var dots = dotsWrap.children;
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].className = (i === index) ? 'active' : '';
+    }
+  }
+  function go(n) { index = (n + total) % total; render(); }
+  function next() { go(index + 1); }
+  function prev() { go(index - 1); }
+  function reset() { clearInterval(timer); timer = setInterval(next, 6500); }
+
+  document.getElementById('revNext').addEventListener('click', function () { next(); reset(); });
+  document.getElementById('revPrev').addEventListener('click', function () { prev(); reset(); });
+
+  var section = document.getElementById('reviews');
+  section.addEventListener('mouseenter', function () { clearInterval(timer); });
+  section.addEventListener('mouseleave', reset);
+
+  var startX = null;
+  track.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', function (e) {
+    if (startX === null) return;
+    var diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 45) { diff < 0 ? next() : prev(); reset(); }
+    startX = null;
+  }, { passive: true });
+
+  render();
+  reset();
+})();
+</script>
+
 <!-- FAQ -->
 <style>
   .faq { background: var(--cream); padding: 96px 24px; }
