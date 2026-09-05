@@ -31,7 +31,7 @@ Aavre is built on one promise: flat fares you can trust. The fare is agreed befo
 
 ## Travel guides
 - [Udaipur sightseeing in one day by cab](https://aavre.in/blog/udaipur-sightseeing-in-one-day.html): a one day city route built around opening times, the old city lanes and the evening light
-- [Why we run electric cabs in Udaipur](https://aavre.in/blog/why-electric-cabs-udaipur.html): what an electric fleet changes about the ride, and how routes and charging are planned
+- [Why we run electric cabs in Udaipur](https://aavre.in/blog/why-electric-cabs-udaipur.html): the comfort case for an electric cab on long Rajasthan days, the rooftop solar charging behind it, and the CO2 figures per trip
 - [Udaipur to Chittorgarh by cab](https://aavre.in/blog/udaipur-to-chittorgarh-by-cab.html): distance, drive time and what to see
 - [Udaipur to Kumbhalgarh by cab](https://aavre.in/blog/udaipur-to-kumbhalgarh-by-cab.html): the day trip to the Great Wall of India
 - [Udaipur airport guide](https://aavre.in/blog/udaipur-airport-guide.html): getting to and from Maharana Pratap Airport
