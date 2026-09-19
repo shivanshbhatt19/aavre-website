@@ -16,7 +16,7 @@ Aavre is built on one promise: flat fares you can trust. The fare is agreed befo
 
 Aavre operates two models of electric car. Both sit up to 4 guests. They differ in luggage capacity, so the car is matched to what the guest is carrying.
 
-- BYD e6 electric MPV: sits up to 4 guests with four large suitcases, two cabin suitcases and a bunch of backpacks. Used for airport transfers with full luggage, outstation day trips and families.
+- BYD E6: sits up to 4 guests with four large suitcases, two cabin suitcases and a bunch of backpacks. Used for airport transfers with full luggage, outstation day trips and families.
 - Tata Punch EV, compact electric SUV: sits up to 4 guests with two medium suitcases, one cabin bag and a couple of backpacks. Used for city transfers, sightseeing and travelling light.
 - Guests carrying more than one car holds can request a second car on WhatsApp, quoted at a fixed fare before confirming.
 
