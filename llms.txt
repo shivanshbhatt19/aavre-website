@@ -2,7 +2,7 @@
 
 > Aavre is a premium electric cab service in Udaipur, Rajasthan. It offers airport transfers, outstation day trips and full day cab hire at fixed prices, with no negotiation and no seasonal surge. Booking is direct on WhatsApp.
 
-Aavre is built on one promise: flat fares you can trust. The fare is agreed before every ride, the same at any hour and any time of year. Cars are fully electric and charged entirely from rooftop solar at Aavre's own base, so nothing is drawn from the grid. Every cab is 5 star safety rated, with 6 airbags, a dashcam and GPS on every ride. Each cab sits up to 4 guests.
+Aavre is built on one promise: flat fares you can trust. The fare is agreed before every ride, the same at any hour and any time of year. Cars are fully electric and charged entirely from rooftop solar at Aavre's own base, so nothing is drawn from the grid. Our cars are 5 star safety rated, with 6 airbags, a dashcam and GPS on every ride. Every cab sits up to 4 guests.
 
 ## Key facts
 - Business name: Aavre Cabs
@@ -11,6 +11,14 @@ Aavre is built on one promise: flat fares you can trust. The fare is agreed befo
 - Booking: direct on WhatsApp at +91 94143 43817
 - Website: https://aavre.in
 - Hours: 06:00 to 23:00, all week, with early and late rides available by pre-booking
+
+## Cars and luggage capacity
+
+Aavre operates two models of electric car. Both sit up to 4 guests. They differ in luggage capacity, so the car is matched to what the guest is carrying.
+
+- BYD e6 electric MPV: sits up to 4 guests with four large suitcases, two cabin suitcases and a bunch of backpacks. Used for airport transfers with full luggage, outstation day trips and families.
+- Tata Punch EV, compact electric SUV: sits up to 4 guests with two medium suitcases, one cabin bag and a couple of backpacks. Used for city transfers, sightseeing and travelling light.
+- Guests carrying more than one car holds can request a second car on WhatsApp, quoted at a fixed fare before confirming.
 
 ## Fares (fixed, no surge, no negotiation)
 - Airport transfer within Udaipur city, up to 35 km: 499 rupees
@@ -27,6 +35,7 @@ Aavre is built on one promise: flat fares you can trust. The fare is agreed befo
 - Pre-confirmed bookings, arranged before you travel
 - Fully electric fleet charged entirely from Aavre's own rooftop solar, with zero tailpipe emissions and no grid electricity
 - 5 star safety rated cars with 6 airbags, dashcam and GPS
+- A choice of two models, so luggage is matched to the trip rather than squeezed in
 - Direct booking on WhatsApp, no app and no middlemen
 
 ## Travel guides

@@ -87,7 +87,17 @@
     {
       "@type": "Question",
       "name": "How many people can the cab seat?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Each cab sits up to 4 guests with room for luggage. With a full car we comfortably fit two medium check-in bags, one cabin bag and a couple of backpacks." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Every Aavre cab sits up to 4 guests. We run two models, the BYD e6 electric MPV and the Tata Punch EV, and both seat the same number. What changes between them is luggage room." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much luggage fits in an Aavre cab?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The BYD e6 MPV takes four large suitcases, two cabin suitcases and a bunch of backpacks, with all four seats taken. The Tata Punch EV takes two medium suitcases, one cabin bag and a couple of backpacks. Tell us what you are carrying when you book on WhatsApp and we send the car that fits it." }
+    },
+    {
+      "@type": "Question",
+      "name": "What cars does Aavre use?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Two electric models. The BYD e6 is a full size electric MPV that swallows four large suitcases along with cabin bags, which we use for airport runs with full luggage, outstation days and families. The Tata Punch EV is a compact electric SUV that takes two medium suitcases and a cabin bag, which we use for city transfers and sightseeing. Both sit up to 4 guests and both are charged from rooftop solar at our own base." }
     },
     {
       "@type": "Question",
@@ -97,12 +107,53 @@
     {
       "@type": "Question",
       "name": "Are your cabs safe?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every cab is 5 star safety rated with 6 airbags, a dashcam and GPS on every ride, so you are looked after from pickup to drop." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Our cars are 5 star safety rated with 6 airbags, a dashcam and GPS on every ride, so you are looked after from pickup to drop." }
     },
     {
       "@type": "Question",
       "name": "Are your cabs electric?",
       "acceptedAnswer": { "@type": "Answer", "text": "Yes, and they are charged entirely from solar panels on our own roof, so nothing is drawn from the grid. That means no exhaust on the road and no coal behind the plug. Against a comparable diesel cab, it saves close to 50 kg of CO2 on a Kumbhalgarh and Ranakpur day." }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": "https://aavre.in/#fleet",
+  "name": "Aavre Cabs vehicles",
+  "description": "The electric cars Aavre Cabs operates in Udaipur, with seating and luggage capacity for each.",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "Vehicle",
+        "name": "BYD e6 electric MPV",
+        "manufacturer": { "@type": "Organization", "name": "BYD" },
+        "model": "e6",
+        "bodyType": "MPV",
+        "fuelType": "Electric",
+        "vehicleSeatingCapacity": 5,
+        "description": "Full size electric MPV. Sits up to 4 guests with four large suitcases, two cabin suitcases and a bunch of backpacks. Used for airport transfers with full luggage, outstation day trips and families.",
+        "provider": { "@id": "https://aavre.in/#business" }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "Vehicle",
+        "name": "Tata Punch EV",
+        "manufacturer": { "@type": "Organization", "name": "Tata Motors" },
+        "model": "Punch EV",
+        "bodyType": "SUV",
+        "fuelType": "Electric",
+        "vehicleSeatingCapacity": 5,
+        "description": "Compact electric SUV. Sits up to 4 guests with two medium suitcases, one cabin bag and a couple of backpacks. Used for city transfers and sightseeing.",
+        "provider": { "@id": "https://aavre.in/#business" }
+      }
     }
   ]
 }
@@ -779,6 +830,12 @@
     line-height: 1.55;
   }
 
+  .tab-note a {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201,169,110,0.4);
+  }
+
   .tab-note::before {
     content: '';
     position: absolute;
@@ -915,6 +972,126 @@
 
   .why-desc {
     font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ── CARS ── */
+  .cars {
+    padding: 7rem 4rem;
+    background: var(--cream-dark);
+  }
+
+  .cars-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .cars-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 3.5rem;
+    align-items: end;
+  }
+
+  .cars-top h2 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 500;
+    color: var(--slate-deep);
+    line-height: 1.15;
+  }
+
+  .cars-top p {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.85;
+  }
+
+  .cars-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .car-card {
+    background: var(--white);
+    border: 1px solid rgba(44,47,53,0.08);
+    padding: 2.5rem 2.25rem;
+  }
+
+  .car-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.9rem;
+  }
+
+  .car-name {
+    font-family: var(--serif);
+    font-size: 1.55rem;
+    font-weight: 500;
+    color: var(--slate-deep);
+    line-height: 1.2;
+    margin-bottom: 1.4rem;
+  }
+
+  .car-specs {
+    display: flex;
+    gap: 2.75rem;
+    padding-bottom: 1.4rem;
+    margin-bottom: 1.4rem;
+    border-bottom: 1px solid rgba(44,47,53,0.08);
+  }
+
+  .car-spec-val {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--gold);
+    line-height: 1;
+    font-variant-numeric: lining-nums;
+  }
+
+  .car-spec-label {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-top: 0.45rem;
+  }
+
+  .car-list { list-style: none; }
+
+  .car-list li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 0.55rem;
+  }
+
+  .car-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.72rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .cars-note {
+    margin-top: 2.25rem;
+    font-size: 0.82rem;
     font-weight: 300;
     color: var(--muted);
     line-height: 1.8;
@@ -1321,6 +1498,9 @@
     .why { padding: 4rem 1.5rem; }
     .why-top { grid-template-columns: 1fr; gap: 1.5rem; }
     .why-grid { grid-template-columns: 1fr 1fr; }
+    .cars { padding: 4.5rem 1.5rem; }
+    .cars-top { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+    .cars-grid { grid-template-columns: 1fr; }
 
     .founders { padding: 4rem 1.5rem; }
     .founders-grid { grid-template-columns: 1fr; }
@@ -1343,6 +1523,9 @@
     .price-pill:first-child { border-right: none; border-bottom: 1px solid rgba(201,169,110,0.2); }
     .trust-item { font-size: 0.7rem; }
     .why-grid { grid-template-columns: 1fr; }
+    .cars { padding: 4rem 1.25rem; }
+    .car-card { padding: 2rem 1.5rem; }
+    .car-specs { gap: 2rem; }
 
     /* Pricing table mobile */
     .pricing-tabs { overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(201,169,110,0.2); }
@@ -1375,6 +1558,7 @@
   <a href="#" class="nav-logo">AA<span>V</span>RE<sup>TM</sup></a>
   <div class="nav-right">
     <a href="#services" class="nav-link">Services</a>
+    <a href="#cars" class="nav-link">Our cars</a>
     <a href="#founders" class="nav-link">About</a>
     <a href="/blog/index.html" class="nav-link">Blog</a>
     <a href="https://wa.me/919414343817?text=Hi%2C%20I%27d%20like%20to%20book%20a%20cab" class="nav-cta" target="_blank" rel="noopener noreferrer">Book Now</a>
@@ -1503,7 +1687,7 @@
         </div>
       </div>
       <div class="tab-notes">
-        <div class="tab-note">Sits up to 4 guests. With a full car, we fit 2 medium check-in bags (up to 15 kg each), 1 cabin bag (up to 7 kg), and a couple of backpacks comfortably.</div>
+        <div class="tab-note">Sits up to 4 guests in either car. The Tata Punch EV takes 2 medium suitcases (up to 15 kg each), 1 cabin bag and a couple of backpacks. The BYD e6 MPV takes 4 large suitcases, 2 cabin suitcases and a bunch of backpacks. <a href="#cars">See both cars</a>.</div>
         <div class="tab-note">All outstation transfers include 30 minutes of free waiting. Beyond that, the trip converts to a full day hire at ₹2,500. Difference settled at trip end.</div>
         <div class="tab-note">Flat rate 24/7. No night surcharge, ever.</div>
         <div class="tab-note">Toll and parking are charged at actuals and are not included in the fare.</div>
@@ -1536,7 +1720,7 @@
       </div>
       <div class="tab-notes">
         <div class="tab-note">Overage charges on km and hours are settled at trip end with full transparency.</div>
-        <div class="tab-note">Sits up to 4 guests with luggage. Fewer guests means more room for bags.</div>
+        <div class="tab-note">Sits up to 4 guests with luggage in either car. Ask for the BYD e6 MPV if you are carrying a full set of bags for the day. <a href="#cars">See both cars</a>.</div>
         <div class="tab-note">Toll and parking are charged at actuals and are not included in the fare.</div>
       </div>
       <a href="https://wa.me/919414343817?text=Hi%2C%20I%20want%20to%20book%20a%20day%20hire" class="btn-book" target="_blank" rel="noopener">Click here to book on WhatsApp</a>
@@ -1561,6 +1745,63 @@
       <a href="https://wa.me/919414343817?text=Hi%2C%20I%20have%20a%20custom%20route%20enquiry" class="btn-book" target="_blank" rel="noopener">Request a Quote</a>
     </div>
 
+  </div>
+</section>
+
+<!-- CARS -->
+<section class="cars" id="cars">
+  <div class="cars-inner">
+    <div class="cars-top">
+      <div>
+        <div class="section-eyebrow">Our cars</div>
+        <h2>Two choices.<br>One standard.</h2>
+      </div>
+      <p>Every Aavre ride arrives in one of two models. Both sit up to 4 guests. What changes is how much luggage travels with you, so tell us what you are carrying and we send the right one.</p>
+    </div>
+    <div class="cars-grid">
+
+      <div class="car-card">
+        <div class="car-eyebrow">The spacious one</div>
+        <div class="car-name">BYD e6 electric MPV</div>
+        <div class="car-specs">
+          <div>
+            <div class="car-spec-val">4</div>
+            <div class="car-spec-label">guests</div>
+          </div>
+          <div>
+            <div class="car-spec-val">6</div>
+            <div class="car-spec-label">suitcases and cabin bags</div>
+          </div>
+        </div>
+        <ul class="car-list">
+          <li>Four large suitcases, two cabin suitcases and a bunch of backpacks, with all four seats taken</li>
+          <li>Full size MPV cabin with generous knee room in the rear</li>
+          <li>Our first choice for airport runs with full luggage, outstation days and families</li>
+        </ul>
+      </div>
+
+      <div class="car-card">
+        <div class="car-eyebrow">The city one</div>
+        <div class="car-name">Tata Punch EV</div>
+        <div class="car-specs">
+          <div>
+            <div class="car-spec-val">4</div>
+            <div class="car-spec-label">guests</div>
+          </div>
+          <div>
+            <div class="car-spec-val">3</div>
+            <div class="car-spec-label">suitcases and cabin bags</div>
+          </div>
+        </div>
+        <ul class="car-list">
+          <li>Two medium suitcases, one cabin bag and a couple of backpacks</li>
+          <li>Compact on the old city lanes, easy to park at every ghat and gate</li>
+          <li>Our first choice for city transfers, sightseeing and travelling light</li>
+        </ul>
+      </div>
+
+    </div>
+    <p class="cars-note">Carrying more than a single car takes? Tell us on WhatsApp when you book. We will put the right car on your ride, or send two, and quote the fixed fare before you confirm.</p>
   </div>
 </section>
 
@@ -2036,7 +2277,15 @@
     </details>
     <details class="faq-item">
       <summary>How many people can the cab seat?</summary>
-      <p>Each cab sits up to 4 guests with room for luggage. With a full car we comfortably fit two medium check-in bags, one cabin bag and a couple of backpacks.</p>
+      <p>Every Aavre cab sits up to 4 guests. We run two models, the BYD e6 electric MPV and the Tata Punch EV, and both seat the same number. What changes between them is luggage room.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How much luggage fits in an Aavre cab?</summary>
+      <p>The BYD e6 MPV takes four large suitcases, two cabin suitcases and a bunch of backpacks, with all four seats taken. The Tata Punch EV takes two medium suitcases, one cabin bag and a couple of backpacks. Tell us what you are carrying when you book on WhatsApp and we send the car that fits it.</p>
+    </details>
+    <details class="faq-item">
+      <summary>What cars does Aavre use?</summary>
+      <p>Two electric models. The BYD e6 is a full size electric MPV that swallows four large suitcases along with cabin bags, which we use for airport runs with full luggage, outstation days and families. The Tata Punch EV is a compact electric SUV that takes two medium suitcases and a cabin bag, which we use for city transfers and sightseeing. Both sit up to 4 guests and both are charged from rooftop solar at our own base.</p>
     </details>
     <details class="faq-item">
       <summary>Do you offer day trips from Udaipur?</summary>
@@ -2044,7 +2293,7 @@
     </details>
     <details class="faq-item">
       <summary>Are your cabs safe?</summary>
-      <p>Yes. Every cab is 5 star safety rated with 6 airbags, a dashcam and GPS on every ride, so you are looked after from pickup to drop.</p>
+      <p>Yes. Our cars are 5 star safety rated with 6 airbags, a dashcam and GPS on every ride, so you are looked after from pickup to drop.</p>
     </details>
     <details class="faq-item">
       <summary>Are your cabs electric?</summary>
