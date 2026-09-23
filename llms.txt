@@ -38,13 +38,16 @@ Aavre operates two models of electric car. Both sit up to 4 guests. They differ 
 - A choice of two models, so luggage is matched to the trip rather than squeezed in
 - Direct booking on WhatsApp, no app and no middlemen
 
+## Service pages
+- [Udaipur airport taxi](https://aavre.in/udaipur-airport-taxi): flat 499 rupee pre booked transfer between Maharana Pratap Airport and any point within 35 km, how booking works, cars, luggage and FAQs
+
 ## Travel guides
-- [Udaipur sightseeing in one day by cab](https://aavre.in/blog/udaipur-sightseeing-in-one-day.html): a one day city route built around opening times, the old city lanes and the evening light
-- [Why we run electric cabs in Udaipur](https://aavre.in/blog/why-electric-cabs-udaipur.html): the comfort case for an electric cab on long Rajasthan days, the rooftop solar charging behind it, and the CO2 figures per trip
-- [Udaipur to Chittorgarh by cab](https://aavre.in/blog/udaipur-to-chittorgarh-by-cab.html): distance, drive time and what to see
-- [Udaipur to Kumbhalgarh by cab](https://aavre.in/blog/udaipur-to-kumbhalgarh-by-cab.html): the day trip to the Great Wall of India
-- [Udaipur airport guide](https://aavre.in/blog/udaipur-airport-guide.html): getting to and from Maharana Pratap Airport
-- [Best day trips from Udaipur](https://aavre.in/blog/best-day-trips-from-udaipur.html): outstation options and routes
-- [Udaipur travel tips](https://aavre.in/blog/udaipur-travel-tips.html)
-- [Udaipur in monsoon](https://aavre.in/blog/udaipur-monsoon-travel-guide.html)
-- [All guides](https://aavre.in/blog/index.html)
+- [Udaipur sightseeing in one day by cab](https://aavre.in/blog/udaipur-sightseeing-in-one-day): a one day city route built around opening times, the old city lanes and the evening light
+- [Why we run electric cabs in Udaipur](https://aavre.in/blog/why-electric-cabs-udaipur): the comfort case for an electric cab on long Rajasthan days, the rooftop solar charging behind it, and the CO2 figures per trip
+- [Udaipur to Chittorgarh by cab](https://aavre.in/blog/udaipur-to-chittorgarh-by-cab): distance, drive time and what to see
+- [Udaipur to Kumbhalgarh by cab](https://aavre.in/blog/udaipur-to-kumbhalgarh-by-cab): the day trip to the Great Wall of India
+- [Udaipur airport guide](https://aavre.in/blog/udaipur-airport-guide): getting to and from Maharana Pratap Airport
+- [Best day trips from Udaipur](https://aavre.in/blog/best-day-trips-from-udaipur): outstation options and routes
+- [Udaipur travel tips](https://aavre.in/blog/udaipur-travel-tips)
+- [Udaipur in monsoon](https://aavre.in/blog/udaipur-monsoon-travel-guide)
+- [All guides](https://aavre.in/blog/)
