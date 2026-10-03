@@ -56,7 +56,10 @@ const SCHEMA = {
     ['platform', 'Platform'], ['rides', 'Rides'], ['earnings', 'Earnings (Rs)'],
     ['cashCollected', 'Cash collected by driver (Rs)'], ['odoStart', 'Odometer start'], ['odoEnd', 'Odometer end'],
     ['km', 'KM'], ['toll', 'Toll (Rs)'], ['parking', 'Parking (Rs)'], ['odoNote', 'Odometer note'], ['notes', 'Notes'],
-    ['socStart', 'Starting charging %'], ['socEnd', 'End charging %']] },
+    ['socStart', 'Starting charging %'], ['socEnd', 'End charging %'],
+    ['ridesRapido', 'Rides Rapido'], ['ridesUber', 'Rides Uber'], ['onlineCollected', 'Online collected by driver (Rs)'],
+    ['driverExpense', 'Driver expense (Rs)'], ['driverExpenseNote', 'Driver expense note'],
+    ['appCollected', 'Paid in app, platform pays Aavre (Rs)']] },
   expenses: { tab: 'Expenses', cols: [
     ['id', 'Expense ID'], ['date', 'Date paid'], ['group', 'Category group'], ['category', 'Category'],
     ['car', 'Car'], ['driver', 'Driver mobile'], ['driverName', 'Driver name'], ['amount', 'Amount (Rs)'],
@@ -106,7 +109,8 @@ const TIME_KEYS = { startTime: true };
 const NUM_KEYS = {
   odoStart: 1, odoEnd: 1, km: 1, fare: 1, received: 1, due: 1, toll: 1, parking: 1, stateTax: 1,
   fastCharging: 1, driverFood: 1, otherExp: 1, driverPay: 1, tripCosts: 1, tripProfit: 1,
-  rides: 1, earnings: 1, cashCollected: 1, amount: 1, defaultPay: 1, socStart: 1, socEnd: 1, units: 1, chargingStops: 1
+  rides: 1, earnings: 1, cashCollected: 1, amount: 1, defaultPay: 1, socStart: 1, socEnd: 1, units: 1, chargingStops: 1,
+  ridesRapido: 1, ridesUber: 1, onlineCollected: 1, driverExpense: 1, appCollected: 1
 };
 
 /* ------------------------------------------------------------------ */
@@ -644,10 +648,20 @@ function validate_(ss, table, r, isNew, confirmed) {
       rec.car = requireCar_(ss, r.car);
       const d = requireDriver_(ss, r.driver);
       rec.driver = d.id; rec.driverName = d.name;
-      rec.platform = oneOf_(r.platform, LISTS.platform, 'Platform');
-      rec.rides = num_(r.rides, 'Rides', { required: true });
-      rec.earnings = num_(r.earnings, 'Earnings', { required: true });
-      rec.cashCollected = num_(r.cashCollected, 'Cash collected') || 0;
+      // one row per car per day; the driver runs Uber and Rapido together
+      rec.platform = 'Uber + Rapido';
+      rec.ridesRapido = num_(r.ridesRapido, 'No of rides Rapido', { required: true });
+      rec.ridesUber = num_(r.ridesUber, 'No of rides Uber', { required: true });
+      rec.rides = rec.ridesRapido + rec.ridesUber;
+      if (rec.rides <= 0) fail_('Enter at least one ride.');
+      // cash rides: the driver collects in hard cash or UPI; in app rides: the platform pays Aavre directly
+      rec.cashCollected = num_(r.cashCollected, 'Hard cash collected by driver', { required: true });
+      rec.onlineCollected = num_(r.onlineCollected, 'UPI collected by driver', { required: true });
+      rec.appCollected = num_(r.appCollected, 'Paid in app', { required: true });
+      rec.earnings = Math.round((rec.cashCollected + rec.onlineCollected + rec.appCollected) * 100) / 100;
+      rec.driverExpense = num_(r.driverExpense, 'Driver expense') || 0;
+      rec.driverExpenseNote = str_(r.driverExpenseNote);
+      if (rec.driverExpense > 0 && !rec.driverExpenseNote) fail_('Add a note for the driver expense (for example puncture or parking).');
       rec.odoNote = r.odoNote; rec.odoStart = r.odoStart; rec.odoEnd = r.odoEnd;
       checkOdo_(ss, rec, isNew ? null : rec.id, confirmed, unchangedOdo_(ss, table, rec, isNew));
       rec.socStart = soc_(r.socStart, 'Starting charging %');

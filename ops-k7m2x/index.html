@@ -394,7 +394,7 @@ function lastOdo(car, excludeId) {
 function driverCash(id) {
   let c = 0;
   S.data.trips.forEach(r => { if (String(r.driver) === String(id) && (r.paymentMode === 'Cash to driver' || r.paymentMode === 'UPI to driver')) c += n(r.received); });
-  S.data.platform.forEach(r => { if (String(r.driver) === String(id)) c += n(r.cashCollected); });
+  S.data.platform.forEach(r => { if (String(r.driver) === String(id)) c += n(r.cashCollected) + n(r.onlineCollected) - n(r.driverExpense); });
   S.data.expenses.forEach(r => { if (String(r.driver) === String(id) && r.paidVia === 'Driver from collected cash') c -= n(r.amount); });
   S.data.settlements.forEach(r => {
     if (String(r.driver) !== String(id)) return;
@@ -459,25 +459,33 @@ const FORMS = {
       l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}${n(r.chargingStops) ? ' · ' + n(r.chargingStops) + ' charging stop' + (n(r.chargingStops) > 1 ? 's' : '') : ''}`, amt: inr(r.fare) })
   },
   platform: {
-    table: 'platform', prefix: 'PL', title: 'Uber or Rapido day', nav: 'Uber / Rapido',
+    table: 'platform', prefix: 'PL', title: 'Uber and Rapido day', nav: 'Uber / Rapido',
     fields: () => [
       { k: 'date', label: 'Date', type: 'date', req: 1, def: today },
-      { k: 'platform', label: 'Platform', type: 'select', req: 1, opts: () => opts(S.data.lists.platform) },
       { k: 'car', label: 'Car', type: 'select', req: 1, opts: () => carOpts() },
-      { k: 'driver', label: 'Driver', type: 'select', req: 1, opts: () => driverOpts() },
-      { k: 'rides', label: 'Rides', type: 'number', req: 1 },
-      { k: 'earnings', label: 'Earnings (₹)', type: 'number', req: 1, hint: () => 'As shown in the app for the day.' },
-      { k: 'cashCollected', label: 'Of which cash collected by driver (₹)', type: 'number', full: 1 },
-      { sec: 'Odometer' },
+      { k: 'driver', label: 'Driver', type: 'select', req: 1, opts: () => driverOpts(), full: 1 },
+      { sec: 'Rides' },
+      { k: 'ridesRapido', label: 'No of rides Rapido', type: 'number', req: 1 },
+      { k: 'ridesUber', label: 'No of rides Uber', type: 'number', req: 1 },
+      { sec: 'Collection' },
+      { k: 'cashCollected', label: 'Total cash collected (₹)', type: 'number', req: 1 },
+      { k: 'onlineCollected', label: 'Total online collected (₹)', type: 'number', req: 1, hint: () => 'UPI received by the driver.' },
+      { k: 'driverExpense', label: 'Driver expense (₹)', type: 'number', hint: () => 'Puncture, parking etc. paid by the driver and deducted.' },
+      { k: 'driverExpenseNote', label: 'Driver expense note', req: 1, show: r => n(r.driverExpense) > 0 },
+      { sec: 'Odometer and battery' },
       { k: 'odoStart', label: 'Odometer start', type: 'number', req: 1, hint: r => odoHint(r) },
       { k: 'odoEnd', label: 'Odometer end', type: 'number', req: 1 },
       { k: 'odoNote', label: 'Reason the readings overlap', full: 1, show: () => S.odoConfirm, req: 1 },
+      { k: 'socStart', label: 'Starting charging %', type: 'number', req: 1 },
+      { k: 'socEnd', label: 'End charging %', type: 'number', req: 1 },
       { sec: 'Costs paid by Aavre' },
       { k: 'toll', label: 'Toll (₹)', type: 'number' }, { k: 'parking', label: 'Parking (₹)', type: 'number' },
       { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
     ],
-    live: r => `<span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(n(r.odoEnd) - n(r.odoStart)) : '0'}</b></span><span class="pill">Expected payout <b>${inr(n(r.earnings) - n(r.cashCollected))}</b></span>`,
-    row: r => ({ l1: `${h(r.platform)}<span class="tag">${num(r.rides)} rides</span>`, l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km`, amt: inr(r.earnings) })
+    live: r => `<span class="pill">Rides <b>${num(n(r.ridesRapido) + n(r.ridesUber))}</b></span><span class="pill">Total collected <b>${inr(n(r.cashCollected) + n(r.onlineCollected))}</b></span>
+      <span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(n(r.odoEnd) - n(r.odoStart)) : '0'}</b></span><span class="pill">Driver hands over <b>${inr(n(r.cashCollected) + n(r.onlineCollected) - n(r.driverExpense))}</b></span>`,
+    row: r => ({ l1: `Uber ${num(r.ridesUber)} · Rapido ${num(r.ridesRapido)}<span class="tag">${num(r.rides)} rides</span>`,
+      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km · cash ${inr(r.cashCollected)} · online ${inr(r.onlineCollected)}${n(r.driverExpense) ? ' · driver expense ' + inr(r.driverExpense) : ''}${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}`, amt: inr(r.earnings) })
   },
   expense: {
     table: 'expenses', prefix: 'EX', title: 'Expense', nav: 'Expense',
@@ -753,7 +761,7 @@ function compute(f) {
 
   const tripCostKeys = ['toll', 'parking', 'stateTax', 'fastCharging', 'driverFood', 'otherExp', 'driverPay'];
   const fares = sum(trips, 'fare'), earnings = sum(plat, 'earnings');
-  const tripCosts = sum(trips, 'tripCosts') + sum(plat, 'toll') + sum(plat, 'parking');
+  const tripCosts = sum(trips, 'tripCosts') + sum(plat, 'toll') + sum(plat, 'parking') + sum(plat, 'driverExpense');
   const expTotal = sum(exps, 'amount');
   const income = fares + earnings, expenses = tripCosts + expTotal;
   const km = sum(trips, 'km') + sum(plat, 'km');
@@ -849,13 +857,14 @@ function secPL(c) {
   const row = (label, fnc, cls) => lines.push(tr([label].concat(months.map(m => fnc(m))).concat([fnc(null)]), cls));
   const pick = (list, m) => m ? by(list, m) : list;
   const inc = m => c.sum(pick(c.trips, m), 'fare') + c.sum(pick(c.plat, m), 'earnings');
-  const tcost = m => c.sum(pick(c.trips, m), 'tripCosts') + c.sum(pick(c.plat, m), 'toll') + c.sum(pick(c.plat, m), 'parking');
+  const tcost = m => c.sum(pick(c.trips, m), 'tripCosts') + c.sum(pick(c.plat, m), 'toll') + c.sum(pick(c.plat, m), 'parking') + c.sum(pick(c.plat, m), 'driverExpense');
   const ecost = m => c.sum(pick(c.exps, m), 'amount');
   row('Direct trip fares', m => inr(c.sum(pick(c.trips, m), 'fare')));
   row('Uber and Rapido earnings', m => inr(c.sum(pick(c.plat, m), 'earnings')));
   row('Total income', m => inr(inc(m)), 'tot');
   const tlabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Public charging', driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay on trips' };
   c.tripCostKeys.forEach(k => row('Trip: ' + tlabels[k], m => inr(c.sum(pick(c.trips, m), k) + (k === 'toll' || k === 'parking' ? c.sum(pick(c.plat, m), k) : 0)), 'sub'));
+  row('Uber and Rapido: driver expenses', m => inr(c.sum(pick(c.plat, m), 'driverExpense')), 'sub');
   cats.forEach(cat => row(cat, m => inr(c.sum(pick(c.exps, m).filter(e => e.category === cat), 'amount')), 'sub'));
   row('Total expenses', m => inr(tcost(m) + ecost(m)), 'tot');
   row('Operating profit', m => signed(inc(m) - tcost(m) - ecost(m)), 'tot');
@@ -895,7 +904,7 @@ function secCars(c, f) {
     const t = c.trips.filter(r => r.car === car.id), p = c.plat.filter(r => r.car === car.id), e = c.exps.filter(r => r.car === car.id);
     const km = c.sum(t, 'km') + c.sum(p, 'km'), gap = unrecordedKm(car.id, r => c.inR(r));
     const direct = c.sum(t, 'fare'), plat = c.sum(p, 'earnings');
-    const cost = c.sum(t, 'tripCosts') + c.sum(p, 'toll') + c.sum(p, 'parking') + c.sum(e, 'amount');
+    const cost = c.sum(t, 'tripCosts') + c.sum(p, 'toll') + c.sum(p, 'parking') + c.sum(p, 'driverExpense') + c.sum(e, 'amount');
     T.trips += t.length; T.km += km; T.gap += gap; T.direct += direct; T.plat += plat; T.cost += cost;
     return tr([h(car.nickname || car.id) + `<div class="small muted">${h(car.id)}</div>`, num(t.length), num(km), gap ? `<span style="color:var(--warn)">${num(gap)}</span>` : '0', inr(direct), inr(plat), inr(cost), signed(direct + plat - cost), km ? '₹' + (Math.round((direct + plat) / km * 10) / 10).toLocaleString('en-IN') : '']);
   });
@@ -926,7 +935,7 @@ function secDrivers(c, f) {
 function secTolls(c) {
   const all = [];
   c.trips.forEach(r => { if (n(r.toll)) all.push({ car: r.car, date: r.date, amt: n(r.toll), route: r.from + ' to ' + r.to }); });
-  c.plat.forEach(r => { if (n(r.toll)) all.push({ car: r.car, date: r.date, amt: n(r.toll), route: r.platform + ' (city)' }); });
+  c.plat.forEach(r => { if (n(r.toll)) all.push({ car: r.car, date: r.date, amt: n(r.toll), route: 'Uber and Rapido (city)' }); });
   c.exps.filter(e => e.category === 'Toll').forEach(r => all.push({ car: r.car, date: r.date, amt: n(r.amount), route: 'Logged as expense' }));
   const total = all.reduce((a, x) => a + x.amt, 0);
   const group = key => { const m = {}; all.forEach(x => { const k = key(x); m[k] = (m[k] || 0) + x.amt; }); return Object.keys(m).map(k => [k, m[k]]); };
@@ -960,16 +969,9 @@ function secCash(c) {
     .map(x => tr([h(x.d.name) + `<div class="small muted">${h(x.d.id)}</div>`, `<b>${inr(x.cash)}</b>`]));
   const dueRows = c.dues.sort((a, b) => b.t.date.localeCompare(a.t.date))
     .map(x => tr([`${fmtDate(x.t.date)}<div class="small muted">${h(x.t.from)} to ${h(x.t.to)} · ${h(x.t.customerName || '')}</div>`, h(D.driverLabel(x.t.driver)), `<b>${inr(x.due)}</b>`]));
-  const plats = S.data.lists.platform.map(p => {
-    const rows = S.data.platform.filter(r => r.platform === p && c.byCar(r));
-    const expected = rows.reduce((a, r) => a + n(r.earnings) - n(r.cashCollected), 0);
-    const got = S.data.settlements.filter(s => s.type === 'Platform payout received' && s.platform === p).reduce((a, s) => a + n(s.amount), 0);
-    return tr([p, inr(rows.reduce((a, r) => a + n(r.earnings), 0)), inr(rows.reduce((a, r) => a + n(r.cashCollected), 0)), inr(expected), inr(got), `<b>${inr(expected - got)}</b>`]);
-  });
   return `<h2 style="margin-top:4px">Cash held by drivers</h2>${table(['Driver', 'Cash in hand'], cashRows)}
-    <p class="note">Cash and driver UPI collected, minus expenses paid from that cash, minus handovers to the company.</p>
+    <p class="note">Cash and UPI collected by the driver (trips and Uber or Rapido days), minus expenses he paid from it, minus handovers to the company.</p>
     <h2>Customer dues</h2>${table(['Trip', 'Driver', 'Due'], dueRows)}
-    <h2>Uber and Rapido payouts</h2>${table(['Platform', 'Earnings', 'Cash with driver', 'Payout expected', 'Payout received', 'Still to come'], plats)}
     <p class="note">These figures are all time, as of today, so they ignore the period filter.</p>`;
 }
 
