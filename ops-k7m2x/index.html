@@ -128,6 +128,8 @@ td.neg{color:var(--bad)} td.pos{color:var(--good)}
 
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:13.5px;z-index:50;max-width:calc(100% - 32px)}
 .queue{background:#fffbeb;color:#92400e;border:1px solid #fde68a;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:13px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.stop{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;background:#fafbfc}
+.stophead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .loading{padding:40px 0;text-align:center;color:var(--muted)}
 @media(max-width:380px){.grid{grid-template-columns:1fr}}
 </style>
@@ -235,16 +237,22 @@ window.addEventListener('online', () => Q.flush());
 async function loadData(force) {
   if (S.data && !force) return S.data;
   S.data = await api('getAll');
+  if (!S.data.charging) S.data.charging = [];
   return S.data;
 }
 function mergeRecord(table, rec) {
   if (!S.data || !rec) return;
+  if (table === 'trips' && Array.isArray(rec.stops)) {
+    S.data.charging = (S.data.charging || []).filter(c => c.tripId !== rec.id).concat(rec.stops);
+    rec = Object.assign({}, rec); delete rec.stops;
+  }
   const list = S.data[table];
   const i = list.findIndex(r => String(r.id) === String(rec.id));
   if (i >= 0) list[i] = Object.assign({}, list[i], rec); else list.push(rec);
 }
 function removeRecord(table, id) {
   if (!S.data) return;
+  if (table === 'trips') S.data.charging = (S.data.charging || []).filter(c => c.tripId !== String(id));
   S.data[table] = S.data[table].filter(r => String(r.id) !== String(id));
 }
 const D = {
@@ -415,24 +423,29 @@ const FORMS = {
       { k: 'from', label: 'From', req: 1 }, { k: 'to', label: 'To', req: 1 },
       { k: 'customerName', label: 'Customer name' }, { k: 'customerMobile', label: 'Customer mobile', type: 'tel' },
       { k: 'bookingRef', label: 'Booking ref', full: 1 },
-      { sec: 'Odometer' },
+      { sec: 'Odometer and battery' },
       { k: 'odoStart', label: 'Odometer start', type: 'number', req: 1, hint: r => odoHint(r) },
       { k: 'odoEnd', label: 'Odometer end', type: 'number', req: 1 },
       { k: 'odoNote', label: 'Reason the readings overlap', full: 1, show: () => S.odoConfirm, req: 1 },
+      { k: 'socStart', label: 'Starting charging %', type: 'number', req: 1 },
+      { k: 'socEnd', label: 'End charging %', type: 'number', req: 1 },
       { sec: 'Payment' },
       { k: 'fare', label: 'Fare (₹)', type: 'number', req: 1 },
       { k: 'paymentMode', label: 'Payment mode', type: 'select', req: 1, opts: () => opts(S.data.lists.paymentMode) },
       { k: 'received', label: 'Amount received (₹)', type: 'number', req: 1, full: 1, hint: () => 'Less than the fare is recorded as due.' },
       { sec: 'Trip expenses' },
       { k: 'toll', label: 'Toll (₹)', type: 'number' }, { k: 'parking', label: 'Parking (₹)', type: 'number' },
-      { k: 'stateTax', label: 'State or permit tax (₹)', type: 'number' }, { k: 'fastCharging', label: 'Fast charging (₹)', type: 'number' },
+      { k: 'stateTax', label: 'State or permit tax (₹)', type: 'number' },
       { k: 'driverFood', label: 'Driver food or allowance (₹)', type: 'number' }, { k: 'driverPay', label: 'Driver pay (₹)', type: 'number', hint: r => payHint(r, 'Per trip') },
       { k: 'otherExp', label: 'Other expense (₹)', type: 'number' }, { k: 'otherExpNote', label: 'Other expense note', show: r => n(r.otherExp) > 0, req: 1 },
+      { sec: 'Public charging' },
+      { stops: true },
       { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
     ],
     live: r => {
       const km = n(r.odoEnd) - n(r.odoStart);
-      const costs = ['toll', 'parking', 'stateTax', 'fastCharging', 'driverFood', 'otherExp', 'driverPay'].reduce((a, k) => a + n(r[k]), 0);
+      const charging = (r.chargingStops || []).reduce((a, st) => a + n(st.amount), 0);
+      const costs = ['toll', 'parking', 'stateTax', 'driverFood', 'otherExp', 'driverPay'].reduce((a, k) => a + n(r[k]), 0) + charging;
       const profit = n(r.fare) - costs, due = Math.max(0, n(r.fare) - n(r.received));
       return `<span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(km) : '0'}</b></span><span class="pill">Trip costs <b>${inr(costs)}</b></span>
         <span class="pill ${profit >= 0 ? 'good' : 'bad'}">Trip profit <b>${inr(profit)}</b></span>${due > 0 ? `<span class="pill bad">Due <b>${inr(due)}</b></span>` : ''}`;
@@ -443,7 +456,7 @@ const FORMS = {
       if (k === 'driver') { const d = D.driver(r.driver); if (d && d.payBasis === 'Per trip' && d.defaultPay !== '' && !r.driverPay) setVal(form, 'driverPay', d.defaultPay); }
     },
     row: r => ({ l1: `${h(r.from)} to ${h(r.to)}<span class="tag">${h(r.tripType)}</span>${n(r.due) > 0 ? '<span class="tag q">due ' + inr(tripDue(r)) + '</span>' : ''}`,
-      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km`, amt: inr(r.fare) })
+      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}${n(r.chargingStops) ? ' · ' + n(r.chargingStops) + ' charging stop' + (n(r.chargingStops) > 1 ? 's' : '') : ''}`, amt: inr(r.fare) })
   },
   platform: {
     table: 'platform', prefix: 'PL', title: 'Uber or Rapido day', nav: 'Uber / Rapido',
@@ -527,8 +540,26 @@ function payHint(r, basis) {
 }
 function setVal(form, k, v) { const i = form.elements[k]; if (i) i.value = v === undefined || v === null ? '' : v; }
 
+const CPOS = ['Tata Power EZ Charge', 'Statiq', 'ChargeZone', 'Jio-bp pulse', 'Zeon Charging', 'GLIDA', 'Kazam', 'Ather Grid'];
+const STOP_FIELDS = [
+  ['station', 'Charging station name', 'text'], ['cpo', 'CPO', 'cpo'],
+  ['socStart', 'Start charging %', 'number'], ['socEnd', 'End charging %', 'number'],
+  ['units', 'Units consumed (kWh)', 'number'], ['amount', 'Amount paid (₹)', 'number']];
+function stopHtml(st, i) {
+  return `<div class="stop" data-stop="${i}"><div class="stophead"><b>Charging stop ${i + 1}</b><button type="button" class="btn sm danger" data-rmstop="${i}">Remove</button></div><div class="grid">` +
+    STOP_FIELDS.map(([k, label, t]) => `<div class="f"><label>${label} <span class="req">*</span></label><input data-sf="${k}" type="text"${t === 'number' ? ' inputmode="decimal"' : ''}${t === 'cpo' ? ' list="cpoList"' : ''} value="${h(st[k] === undefined ? '' : st[k])}" autocomplete="off"></div>`).join('') +
+    '</div></div>';
+}
+function readStops(form) {
+  return $$('.stop', form).map(box => { const o = {}; $$('[data-sf]', box).forEach(i => { o[i.dataset.sf] = i.value.trim(); }); return o; });
+}
+function drawStops(form, list) {
+  $('#stopList', form).innerHTML = list.map(stopHtml).join('') || '<p class="muted small" style="margin:0">No public charging on this trip.</p>';
+}
+
 function fieldHtml(f, rec) {
   if (f.sec) return `<div class="sec">${h(f.sec)}</div>`;
+  if (f.stops) return `<div class="f full" data-k="_stops"><datalist id="cpoList">${CPOS.map(c => `<option value="${h(c)}">`).join('')}</datalist><div id="stopList"></div><div><button type="button" class="btn sm ghost" id="addStop">Add public charging stop</button></div></div>`;
   const v = rec[f.k] === undefined ? '' : rec[f.k];
   const show = f.show ? f.show(rec) : true;
   const req = f.req ? ' <span class="req">*</span>' : '';
@@ -567,6 +598,7 @@ function renderInput(app, kind) {
   if (!S.edit || S.edit._kind !== kind) { S.edit = null; S.odoConfirm = false; }
   const fields = F.fields();
   const rec = S.edit ? Object.assign({}, S.edit) : {};
+  if (kind === 'trip' && S.edit) rec.chargingStops = (S.data.charging || []).filter(c => c.tripId === S.edit.id).sort((a, b) => String(a.id).localeCompare(String(b.id)));
   if (!S.edit) fields.forEach(f => { if (f.def && rec[f.k] === undefined) rec[f.k] = f.def(); });
   const seg = Object.keys(FORMS).map(k => `<a href="#/input/${k}" class="${k === kind ? 'on' : ''}">${FORMS[k].nav}</a>`).join('');
 
@@ -587,8 +619,14 @@ function renderInput(app, kind) {
   bindShell();
 
   const form = $('#entryForm');
+  if ($('#stopList', form)) {
+    drawStops(form, rec.chargingStops || []);
+    $('#addStop').onclick = () => { const l = readStops(form); l.push({}); drawStops(form, l); refresh(); const ins = $$('.stop [data-sf="station"]', form); if (ins.length) ins[ins.length - 1].focus(); };
+    $('#stopList', form).addEventListener('click', e => { const b = e.target.closest('[data-rmstop]'); if (!b) return; const l = readStops(form); l.splice(Number(b.dataset.rmstop), 1); drawStops(form, l); refresh(); });
+  }
   const refresh = changed => {
     const r = readForm(form, fields);
+    if ($('#stopList', form)) r.chargingStops = readStops(form);
     if (changed && F.onChange) { F.onChange(changed, r, form); Object.assign(r, readForm(form, fields)); }
     fields.forEach(f => {
       if (!f.k) return;
@@ -600,7 +638,7 @@ function renderInput(app, kind) {
     if (F.live) $('#live').innerHTML = F.live(r);
   };
   if (S.edit) form.dataset.recvTouched = '1';
-  form.addEventListener('input', e => { if (e.target.name) { e.target.closest('.f').classList.remove('err'); if (!S.odoConfirm) $('#formMsg').innerHTML = ''; refresh(e.target.name); } });
+  form.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.sf) { if (!S.odoConfirm) $('#formMsg').innerHTML = ''; refresh(); return; } if (e.target.name) { e.target.closest('.f').classList.remove('err'); if (!S.odoConfirm) $('#formMsg').innerHTML = ''; refresh(e.target.name); } });
   form.addEventListener('change', e => { if (e.target.name) refresh(e.target.name); });
   refresh();
 
@@ -619,6 +657,13 @@ function renderInput(app, kind) {
     });
     fields.forEach(f => { if (f.k && f.show && !f.show(r)) r[f.k] = ''; });
     if (missing) { $('#formMsg').innerHTML = `<div class="msg bad">${h(missing.label)} is required.</div>`; form.elements[missing.k].focus(); return; }
+    if ($('#stopList', form)) {
+      r.chargingStops = readStops(form);
+      for (let i = 0; i < r.chargingStops.length; i++) {
+        const gap = STOP_FIELDS.find(([k]) => r.chargingStops[i][k] === '');
+        if (gap) { $('#formMsg').innerHTML = `<div class="msg bad">Charging stop ${i + 1}: ${h(gap[1])} is required.</div>`; $$('.stop', form)[i].querySelector(`[data-sf="${gap[0]}"]`).focus(); return; }
+      }
+    }
     const isNew = !S.edit;
     r.id = isNew ? newId(F.prefix) : S.edit.id;
     const payload = { table: F.table, record: r, isNew, odoConfirmed: S.odoConfirm };
@@ -809,7 +854,7 @@ function secPL(c) {
   row('Direct trip fares', m => inr(c.sum(pick(c.trips, m), 'fare')));
   row('Uber and Rapido earnings', m => inr(c.sum(pick(c.plat, m), 'earnings')));
   row('Total income', m => inr(inc(m)), 'tot');
-  const tlabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Fast charging', driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay on trips' };
+  const tlabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Public charging', driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay on trips' };
   c.tripCostKeys.forEach(k => row('Trip: ' + tlabels[k], m => inr(c.sum(pick(c.trips, m), k) + (k === 'toll' || k === 'parking' ? c.sum(pick(c.plat, m), k) : 0)), 'sub'));
   cats.forEach(cat => row(cat, m => inr(c.sum(pick(c.exps, m).filter(e => e.category === cat), 'amount')), 'sub'));
   row('Total expenses', m => inr(tcost(m) + ecost(m)), 'tot');

@@ -45,7 +45,12 @@ const SCHEMA = {
     ['fastCharging', 'Fast charging (Rs)'], ['driverFood', 'Driver food/allowance (Rs)'],
     ['otherExp', 'Other trip expense (Rs)'], ['otherExpNote', 'Other expense note'],
     ['driverPay', 'Driver pay (Rs)'], ['tripCosts', 'Trip costs total (Rs)'], ['tripProfit', 'Trip profit (Rs)'],
-    ['odoNote', 'Odometer note'], ['notes', 'Notes']] },
+    ['odoNote', 'Odometer note'], ['notes', 'Notes'],
+    ['socStart', 'Starting charging %'], ['socEnd', 'End charging %'], ['chargingStops', 'Public charging stops']] },
+  charging: { tab: 'Charging stops', internal: true, cols: [
+    ['id', 'Stop ID'], ['tripId', 'Trip ID'], ['date', 'Date'], ['car', 'Car'], ['station', 'Charging station'],
+    ['cpo', 'CPO'], ['socStart', 'Start charging %'], ['socEnd', 'End charging %'], ['units', 'Units consumed (kWh)'],
+    ['amount', 'Amount (Rs)']] },
   platform: { tab: 'Platform income', cols: [
     ['id', 'Entry ID'], ['date', 'Date'], ['car', 'Car'], ['driver', 'Driver mobile'], ['driverName', 'Driver name'],
     ['platform', 'Platform'], ['rides', 'Rides'], ['earnings', 'Earnings (Rs)'],
@@ -100,7 +105,7 @@ const TIME_KEYS = { startTime: true };
 const NUM_KEYS = {
   odoStart: 1, odoEnd: 1, km: 1, fare: 1, received: 1, due: 1, toll: 1, parking: 1, stateTax: 1,
   fastCharging: 1, driverFood: 1, otherExp: 1, driverPay: 1, tripCosts: 1, tripProfit: 1,
-  rides: 1, earnings: 1, cashCollected: 1, amount: 1, defaultPay: 1
+  rides: 1, earnings: 1, cashCollected: 1, amount: 1, defaultPay: 1, socStart: 1, socEnd: 1, units: 1, chargingStops: 1
 };
 
 /* ------------------------------------------------------------------ */
@@ -498,6 +503,42 @@ function checkOdo_(ss, rec, excludeId, confirmed, unchanged) {
   }
 }
 
+function soc_(v, label) {
+  const x = num_(v, label, { required: true });
+  if (x > 100) fail_(label + ' must be between 0 and 100.');
+  return x;
+}
+
+function validateStops_(list, trip) {
+  if (!Array.isArray(list)) list = [];
+  return list.map(function (r, i) {
+    const n = 'Charging stop ' + (i + 1) + ': ';
+    const st = {};
+    st.id = trip.id + '-C' + (i + 1);
+    st.tripId = trip.id; st.date = trip.date; st.car = trip.car;
+    st.station = str_(r.station); if (!st.station) fail_(n + 'charging station name is required.');
+    st.cpo = str_(r.cpo); if (!st.cpo) fail_(n + 'CPO is required.');
+    st.socStart = soc_(r.socStart, n + 'start charging %');
+    st.socEnd = soc_(r.socEnd, n + 'end charging %');
+    if (st.socEnd <= st.socStart) fail_(n + 'end charging % must be more than start charging %.');
+    st.units = num_(r.units, n + 'units consumed', { required: true, positive: true });
+    st.amount = num_(r.amount, n + 'amount', { required: true });
+    return st;
+  });
+}
+
+function writeStops_(ss, user, tripId, stops) {
+  const t = table_(ss, dataSchema_('charging'));
+  const now = new Date();
+  t.rows.forEach(function (r) {
+    if (r.tripId === tripId && r.deleted !== 'Yes') writeRow_(t, { deleted: 'Yes', updatedBy: user.username, updatedAt: now }, r._row);
+  });
+  stops.forEach(function (st) {
+    const row = Object.assign({}, st, { createdBy: user.username, createdAt: now, updatedBy: '', updatedAt: '', deleted: 'No' });
+    writeRow_(t, row);
+  });
+}
+
 function unchangedOdo_(ss, table, rec, isNew) {
   if (isNew) return false;
   const cur = lookup_(ss, table, rec.id);
@@ -577,13 +618,18 @@ function validate_(ss, table, r, isNew, confirmed) {
       if (!rec.from || !rec.to) fail_('From and To are required.');
       rec.odoNote = r.odoNote; rec.odoStart = r.odoStart; rec.odoEnd = r.odoEnd;
       checkOdo_(ss, rec, isNew ? null : rec.id, confirmed, unchangedOdo_(ss, table, rec, isNew));
+      rec.socStart = soc_(r.socStart, 'Starting charging %');
+      rec.socEnd = soc_(r.socEnd, 'End charging %');
+      rec._stops = validateStops_(r.chargingStops, rec);
+      rec.chargingStops = rec._stops.length;
       rec.fare = num_(r.fare, 'Fare', { required: true });
       rec.paymentMode = oneOf_(r.paymentMode, LISTS.paymentMode, 'Payment mode');
       rec.received = num_(r.received, 'Amount received', { required: true });
       rec.due = Math.max(0, Math.round((rec.fare - rec.received) * 100) / 100);
       const costLabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Fast charging',
         driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay' };
-      Object.keys(costLabels).forEach(function (k) { rec[k] = num_(r[k], costLabels[k]) || 0; });
+      Object.keys(costLabels).forEach(function (k) { if (k !== 'fastCharging') rec[k] = num_(r[k], costLabels[k]) || 0; });
+      rec.fastCharging = rec._stops.reduce(function (a, st) { return a + st.amount; }, 0); // total of the charging stops
       rec.otherExpNote = str_(r.otherExpNote);
       if (rec.otherExp > 0 && !rec.otherExpNote) fail_('Add a note for the other trip expense.');
       rec.tripCosts = rec.toll + rec.parking + rec.stateTax + rec.fastCharging + rec.driverFood + rec.otherExp + rec.driverPay;
@@ -659,6 +705,7 @@ function validate_(ss, table, r, isNew, confirmed) {
 
 function save_(user, table, record, isNew, odoConfirmed) {
   const schema = dataSchema_(table);
+  if (schema.internal) fail_('Unknown table.', 'BAD_TABLE');
   if (schema.admin) requireAdmin_(user);
   const ss = dataSs_();
   return withLock_(function () {
@@ -670,7 +717,11 @@ function save_(user, table, record, isNew, odoConfirmed) {
     // same entry sent twice (retry after a network drop): keep one copy
     if (isNew && !schema.natural) {
       const dup = findRow(str_(record.id));
-      if (dup && dup.deleted !== 'Yes') return clean_(dup);
+      if (dup && dup.deleted !== 'Yes') {
+        const d = clean_(dup);
+        if (table === 'trips') d.stops = stopsFor_(ss, d.id);
+        return d;
+      }
     }
     const rec = validate_(ss, table, record, isNew, odoConfirmed);
     const existing = findRow(rec.id);
@@ -696,12 +747,23 @@ function save_(user, table, record, isNew, odoConfirmed) {
       rec.createdBy = user.username; rec.createdAt = now; rec.updatedBy = ''; rec.updatedAt = ''; rec.deleted = 'No';
       writeRow_(t, rec);
     }
+    if (table === 'trips') {
+      const stops = rec._stops; delete rec._stops;
+      writeStops_(ss, user, rec.id, stops);
+      rec.stops = stops;
+    }
     return rec;
   });
 }
 
+function stopsFor_(ss, tripId) {
+  return table_(ss, dataSchema_('charging')).rows
+    .filter(function (r) { return r.tripId === tripId && r.deleted !== 'Yes'; }).map(clean_);
+}
+
 function remove_(user, table, id) {
   const schema = dataSchema_(table);
+  if (schema.internal) fail_('Unknown table.', 'BAD_TABLE');
   if (schema.admin) requireAdmin_(user);
   if (table === 'categories') fail_('Categories cannot be deleted. Hide them instead.');
   if (table === 'cars' || table === 'drivers') fail_('Mark it Inactive instead of deleting.');
@@ -711,6 +773,7 @@ function remove_(user, table, id) {
     for (let i = 0; i < t.rows.length; i++) {
       if (String(t.rows[i].id) === String(id) && t.rows[i].deleted !== 'Yes') {
         writeRow_(t, { deleted: 'Yes', updatedBy: user.username, updatedAt: new Date() }, t.rows[i]._row);
+        if (table === 'trips') writeStops_(ss, user, String(id), []);
         return true;
       }
     }
