@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="theme-color" content="#1a1f2e">
+<title>Aavre Ops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1a1f2e; --navy2:#252b3d; --gold:#C9A84C; --gold2:#B8A882; --cream:#FAF7F0; --card:#ffffff;
+  --ink:#1f2430; --muted:#626a7a; --line:#e6e1d4; --good:#2e7d4f; --bad:#b3261e; --warn:#a66a00;
+  --radius:14px; --shadow:0 1px 2px rgba(26,31,46,.06),0 4px 16px rgba(26,31,46,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;overflow-x:hidden}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.brand{font-family:"Playfair Display",Georgia,serif;font-size:20px;letter-spacing:.3px;text-decoration:none;color:#fff}
+.brand b{color:var(--gold);font-weight:600}
+.top .sp{flex:1}
+.top .who{font-size:13px;color:#c9cdd8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.top button{background:transparent;border:1px solid #3a4258;color:#fff;border-radius:10px;padding:7px 12px;font-size:13px;cursor:pointer}
+.nav{display:flex;gap:6px;padding:10px 16px;background:var(--navy2);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;color:#d6d9e2;text-decoration:none;padding:7px 12px;border-radius:999px;font-size:13.5px;font-weight:500}
+.nav a.on{background:var(--gold);color:var(--navy)}
+
+main{max-width:980px;margin:0 auto;padding:16px 16px 96px}
+h1{font-family:"Playfair Display",Georgia,serif;font-weight:600;font-size:24px;margin:6px 0 14px}
+h2{font-size:16px;margin:22px 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+/* home */
+.bigbtns{display:grid;gap:14px;margin-top:8px}
+.bigbtn{display:block;text-decoration:none;background:var(--navy);color:#fff;border-radius:18px;padding:26px 20px;box-shadow:var(--shadow)}
+.bigbtn.alt{background:#fff;color:var(--navy);border:1.5px solid var(--gold)}
+.bigbtn .t{font-family:"Playfair Display",Georgia,serif;font-size:24px}
+.bigbtn .d{opacity:.8;font-size:14px;margin-top:4px}
+@media(min-width:720px){.bigbtns{grid-template-columns:1fr 1fr}}
+
+/* forms */
+.seg{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg a{flex:none;text-decoration:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-weight:500;font-size:14px}
+.seg a.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f.full{grid-column:1/-1}
+.f label{font-size:13px;font-weight:600;color:#3a4050}
+.f label .req{color:var(--gold)}
+.f input,.f select,.f textarea{width:100%;min-height:48px;padding:11px 12px;border:1.5px solid #d9d3c3;border-radius:12px;background:#fff;font-size:16px;outline:none}
+.f textarea{min-height:72px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.18)}
+.f .hint{font-size:12.5px;color:var(--muted)}
+.f.err input,.f.err select{border-color:var(--bad)}
+.sec{grid-column:1/-1;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold2);margin-top:8px;border-top:1px solid var(--line);padding-top:14px}
+.live{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.pill{background:#f3efe4;border-radius:999px;padding:6px 12px;font-size:13px}
+.pill b{font-weight:700}
+.pill.good b{color:var(--good)} .pill.bad b{color:var(--bad)}
+.actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{appearance:none;border:0;border-radius:12px;padding:13px 20px;font-weight:600;font-size:15px;cursor:pointer;background:var(--navy);color:#fff;min-height:48px}
+.btn.gold{background:var(--gold);color:var(--navy)}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid #d9d3c3}
+.btn.danger{background:#fff;color:var(--bad);border:1.5px solid #e9c3c0}
+.btn.sm{padding:8px 12px;min-height:36px;font-size:13px;border-radius:10px}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.wide{flex:1}
+.msg{border-radius:12px;padding:11px 13px;margin:12px 0 0;font-size:14px}
+.msg.bad{background:#fbeceb;color:var(--bad)}
+.msg.warn{background:#fff4dc;color:#6b4800}
+.msg.good{background:#e7f4ec;color:var(--good)}
+
+/* lists */
+.rows{display:flex;flex-direction:column}
+.row{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .main{flex:1;min-width:0}
+.row .l1{font-weight:600;overflow-wrap:anywhere}
+.row .l2{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row .amt{font-weight:700;white-space:nowrap}
+.row .btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:#f0ece0;color:#5b5240;margin-left:6px}
+.tag.q{background:#fff0cf;color:#7a5200}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.filters .f input,.filters .f select{min-height:42px;padding:8px 10px;font-size:15px}
+
+/* analytics */
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:720px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.tile .k{font-size:12.5px;color:var(--muted)}
+.tile .v{font-size:21px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.tile .v.good{color:var(--good)} .tile .v.bad{color:var(--bad)}
+.tile.hero{background:var(--navy);color:#fff;border-color:var(--navy)} .tile.hero .k{color:#c9cdd8}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid #f0ece2}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit}
+thead th{background:#f7f3e9;font-size:12px;color:#4a5060;font-weight:600}
+tbody tr{background:#fff}
+tr.tot td{font-weight:700;background:#faf7ef}
+tr.sub td{color:var(--muted)}
+td.neg{color:var(--bad)} td.pos{color:var(--good)}
+.chart{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin:6px 0 0;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.note{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* login */
+.login{max-width:400px;margin:8vh auto 0}
+.login .brand{display:block;text-align:center;color:var(--navy);font-size:30px;margin-bottom:4px}
+.login .brand b{color:var(--gold)}
+.login .card{padding:22px}
+.login .f{margin-bottom:12px}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:14px;z-index:50;max-width:calc(100% - 32px)}
+.queue{background:#fff4dc;color:#6b4800;border-radius:12px;padding:10px 13px;margin-bottom:12px;font-size:13.5px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.loading{padding:40px 0;text-align:center;color:var(--muted)}
+@media(max-width:380px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast hidden" role="status"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   CONFIG: paste the Apps Script web app URL here (ends with /exec)
+   ===================================================================== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbz3Mc7ycLhQWqOTN5ac4X6GxXVTKd18beRuKKKuKVnWdUZ2jlxXVLMd8QBCT_MaWp9vSw/exec';
+
+/* ---------- small utils ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const h = v => String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const n = v => { const x = Number(v); return isFinite(x) ? x : 0; };
+const inr = v => '₹' + Math.round(n(v)).toLocaleString('en-IN');
+const num = v => Math.round(n(v)).toLocaleString('en-IN');
+const today = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Kolkata' });
+const nowTime = () => new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' });
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fmtDate = d => d ? (Number(d.slice(8, 10)) + ' ' + MONTHS[Number(d.slice(5, 7)) - 1] + ' ' + d.slice(0, 4)) : '';
+const fmtMonth = m => MONTHS[Number(m.slice(5, 7)) - 1] + ' ' + m.slice(0, 4);
+const newId = p => p + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+const S = {
+  token: store.get('aavreOps.token'),
+  user: (() => { try { return JSON.parse(store.get('aavreOps.user') || 'null'); } catch (e) { return null; } })(),
+  data: null,
+  edit: null,          // record being edited in the input form
+  odoConfirm: false,
+  af: null             // analytics filters
+};
+
+function toast(msg, ms) {
+  const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hidden'), ms || 2600);
+}
+
+/* ---------- API ---------- */
+class ApiError extends Error { constructor(m, code, extra) { super(m); this.code = code; this.extra = extra; } }
+
+async function api(action, body) {
+  if (!/^https:\/\//.test(API_URL)) throw new ApiError('This page is not connected to the backend yet. Paste the Apps Script URL into API_URL.', 'CONFIG');
+  let res, json;
+  try {
+    res = await fetch(API_URL, {
+      method: 'POST', redirect: 'follow', cache: 'no-store',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({}, body || {}, { action, token: S.token }))
+    });
+  } catch (e) { throw new ApiError('No connection. Check the internet and try again.', 'NETWORK'); }
+  try { json = await res.json(); } catch (e) { throw new ApiError('The server sent an unexpected reply. Try again.', 'NETWORK'); }
+  if (!json.ok) {
+    if (json.code === 'AUTH') { endSession(json.error); }
+    else if (json.code === 'MUST_CHANGE' && S.user) { S.user.mustChange = true; saveUser(); location.hash = '#/password'; }
+    throw new ApiError(json.error, json.code, json.extra);
+  }
+  return json.data;
+}
+
+function saveUser() { store.set('aavreOps.user', JSON.stringify(S.user)); }
+function endSession(message) {
+  S.token = null; S.user = null; S.data = null;
+  store.del('aavreOps.token'); store.del('aavreOps.user');
+  S.loginMsg = message || '';
+  location.hash = '#/login';
+  render();
+}
+
+/* ---------- offline queue: saves that could not reach the server ---------- */
+const Q = {
+  key: 'aavreOps.queue',
+  all() { try { return JSON.parse(store.get(this.key) || '[]'); } catch (e) { return []; } },
+  put(list) { store.set(this.key, JSON.stringify(list)); },
+  add(item) { const l = this.all().filter(x => x.record.id !== item.record.id); l.push(item); this.put(l); },
+  async flush() {
+    const list = this.all();
+    if (!list.length || !S.token) return;
+    const left = [];
+    for (const item of list) {
+      try { const rec = await api('save', item); mergeRecord(item.table, rec); }
+      catch (e) {
+        if (e.code === 'NETWORK') { left.push(item); }
+        else if (e.code === 'AUTH') { left.push(item); break; }
+        else { toast('A saved entry could not sync: ' + e.message, 6000); left.push(Object.assign(item, { failed: e.message })); }
+      }
+    }
+    this.put(left);
+    if (list.length !== left.length) { toast('Synced ' + (list.length - left.length) + ' pending entr' + (list.length - left.length === 1 ? 'y' : 'ies')); render(); }
+  }
+};
+window.addEventListener('online', () => Q.flush());
+
+/* ---------- data ---------- */
+async function loadData(force) {
+  if (S.data && !force) return S.data;
+  S.data = await api('getAll');
+  return S.data;
+}
+function mergeRecord(table, rec) {
+  if (!S.data || !rec) return;
+  const list = S.data[table];
+  const i = list.findIndex(r => String(r.id) === String(rec.id));
+  if (i >= 0) list[i] = Object.assign({}, list[i], rec); else list.push(rec);
+}
+function removeRecord(table, id) {
+  if (!S.data) return;
+  S.data[table] = S.data[table].filter(r => String(r.id) !== String(id));
+}
+const D = {
+  cars: (all) => (S.data ? S.data.cars : []).filter(c => all || c.status !== 'Inactive'),
+  drivers: (all) => (S.data ? S.data.drivers : []).filter(d => all || d.status !== 'Inactive'),
+  car: id => (S.data ? S.data.cars : []).find(c => c.id === id),
+  driver: id => (S.data ? S.data.drivers : []).find(d => String(d.id) === String(id)),
+  carLabel: id => { const c = D.car(id); return c ? (c.nickname ? c.nickname + ' · ' + c.id : c.id) : (id || ''); },
+  driverLabel: id => { const d = D.driver(id); return d ? d.name : (id || ''); },
+  isAdmin: () => S.user && S.user.role === 'Super admin'
+};
+
+/* ---------- router ---------- */
+window.addEventListener('hashchange', render);
+document.addEventListener('DOMContentLoaded', () => { render(); });
+
+function shell(active, inner) {
+  const u = S.user;
+  const tabs = [['#/home', 'Home', 'home'], ['#/input/trip', 'Input data', 'input'], ['#/analytics/summary', 'Analytics', 'analytics'], ['#/settings', 'Settings', 'settings']];
+  const q = Q.all().length;
+  return `<header class="top"><a class="brand" href="#/home">Aavre <b>Ops</b></a><span class="sp"></span>
+    <span class="who">${h(u ? u.name : '')}</span><button id="logoutBtn" type="button">Log out</button></header>
+    <nav class="nav">${tabs.map(t => `<a href="${t[0]}" class="${active === t[2] ? 'on' : ''}">${t[1]}</a>`).join('')}</nav>
+    <main>${q ? `<div class="queue"><span>${q} entr${q === 1 ? 'y is' : 'ies are'} saved on this phone and waiting to sync.</span><button class="btn sm gold" id="syncBtn" type="button">Sync now</button></div>` : ''}${inner}</main>`;
+}
+
+function bindShell() {
+  const lb = $('#logoutBtn');
+  if (lb) lb.onclick = async () => { try { await api('logout'); } catch (e) {} endSession('You are logged out.'); };
+  const sb = $('#syncBtn');
+  if (sb) sb.onclick = () => Q.flush();
+}
+
+async function render() {
+  const app = $('#app');
+  const hash = location.hash || '#/home';
+  const parts = hash.replace(/^#\//, '').split('/');
+  if (!S.token) { if (parts[0] !== 'login') { location.hash = '#/login'; return; } return renderLogin(app); }
+  if (S.user && S.user.mustChange && parts[0] !== 'password') { location.hash = '#/password'; return; }
+  if (parts[0] === 'login') { location.hash = '#/home'; return; }
+  if (parts[0] === 'password') return renderPassword(app, true);
+
+  if (!S.data) {
+    app.innerHTML = shell(parts[0], '<div class="loading">Loading…</div>'); bindShell();
+    try { await loadData(); Q.flush(); }
+    catch (e) { app.innerHTML = shell(parts[0], `<div class="msg bad">${h(e.message)}</div><div class="actions"><button class="btn" onclick="render()">Try again</button></div>`); bindShell(); return; }
+  }
+  if (parts[0] === 'home') renderHome(app);
+  else if (parts[0] === 'input') renderInput(app, parts[1] || 'trip');
+  else if (parts[0] === 'analytics') renderAnalytics(app, parts[1] || 'summary');
+  else if (parts[0] === 'settings') renderSettings(app, parts[1] || (D.isAdmin() ? 'cars' : 'password'));
+  else { location.hash = '#/home'; }
+}
+
+/* ---------- login and password ---------- */
+function renderLogin(app) {
+  app.innerHTML = `<div class="login" style="padding:0 16px">
+    <span class="brand">Aavre <b>Ops</b></span><p class="muted small" style="text-align:center;margin:0 0 18px">Team access only</p>
+    <form class="card" id="loginForm" autocomplete="on">
+      <div class="f"><label for="lu">Username</label><input id="lu" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+      <div class="f"><label for="lp">Password</label><input id="lp" name="password" type="password" autocomplete="current-password" required></div>
+      <button class="btn gold" style="width:100%" type="submit" id="loginBtn">Log in</button>
+      ${S.loginMsg ? `<div class="msg warn">${h(S.loginMsg)}</div>` : ''}<div id="loginErr"></div>
+    </form></div>`;
+  $('#loginForm').onsubmit = async ev => {
+    ev.preventDefault();
+    const b = $('#loginBtn'); b.disabled = true; b.textContent = 'Checking…'; $('#loginErr').innerHTML = '';
+    try {
+      const r = await api('login', { username: $('#lu').value.trim(), password: $('#lp').value });
+      S.token = r.token; S.user = r.user; S.loginMsg = '';
+      store.set('aavreOps.token', r.token); saveUser();
+      location.hash = r.user.mustChange ? '#/password' : '#/home';
+      render();
+    } catch (e) {
+      $('#loginErr').innerHTML = `<div class="msg bad">${h(e.message)}</div>`;
+      b.disabled = false; b.textContent = 'Log in';
+    }
+  };
+}
+
+function passwordForm(forced) {
+  return `<form class="card" id="pwForm">
+    ${forced ? '<p style="margin-top:0">Set your own password before you continue.</p>' : ''}
+    <div class="grid">
+      <div class="f full"><label>Current password</label><input type="password" id="pwOld" autocomplete="current-password" required></div>
+      <div class="f full"><label>New password</label><input type="password" id="pwNew" autocomplete="new-password" minlength="10" required><span class="hint">At least 10 characters.</span></div>
+      <div class="f full"><label>Repeat new password</label><input type="password" id="pwNew2" autocomplete="new-password" required></div>
+    </div>
+    <div class="actions"><button class="btn gold" type="submit">Save password</button></div><div id="pwMsg"></div></form>`;
+}
+function bindPasswordForm(after) {
+  $('#pwForm').onsubmit = async ev => {
+    ev.preventDefault();
+    const a = $('#pwNew').value, b = $('#pwNew2').value;
+    if (a !== b) { $('#pwMsg').innerHTML = '<div class="msg bad">The new passwords do not match.</div>'; return; }
+    try {
+      const u = await api('changePassword', { oldPassword: $('#pwOld').value, newPassword: a });
+      S.user = u; saveUser();
+      toast('Password updated');
+      after();
+    } catch (e) { $('#pwMsg').innerHTML = `<div class="msg bad">${h(e.message)}</div>`; }
+  };
+}
+function renderPassword(app, forced) {
+  app.innerHTML = `<header class="top"><span class="brand">Aavre <b>Ops</b></span><span class="sp"></span><button id="logoutBtn" type="button">Log out</button></header>
+    <main><h1>Set a new password</h1>${passwordForm(forced)}</main>`;
+  bindShell();
+  bindPasswordForm(() => { location.hash = '#/home'; render(); });
+}
+
+/* ---------- home ---------- */
+function renderHome(app) {
+  const t = today();
+  const trips = S.data.trips.filter(r => r.date === t).length;
+  const plat = S.data.platform.filter(r => r.date === t).length;
+  app.innerHTML = shell('home', `<h1>Hello, ${h(S.user.name.split(' ')[0])}</h1>
+    <div class="bigbtns">
+      <a class="bigbtn" href="#/input/trip"><div class="t">Input data</div><div class="d">Trips, Uber and Rapido days, expenses, settlements</div></a>
+      <a class="bigbtn alt" href="#/analytics/summary"><div class="t">Analytics</div><div class="d">P&amp;L, cars, drivers, tolls, salaries, cash</div></a>
+    </div>
+    <p class="muted small" style="margin-top:18px">Today: ${trips} trip${trips === 1 ? '' : 's'} and ${plat} Uber or Rapido entr${plat === 1 ? 'y' : 'ies'} logged.</p>`);
+  bindShell();
+}
+
+/* =====================================================================
+   INPUT
+   ===================================================================== */
+const opts = list => list.map(x => Array.isArray(x) ? x : [x, x]);
+const carOpts = (all) => D.cars(all).map(c => [c.id, (c.nickname ? c.nickname + ' · ' : '') + c.id]);
+const driverOpts = (all) => D.drivers(all).map(d => [d.id, d.name + ' · ' + d.id]);
+
+function lastOdo(car, excludeId) {
+  let max = null;
+  ['trips', 'platform'].forEach(t => S.data[t].forEach(r => {
+    if (r.car === car && r.id !== excludeId && r.odoEnd !== '' && (max === null || n(r.odoEnd) > max)) max = n(r.odoEnd);
+  }));
+  return max;
+}
+function driverCash(id) {
+  let c = 0;
+  S.data.trips.forEach(r => { if (String(r.driver) === String(id) && (r.paymentMode === 'Cash to driver' || r.paymentMode === 'UPI to driver')) c += n(r.received); });
+  S.data.platform.forEach(r => { if (String(r.driver) === String(id)) c += n(r.cashCollected); });
+  S.data.expenses.forEach(r => { if (String(r.driver) === String(id) && r.paidVia === 'Driver from collected cash') c -= n(r.amount); });
+  S.data.settlements.forEach(r => {
+    if (String(r.driver) !== String(id)) return;
+    if (r.type === 'Driver cash handover' || r.type === 'Driver UPI handover') c -= n(r.amount);
+    if (r.type === 'Customer due collected' && r.collectedBy === 'Driver') c += n(r.amount);
+  });
+  return c;
+}
+function tripDue(t) {
+  let paid = 0;
+  S.data.settlements.forEach(s => { if (s.type === 'Customer due collected' && s.tripId === t.id) paid += n(s.amount); });
+  return Math.max(0, n(t.due) - paid);
+}
+
+const FORMS = {
+  trip: {
+    table: 'trips', prefix: 'TR', title: 'Trip', nav: 'Trip',
+    fields: () => [
+      { k: 'date', label: 'Date', type: 'date', req: 1, def: today },
+      { k: 'startTime', label: 'Start time', type: 'time', def: nowTime },
+      { k: 'car', label: 'Car', type: 'select', req: 1, opts: () => carOpts() },
+      { k: 'driver', label: 'Driver', type: 'select', req: 1, opts: () => driverOpts() },
+      { k: 'tripType', label: 'Trip type', type: 'select', req: 1, opts: () => opts(S.data.lists.tripType) },
+      { k: 'source', label: 'Booking source', type: 'select', req: 1, opts: () => opts(S.data.lists.source) },
+      { k: 'partner', label: 'Partner name', req: 1, full: 1, show: r => r.source === 'Hotel or homestay partner' },
+      { k: 'from', label: 'From', req: 1 }, { k: 'to', label: 'To', req: 1 },
+      { k: 'customerName', label: 'Customer name' }, { k: 'customerMobile', label: 'Customer mobile', type: 'tel' },
+      { k: 'bookingRef', label: 'Booking ref', full: 1 },
+      { sec: 'Odometer' },
+      { k: 'odoStart', label: 'Odometer start', type: 'number', req: 1, hint: r => odoHint(r) },
+      { k: 'odoEnd', label: 'Odometer end', type: 'number', req: 1 },
+      { k: 'odoNote', label: 'Reason the readings overlap', full: 1, show: () => S.odoConfirm, req: 1 },
+      { sec: 'Payment' },
+      { k: 'fare', label: 'Fare (₹)', type: 'number', req: 1 },
+      { k: 'paymentMode', label: 'Payment mode', type: 'select', req: 1, opts: () => opts(S.data.lists.paymentMode) },
+      { k: 'received', label: 'Amount received (₹)', type: 'number', req: 1, full: 1, hint: () => 'Less than the fare is recorded as due.' },
+      { sec: 'Trip expenses' },
+      { k: 'toll', label: 'Toll (₹)', type: 'number' }, { k: 'parking', label: 'Parking (₹)', type: 'number' },
+      { k: 'stateTax', label: 'State or permit tax (₹)', type: 'number' }, { k: 'fastCharging', label: 'Fast charging (₹)', type: 'number' },
+      { k: 'driverFood', label: 'Driver food or allowance (₹)', type: 'number' }, { k: 'driverPay', label: 'Driver pay (₹)', type: 'number', hint: r => payHint(r, 'Per trip') },
+      { k: 'otherExp', label: 'Other expense (₹)', type: 'number' }, { k: 'otherExpNote', label: 'Other expense note', show: r => n(r.otherExp) > 0, req: 1 },
+      { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
+    ],
+    live: r => {
+      const km = n(r.odoEnd) - n(r.odoStart);
+      const costs = ['toll', 'parking', 'stateTax', 'fastCharging', 'driverFood', 'otherExp', 'driverPay'].reduce((a, k) => a + n(r[k]), 0);
+      const profit = n(r.fare) - costs, due = Math.max(0, n(r.fare) - n(r.received));
+      return `<span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(km) : '0'}</b></span><span class="pill">Trip costs <b>${inr(costs)}</b></span>
+        <span class="pill ${profit >= 0 ? 'good' : 'bad'}">Trip profit <b>${inr(profit)}</b></span>${due > 0 ? `<span class="pill bad">Due <b>${inr(due)}</b></span>` : ''}`;
+    },
+    onChange: (k, r, form) => {
+      if (k === 'fare' && !form.dataset.recvTouched) setVal(form, 'received', r.fare);
+      if (k === 'received') form.dataset.recvTouched = '1';
+      if (k === 'driver') { const d = D.driver(r.driver); if (d && d.payBasis === 'Per trip' && d.defaultPay !== '' && !r.driverPay) setVal(form, 'driverPay', d.defaultPay); }
+    },
+    row: r => ({ l1: `${h(r.from)} to ${h(r.to)}<span class="tag">${h(r.tripType)}</span>${n(r.due) > 0 ? '<span class="tag q">due ' + inr(tripDue(r)) + '</span>' : ''}`,
+      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km`, amt: inr(r.fare) })
+  },
+  platform: {
+    table: 'platform', prefix: 'PL', title: 'Uber or Rapido day', nav: 'Uber / Rapido',
+    fields: () => [
+      { k: 'date', label: 'Date', type: 'date', req: 1, def: today },
+      { k: 'platform', label: 'Platform', type: 'select', req: 1, opts: () => opts(S.data.lists.platform) },
+      { k: 'car', label: 'Car', type: 'select', req: 1, opts: () => carOpts() },
+      { k: 'driver', label: 'Driver', type: 'select', req: 1, opts: () => driverOpts() },
+      { k: 'rides', label: 'Rides', type: 'number', req: 1 },
+      { k: 'earnings', label: 'Earnings (₹)', type: 'number', req: 1, hint: () => 'As shown in the app for the day.' },
+      { k: 'cashCollected', label: 'Of which cash collected by driver (₹)', type: 'number', full: 1 },
+      { sec: 'Odometer' },
+      { k: 'odoStart', label: 'Odometer start', type: 'number', req: 1, hint: r => odoHint(r) },
+      { k: 'odoEnd', label: 'Odometer end', type: 'number', req: 1 },
+      { k: 'odoNote', label: 'Reason the readings overlap', full: 1, show: () => S.odoConfirm, req: 1 },
+      { sec: 'Costs paid by Aavre' },
+      { k: 'toll', label: 'Toll (₹)', type: 'number' }, { k: 'parking', label: 'Parking (₹)', type: 'number' },
+      { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
+    ],
+    live: r => `<span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(n(r.odoEnd) - n(r.odoStart)) : '0'}</b></span><span class="pill">Expected payout <b>${inr(n(r.earnings) - n(r.cashCollected))}</b></span>`,
+    row: r => ({ l1: `${h(r.platform)}<span class="tag">${num(r.rides)} rides</span>`, l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km`, amt: inr(r.earnings) })
+  },
+  expense: {
+    table: 'expenses', prefix: 'EX', title: 'Expense', nav: 'Expense',
+    fields: () => [
+      { k: 'date', label: 'Date paid', type: 'date', req: 1, def: today },
+      { k: 'category', label: 'Category', type: 'select', req: 1, groups: () => catGroups() },
+      { k: 'car', label: 'Car', type: 'select', req: 1, opts: () => [['General', 'General (shared, not a car)']].concat(carOpts()), def: () => 'General',
+        hint: r => r.category === 'Charging' ? 'Charging is always a General cost for now.' : '' },
+      { k: 'driver', label: 'Driver', type: 'select', opts: () => driverOpts(), req: 1, show: r => catGroup(r.category) === 'Driver' || r.paidVia === 'Driver from collected cash' },
+      { k: 'amount', label: 'Amount (₹)', type: 'number', req: 1, hint: r => catGroup(r.category) === 'Driver' ? payHint(r) : '' },
+      { k: 'paidVia', label: 'Paid via', type: 'select', req: 1, opts: () => opts(S.data.lists.paidVia) },
+      { k: 'note', label: 'Vendor or note', type: 'textarea', full: 1 }
+    ],
+    onChange: (k, r, form) => {
+      if (k === 'category' && r.category === 'Charging') setVal(form, 'car', 'General');
+    },
+    row: r => ({ l1: `${h(r.category)}<span class="tag">${h(r.group)}</span>`, l2: `${fmtDate(r.date)} · ${h(r.car === 'General' ? 'General' : D.carLabel(r.car))}${r.driver ? ' · ' + h(D.driverLabel(r.driver)) : ''}${r.note ? ' · ' + h(r.note) : ''}`, amt: inr(r.amount) })
+  },
+  settlement: {
+    table: 'settlements', prefix: 'ST', title: 'Settlement', nav: 'Settlement',
+    fields: () => [
+      { k: 'date', label: 'Date', type: 'date', req: 1, def: today },
+      { k: 'type', label: 'Type', type: 'select', req: 1, opts: () => opts(S.data.lists.settlementType) },
+      { k: 'platform', label: 'Platform', type: 'select', req: 1, opts: () => opts(S.data.lists.platform), show: r => r.type === 'Platform payout received' },
+      { k: 'tripId', label: 'Trip with amount due', type: 'select', req: 1, full: 1, opts: r => dueTripOpts(r), show: r => r.type === 'Customer due collected' },
+      { k: 'collectedBy', label: 'Collected by', type: 'select', req: 1, opts: () => opts(S.data.lists.collectedBy), show: r => r.type === 'Customer due collected' },
+      { k: 'driver', label: 'Driver', type: 'select', req: 1, opts: () => driverOpts(true),
+        show: r => (r.type === 'Driver cash handover' || r.type === 'Driver UPI handover') || (r.type === 'Customer due collected' && r.collectedBy === 'Driver'),
+        hint: r => r.driver ? 'Cash with this driver now: ' + inr(driverCash(r.driver)) : '' },
+      { k: 'amount', label: 'Amount (₹)', type: 'number', req: 1 },
+      { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
+    ],
+    row: r => ({ l1: h(r.type), l2: `${fmtDate(r.date)}${r.driver ? ' · ' + h(D.driverLabel(r.driver)) : ''}${r.platform ? ' · ' + h(r.platform) : ''}${r.tripId ? ' · trip ' + h(r.tripId) : ''}`, amt: inr(r.amount) })
+  }
+};
+
+function catGroup(c) { const x = S.data.categories.find(k => k.id === c); return x ? x.group : ''; }
+function catGroups() {
+  const out = {};
+  S.data.lists.groups.forEach(g => out[g] = []);
+  S.data.categories.filter(c => c.hidden !== 'Yes').forEach(c => { (out[c.group] = out[c.group] || []).push([c.id, c.id]); });
+  return out;
+}
+function dueTripOpts(r) {
+  const list = S.data.trips.filter(t => tripDue(t) > 0 || t.id === r.tripId)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map(t => [t.id, `${fmtDate(t.date)} · ${t.from} to ${t.to} · due ${inr(tripDue(t))}`]);
+  return list.length ? list : [['', 'No trips with an amount due']];
+}
+function odoHint(r) {
+  if (!r.car) return 'Type the reading shown in the car.';
+  const l = lastOdo(r.car, S.edit ? S.edit.id : null);
+  return l === null ? 'No earlier reading for this car.' : 'Last recorded end for this car: ' + num(l) + '. Any gap is counted as unrecorded km.';
+}
+function payHint(r, basis) {
+  const d = D.driver(r.driver);
+  if (!d || d.defaultPay === '' || d.defaultPay === undefined) return '';
+  if (basis && d.payBasis !== basis) return '';
+  return 'Default pay: ' + inr(d.defaultPay) + ' ' + String(d.payBasis || '').toLowerCase();
+}
+function setVal(form, k, v) { const i = form.elements[k]; if (i) i.value = v === undefined || v === null ? '' : v; }
+
+function fieldHtml(f, rec) {
+  if (f.sec) return `<div class="sec">${h(f.sec)}</div>`;
+  const v = rec[f.k] === undefined ? '' : rec[f.k];
+  const show = f.show ? f.show(rec) : true;
+  const req = f.req ? ' <span class="req">*</span>' : '';
+  const id = 'f_' + f.k;
+  let input;
+  if (f.type === 'select') {
+    let o = '<option value="">Select</option>';
+    if (f.groups) {
+      const g = f.groups();
+      Object.keys(g).forEach(name => { if (g[name].length) o += `<optgroup label="${h(name)}">` + g[name].map(x => `<option value="${h(x[0])}"${String(x[0]) === String(v) ? ' selected' : ''}>${h(x[1])}</option>`).join('') + '</optgroup>'; });
+    } else {
+      const list = f.opts(rec);
+      if (v !== '' && !list.some(x => String(x[0]) === String(v))) list.push([v, v + ' (inactive)']);
+      o += list.map(x => `<option value="${h(x[0])}"${String(x[0]) === String(v) ? ' selected' : ''}>${h(x[1])}</option>`).join('');
+    }
+    input = `<select id="${id}" name="${f.k}">${o}</select>`;
+  } else if (f.type === 'textarea') {
+    input = `<textarea id="${id}" name="${f.k}">${h(v)}</textarea>`;
+  } else {
+    const t = f.type === 'number' ? 'text' : (f.type || 'text');
+    const extra = f.type === 'number' ? ' inputmode="decimal" pattern="[0-9]*[.]?[0-9]*"' : (f.type === 'tel' ? ' inputmode="tel"' : '');
+    input = `<input id="${id}" name="${f.k}" type="${t}" value="${h(v)}"${extra} autocomplete="off">`;
+  }
+  const hint = f.hint ? f.hint(rec) : '';
+  return `<div class="f${f.full || f.type === 'textarea' ? ' full' : ''}${show ? '' : ' hidden'}" data-k="${f.k}"><label for="${id}">${h(f.label)}${req}</label>${input}<span class="hint" data-hint="${f.k}">${h(hint)}</span></div>`;
+}
+
+function readForm(form, fields) {
+  const r = {};
+  fields.forEach(f => { if (!f.k) return; const el = form.elements[f.k]; if (el) r[f.k] = el.value.trim(); });
+  return r;
+}
+
+function renderInput(app, kind) {
+  const F = FORMS[kind] || FORMS.trip;
+  if (!S.edit || S.edit._kind !== kind) { S.edit = null; S.odoConfirm = false; }
+  const fields = F.fields();
+  const rec = S.edit ? Object.assign({}, S.edit) : {};
+  if (!S.edit) fields.forEach(f => { if (f.def && rec[f.k] === undefined) rec[f.k] = f.def(); });
+  const seg = Object.keys(FORMS).map(k => `<a href="#/input/${k}" class="${k === kind ? 'on' : ''}">${FORMS[k].nav}</a>`).join('');
+
+  app.innerHTML = shell('input', `<div class="seg">${seg}</div>
+    <form class="card" id="entryForm" novalidate>
+      <h2 style="margin-top:0">${S.edit ? 'Edit ' + F.title.toLowerCase() : 'Add ' + F.title.toLowerCase()}</h2>
+      <div class="grid">${fields.map(f => fieldHtml(f, rec)).join('')}${F.live ? `<div class="live" id="live">${F.live(rec)}</div>` : ''}</div>
+      <div id="formMsg"></div>
+      <div class="actions"><button class="btn gold wide" type="submit" id="saveBtn">${S.edit ? 'Update' : 'Save'}</button>
+      ${S.edit ? '<button class="btn ghost" type="button" id="cancelEdit">Cancel</button>' : ''}</div>
+    </form>
+    <h2>Recent ${F.title.toLowerCase()} entries</h2>
+    <div class="card"><div class="filters" id="recentFilters">
+      <div class="f"><label>From</label><input type="date" id="rfFrom"></div><div class="f"><label>To</label><input type="date" id="rfTo"></div>
+      ${F.table !== 'settlements' ? `<div class="f"><label>Car</label><select id="rfCar"><option value="">All cars</option>${carOpts(true).map(x => `<option value="${h(x[0])}">${h(x[1])}</option>`).join('')}</select></div>` : ''}
+      <div class="f"><label>Driver</label><select id="rfDriver"><option value="">All drivers</option>${driverOpts(true).map(x => `<option value="${h(x[0])}">${h(x[1])}</option>`).join('')}</select></div>
+    </div><div class="rows" id="recent" style="margin-top:8px"></div></div>`);
+  bindShell();
+
+  const form = $('#entryForm');
+  const refresh = changed => {
+    const r = readForm(form, fields);
+    if (changed && F.onChange) { F.onChange(changed, r, form); Object.assign(r, readForm(form, fields)); }
+    fields.forEach(f => {
+      if (!f.k) return;
+      const box = form.querySelector(`[data-k="${f.k}"]`);
+      if (f.show) box.classList.toggle('hidden', !f.show(r));
+      if (f.hint) form.querySelector(`[data-hint="${f.k}"]`).textContent = f.hint(r);
+      if (f.type === 'select' && f.opts && f.k === 'tripId' && changed === 'type') { /* options are static per render */ }
+    });
+    if (F.live) $('#live').innerHTML = F.live(r);
+  };
+  if (S.edit) form.dataset.recvTouched = '1';
+  form.addEventListener('input', e => { if (e.target.name) { e.target.closest('.f').classList.remove('err'); if (!S.odoConfirm) $('#formMsg').innerHTML = ''; refresh(e.target.name); } });
+  form.addEventListener('change', e => { if (e.target.name) refresh(e.target.name); });
+  refresh();
+
+  if ($('#cancelEdit')) $('#cancelEdit').onclick = () => { S.edit = null; S.odoConfirm = false; renderInput(app, kind); };
+
+  form.onsubmit = async ev => {
+    ev.preventDefault();
+    const r = readForm(form, fields);
+    // required check (visible fields only)
+    let missing = null;
+    fields.forEach(f => {
+      if (!f.k || !f.req) return;
+      const box = form.querySelector(`[data-k="${f.k}"]`);
+      if (box.classList.contains('hidden')) { return; }
+      if (r[f.k] === '') { box.classList.add('err'); if (!missing) missing = f; }
+    });
+    fields.forEach(f => { if (f.k && f.show && !f.show(r)) r[f.k] = ''; });
+    if (missing) { $('#formMsg').innerHTML = `<div class="msg bad">${h(missing.label)} is required.</div>`; form.elements[missing.k].focus(); return; }
+    const isNew = !S.edit;
+    r.id = isNew ? newId(F.prefix) : S.edit.id;
+    const payload = { table: F.table, record: r, isNew, odoConfirmed: S.odoConfirm };
+    const btn = $('#saveBtn'); btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      const saved = await api('save', payload);
+      mergeRecord(F.table, saved);
+      toast(isNew ? 'Saved' : 'Updated');
+      S.edit = null; S.odoConfirm = false;
+      renderInput(app, kind);
+    } catch (e) {
+      btn.disabled = false; btn.textContent = isNew ? 'Save' : 'Update';
+      if (e.code === 'NETWORK' && isNew) {
+        Q.add(payload);
+        toast('No connection. Kept on this phone and will sync.', 4000);
+        S.odoConfirm = false; renderInput(app, kind); return;
+      }
+      if (e.code === 'ODO_WARN') {
+        S.odoConfirm = true;
+        $('#formMsg').innerHTML = `<div class="msg warn">${h(e.message)}</div>`;
+        refresh();
+        const note = form.elements.odoNote; if (note) note.focus();
+        return;
+      }
+      $('#formMsg').innerHTML = `<div class="msg bad">${h(e.message)}</div>`;
+    }
+  };
+
+  // recent list
+  const draw = () => {
+    const from = $('#rfFrom').value, to = $('#rfTo').value, car = $('#rfCar') ? $('#rfCar').value : '', drv = $('#rfDriver').value;
+    const filtered = !!(from || to || car || drv);
+    let list = S.data[F.table].slice();
+    list = list.filter(r => (!from || r.date >= from) && (!to || r.date <= to) && (!car || r.car === car) && (!drv || String(r.driver) === drv));
+    list.sort((a, b) => (b.date + (b.createdAt || '')).localeCompare(a.date + (a.createdAt || '')));
+    const pending = Q.all().filter(x => x.table === F.table).map(x => Object.assign({ _pending: 1 }, x.record));
+    const shown = (filtered ? list.slice(0, 200) : list.slice(0, 20));
+    const rows = pending.concat(shown).map(r => {
+      const x = F.row(r);
+      return `<div class="row"><div class="main"><div class="l1">${x.l1}${r._pending ? '<span class="tag q">waiting to sync</span>' : ''}</div><div class="l2">${x.l2}</div>
+        <div class="l2">${r.createdBy ? 'by ' + h(r.createdBy) : ''}${r.updatedBy ? ' · edited by ' + h(r.updatedBy) : ''}</div></div>
+        <div style="text-align:right"><div class="amt">${x.amt}</div>${r._pending ? '' : `<div class="btns" style="margin-top:6px"><button class="btn sm ghost" data-edit="${h(r.id)}" type="button">Edit</button><button class="btn sm danger" data-del="${h(r.id)}" type="button">Delete</button></div>`}</div></div>`;
+    }).join('');
+    $('#recent').innerHTML = rows || '<p class="muted small">Nothing here yet.</p>';
+  };
+  $$('#recentFilters input, #recentFilters select').forEach(i => i.addEventListener('change', draw));
+  $('#recent').addEventListener('click', async e => {
+    const ed = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
+    if (ed) {
+      const r = S.data[F.table].find(x => String(x.id) === ed.dataset.edit);
+      S.edit = Object.assign({ _kind: kind }, r); S.odoConfirm = !!r.odoNote;
+      renderInput(app, kind); window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if (del) {
+      if (!del.dataset.armed) { del.dataset.armed = '1'; del.textContent = 'Tap to confirm'; setTimeout(() => { if (del.isConnected) { delete del.dataset.armed; del.textContent = 'Delete'; } }, 4000); return; }
+      del.disabled = true;
+      try { await api('remove', { table: F.table, id: del.dataset.del }); removeRecord(F.table, del.dataset.del); toast('Deleted'); draw(); }
+      catch (err) { del.disabled = false; toast(err.message, 4000); }
+    }
+  });
+  draw();
+}
+
+/* =====================================================================
+   ANALYTICS
+   ===================================================================== */
+function periodRange(f) {
+  const t = today();
+  const d = new Date(t + 'T00:00:00Z');
+  const iso = x => x.toISOString().slice(0, 10);
+  if (f.period === 'today') return [t, t];
+  if (f.period === 'week') { const wd = (d.getUTCDay() + 6) % 7; const s = new Date(d); s.setUTCDate(d.getUTCDate() - wd); return [iso(s), t]; }
+  if (f.period === 'month') { const m = f.month || t.slice(0, 7); const e = new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5, 7)), 0)); return [m + '-01', iso(e)]; }
+  if (f.period === 'custom') return [f.from || '0000-01-01', f.to || '9999-12-31'];
+  return ['0000-01-01', '9999-12-31'];
+}
+
+function compute(f) {
+  const [a, b] = periodRange(f);
+  const inR = r => r.date >= a && r.date <= b;
+  const byCar = r => !f.car || r.car === f.car;
+  const byDrv = r => !f.driver || String(r.driver) === f.driver;
+  const trips = S.data.trips.filter(r => inR(r) && byCar(r) && byDrv(r));
+  const plat = S.data.platform.filter(r => inR(r) && byCar(r) && byDrv(r));
+  const exps = S.data.expenses.filter(r => inR(r) && (!f.car || r.car === f.car) && byDrv(r));
+  const sum = (l, k) => l.reduce((x, r) => x + n(r[k]), 0);
+
+  const tripCostKeys = ['toll', 'parking', 'stateTax', 'fastCharging', 'driverFood', 'otherExp', 'driverPay'];
+  const fares = sum(trips, 'fare'), earnings = sum(plat, 'earnings');
+  const tripCosts = sum(trips, 'tripCosts') + sum(plat, 'toll') + sum(plat, 'parking');
+  const expTotal = sum(exps, 'amount');
+  const income = fares + earnings, expenses = tripCosts + expTotal;
+  const km = sum(trips, 'km') + sum(plat, 'km');
+
+  // dues and cash (as of now, not period bound)
+  const dues = S.data.trips.map(t => ({ t, due: tripDue(t) })).filter(x => x.due > 0 && byCar(x.t) && byDrv(x.t));
+  const drivers = D.drivers(true).filter(d => !f.driver || String(d.id) === f.driver);
+  const cash = drivers.map(d => ({ d, cash: driverCash(d.id) }));
+
+  return { a, b, trips, plat, exps, fares, earnings, tripCosts, expTotal, income, expenses, profit: income - expenses, km,
+    dues, cash, sum, tripCostKeys, inR, byCar, byDrv };
+}
+
+function unrecordedKm(car, inR) {
+  const recs = [];
+  ['trips', 'platform'].forEach(t => S.data[t].forEach(r => { if (r.car === car && r.odoStart !== '' && r.odoEnd !== '') recs.push(r); }));
+  recs.sort((x, y) => n(x.odoStart) - n(y.odoStart));
+  let gap = 0;
+  for (let i = 1; i < recs.length; i++) {
+    const g = n(recs[i].odoStart) - n(recs[i - 1].odoEnd);
+    if (g > 0 && inR(recs[i])) gap += g;
+  }
+  return gap;
+}
+
+const SECTIONS = [['summary', 'Summary'], ['pl', 'P&L'], ['cars', 'By car'], ['drivers', 'By driver'], ['tolls', 'Tolls'], ['salary', 'Salary paid'], ['cash', 'Cash and dues'], ['repo', 'Driver repository']];
+
+function renderAnalytics(app, sec) {
+  if (!S.af) S.af = { period: 'month', month: today().slice(0, 7), from: '', to: '', car: '', driver: '' };
+  const f = S.af;
+  const seg = SECTIONS.map(s => `<a href="#/analytics/${s[0]}" class="${s[0] === sec ? 'on' : ''}">${s[1]}</a>`).join('');
+  const per = [['today', 'Today'], ['week', 'This week'], ['month', 'Month'], ['custom', 'Custom range'], ['all', 'All time']];
+  app.innerHTML = shell('analytics', `<div class="seg">${seg}</div>
+    <div class="card"><div class="filters" id="af">
+      <div class="f"><label>Period</label><select id="afPeriod">${per.map(p => `<option value="${p[0]}"${f.period === p[0] ? ' selected' : ''}>${p[1]}</option>`).join('')}</select></div>
+      <div class="f${f.period === 'month' ? '' : ' hidden'}"><label>Month</label><input type="month" id="afMonth" value="${h(f.month)}"></div>
+      <div class="f${f.period === 'custom' ? '' : ' hidden'}"><label>From</label><input type="date" id="afFrom" value="${h(f.from)}"></div>
+      <div class="f${f.period === 'custom' ? '' : ' hidden'}"><label>To</label><input type="date" id="afTo" value="${h(f.to)}"></div>
+      <div class="f"><label>Car</label><select id="afCar"><option value="">All cars</option>${carOpts(true).map(x => `<option value="${h(x[0])}"${f.car === x[0] ? ' selected' : ''}>${h(x[1])}</option>`).join('')}</select></div>
+      <div class="f"><label>Driver</label><select id="afDriver"><option value="">All drivers</option>${driverOpts(true).map(x => `<option value="${h(x[0])}"${f.driver === String(x[0]) ? ' selected' : ''}>${h(x[1])}</option>`).join('')}</select></div>
+    </div>
+    <div class="actions" style="margin-top:10px"><button class="btn sm ghost" id="afRefresh" type="button">Refresh data</button>${S.data.sheetUrl ? `<a class="btn sm ghost" style="text-decoration:none;display:inline-flex;align-items:center" href="${h(S.data.sheetUrl)}" target="_blank" rel="noopener noreferrer">Open in Sheet</a>` : ''}</div></div>
+    <div id="sec"></div>`);
+  bindShell();
+  const upd = () => {
+    f.period = $('#afPeriod').value; f.month = $('#afMonth').value || today().slice(0, 7);
+    f.from = $('#afFrom').value; f.to = $('#afTo').value; f.car = $('#afCar').value; f.driver = $('#afDriver').value;
+    renderAnalytics(app, sec);
+  };
+  $$('#af select, #af input').forEach(i => i.addEventListener('change', upd));
+  $('#afRefresh').onclick = async () => { $('#afRefresh').disabled = true; try { await loadData(true); toast('Data refreshed'); } catch (e) { if (!S.token) return; toast(e.message, 4000); } if (S.data) renderAnalytics(app, sec); };
+
+  const c = compute(f);
+  const box = $('#sec');
+  const scope = `<p class="note">${f.period === 'all' ? 'All time' : fmtDate(c.a) + ' to ' + fmtDate(c.b)}${f.car ? ' · ' + h(D.carLabel(f.car)) + ' only (shared General costs excluded)' : ''}${f.driver ? ' · ' + h(D.driverLabel(f.driver)) + ' only' : ''}</p>`;
+  const fn = { summary: secSummary, pl: secPL, cars: secCars, drivers: secDrivers, tolls: secTolls, salary: secSalary, cash: secCash, repo: secRepo }[sec] || secSummary;
+  box.innerHTML = fn(c, f) + scope;
+}
+
+const tile = (k, v, cls, hero) => `<div class="tile${hero ? ' hero' : ''}"><div class="k">${k}</div><div class="v ${cls || ''}">${v}</div></div>`;
+const table = (head, rows, opt) => `<div class="tw"><table><thead><tr>${head.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.join('') || `<tr><td colspan="${head.length}" class="muted">No data for this selection.</td></tr>`}</tbody></table></div>`;
+const tr = (cells, cls) => `<tr class="${cls || ''}">${cells.map(x => `<td>${x}</td>`).join('')}</tr>`;
+const signed = v => `<span style="color:${v < 0 ? 'var(--bad)' : 'var(--good)'}">${v < 0 ? '−' : ''}${inr(Math.abs(v))}</span>`;
+
+function secSummary(c) {
+  const margin = c.income ? Math.round(c.profit / c.income * 100) : 0;
+  const dueTotal = c.dues.reduce((a, x) => a + x.due, 0);
+  const cashTotal = c.cash.reduce((a, x) => a + x.cash, 0);
+  return `<div class="tiles">
+    ${tile('Operating profit', signed(c.profit), '', true)}${tile('Income', inr(c.income))}${tile('Expenses', inr(c.expenses))}${tile('Margin', c.income ? margin + '%' : '0%', margin < 0 ? 'bad' : 'good')}
+    ${tile('Direct trips', num(c.trips.length))}${tile('KM driven', num(c.km))}${tile('Cash with drivers', inr(cashTotal))}${tile('Customer dues', inr(dueTotal), dueTotal > 0 ? 'bad' : '')}
+  </div>
+  <h2>Where the money came from and went</h2>
+  ${table(['', 'Amount'], [
+    tr(['Direct trip fares', inr(c.fares)]), tr(['Uber and Rapido earnings', inr(c.earnings)]), tr(['Total income', inr(c.income)], 'tot'),
+    tr(['Trip costs (toll, charging, driver pay and more)', inr(c.tripCosts)]), tr(['Other expenses', inr(c.expTotal)]), tr(['Total expenses', inr(c.expenses)], 'tot'),
+    tr(['Operating profit', signed(c.profit)], 'tot')])}
+  <p class="note">Operating P&amp;L: excludes car purchase, EMI, depreciation, GST, partner commission and settlements. Customer dues and cash with drivers are as of today.</p>`;
+}
+
+function monthsOf(c) {
+  const set = new Set();
+  c.trips.concat(c.plat, c.exps).forEach(r => set.add(r.date.slice(0, 7)));
+  return Array.from(set).sort();
+}
+
+function secPL(c) {
+  const months = monthsOf(c);
+  if (!months.length) return '<div class="card muted">No entries in this period.</div>';
+  const by = (list, m) => list.filter(r => r.date.slice(0, 7) === m);
+  const cats = Array.from(new Set(c.exps.map(e => e.category))).sort();
+  const lines = [];
+  const row = (label, fnc, cls) => lines.push(tr([label].concat(months.map(m => fnc(m))).concat([fnc(null)]), cls));
+  const pick = (list, m) => m ? by(list, m) : list;
+  const inc = m => c.sum(pick(c.trips, m), 'fare') + c.sum(pick(c.plat, m), 'earnings');
+  const tcost = m => c.sum(pick(c.trips, m), 'tripCosts') + c.sum(pick(c.plat, m), 'toll') + c.sum(pick(c.plat, m), 'parking');
+  const ecost = m => c.sum(pick(c.exps, m), 'amount');
+  row('Direct trip fares', m => inr(c.sum(pick(c.trips, m), 'fare')));
+  row('Uber and Rapido earnings', m => inr(c.sum(pick(c.plat, m), 'earnings')));
+  row('Total income', m => inr(inc(m)), 'tot');
+  const tlabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Fast charging', driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay on trips' };
+  c.tripCostKeys.forEach(k => row('Trip: ' + tlabels[k], m => inr(c.sum(pick(c.trips, m), k) + (k === 'toll' || k === 'parking' ? c.sum(pick(c.plat, m), k) : 0)), 'sub'));
+  cats.forEach(cat => row(cat, m => inr(c.sum(pick(c.exps, m).filter(e => e.category === cat), 'amount')), 'sub'));
+  row('Total expenses', m => inr(tcost(m) + ecost(m)), 'tot');
+  row('Operating profit', m => signed(inc(m) - tcost(m) - ecost(m)), 'tot');
+  row('Margin', m => inc(m) ? Math.round((inc(m) - tcost(m) - ecost(m)) / inc(m) * 100) + '%' : '0%');
+
+  const data = months.map(m => ({ m, inc: inc(m), exp: tcost(m) + ecost(m) }));
+  return `<div class="card">${plChart(data)}<div class="legend"><span><i style="background:var(--navy)"></i>Income</span><span><i style="background:var(--gold)"></i>Expenses</span><span><i style="background:var(--good);border-radius:50%"></i>Profit</span></div></div>
+    ${table(['Line'].concat(months.map(fmtMonth)).concat(['Total']), lines)}`;
+}
+
+function plChart(data) {
+  const W = 640, H = 240, L = 56, R = 12, T = 14, B = 30;
+  const max = Math.max(1, ...data.map(d => Math.max(d.inc, d.exp)));
+  const min = Math.min(0, ...data.map(d => d.inc - d.exp));
+  const span = max - min;
+  const step = Math.pow(10, Math.floor(Math.log10(span / 4))); const nice = [1, 2, 2.5, 5, 10].map(x => x * step).find(x => span / x <= 5) || step * 10;
+  const lo = Math.floor(min / nice) * nice, hi = Math.ceil(max / nice) * nice;
+  const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  const bw = (W - L - R) / data.length;
+  const barW = Math.min(28, bw * 0.32);
+  let g = '';
+  for (let v = lo; v <= hi + 1e-9; v += nice) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? '#9aa0ad' : '#ece7da'}"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#626a7a">${v >= 100000 || v <= -100000 ? (v / 100000).toFixed(1) + 'L' : v >= 1000 || v <= -1000 ? Math.round(v / 1000) + 'k' : v}</text>`;
+  const bars = data.map((d, i) => {
+    const cx = L + bw * i + bw / 2, p = d.inc - d.exp;
+    return `<rect x="${cx - barW - 1}" y="${y(d.inc)}" width="${barW}" height="${Math.max(0, y(0) - y(d.inc))}" rx="3" fill="#1a1f2e"><title>Income ${inr(d.inc)}</title></rect>
+      <rect x="${cx + 1}" y="${y(d.exp)}" width="${barW}" height="${Math.max(0, y(0) - y(d.exp))}" rx="3" fill="#C9A84C"><title>Expenses ${inr(d.exp)}</title></rect>
+      <circle cx="${cx}" cy="${y(p)}" r="5" fill="${p < 0 ? '#b3261e' : '#2e7d4f'}" stroke="#fff" stroke-width="1.5"><title>Profit ${inr(p)}</title></circle>
+      <text x="${cx}" y="${H - 10}" font-size="11.5" text-anchor="middle" fill="#626a7a">${fmtMonth(d.m)}</text>`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly income, expenses and profit">${g}${bars}</svg>`;
+}
+
+function secCars(c, f) {
+  const cars = D.cars(true).filter(x => !f.car || x.id === f.car);
+  let T = { trips: 0, km: 0, gap: 0, direct: 0, plat: 0, cost: 0 };
+  const rows = cars.map(car => {
+    const t = c.trips.filter(r => r.car === car.id), p = c.plat.filter(r => r.car === car.id), e = c.exps.filter(r => r.car === car.id);
+    const km = c.sum(t, 'km') + c.sum(p, 'km'), gap = unrecordedKm(car.id, r => c.inR(r));
+    const direct = c.sum(t, 'fare'), plat = c.sum(p, 'earnings');
+    const cost = c.sum(t, 'tripCosts') + c.sum(p, 'toll') + c.sum(p, 'parking') + c.sum(e, 'amount');
+    T.trips += t.length; T.km += km; T.gap += gap; T.direct += direct; T.plat += plat; T.cost += cost;
+    return tr([h(car.nickname || car.id) + `<div class="small muted">${h(car.id)}</div>`, num(t.length), num(km), gap ? `<span style="color:var(--warn)">${num(gap)}</span>` : '0', inr(direct), inr(plat), inr(cost), signed(direct + plat - cost), km ? '₹' + (Math.round((direct + plat) / km * 10) / 10).toLocaleString('en-IN') : '']);
+  });
+  if (!f.car) {
+    const g = c.exps.filter(r => r.car === 'General'), gc = c.sum(g, 'amount');
+    rows.push(tr(['General (shared)', '', '', '', '', '', inr(gc), signed(-gc), '']));
+    T.cost += gc;
+  }
+  rows.push(tr(['Total', num(T.trips), num(T.km), num(T.gap), inr(T.direct), inr(T.plat), inr(T.cost), signed(T.direct + T.plat - T.cost), T.km ? '₹' + (Math.round((T.direct + T.plat) / T.km * 10) / 10).toLocaleString('en-IN') : ''], 'tot'));
+  return table(['Car', 'Trips', 'KM', 'Unrecorded km', 'Direct income', 'Uber and Rapido', 'Costs', 'Profit', 'Income per km'], rows) +
+    '<p class="note">Unrecorded km is the gap between one entry\'s end reading and the next entry\'s start reading for the same car, usually personal use. Shared General costs (charging, common expenses) are shown on their own line, not split across cars.</p>';
+}
+
+function secDrivers(c, f) {
+  const list = D.drivers(true).filter(d => !f.driver || String(d.id) === f.driver);
+  const rows = list.map(d => {
+    const t = c.trips.filter(r => String(r.driver) === String(d.id)), p = c.plat.filter(r => String(r.driver) === String(d.id));
+    const e = c.exps.filter(r => String(r.driver) === String(d.id) && r.group === 'Driver');
+    const pay = c.sum(t, 'driverPay') + c.sum(t, 'driverFood') + c.sum(e, 'amount');
+    return { d, trips: t.length, rides: c.sum(p, 'rides'), km: c.sum(t, 'km') + c.sum(p, 'km'), income: c.sum(t, 'fare') + c.sum(p, 'earnings'), pay, cash: driverCash(d.id) };
+  }).filter(x => x.trips || x.rides || x.pay || x.cash || f.driver)
+    .sort((a, b) => b.income - a.income);
+  return table(['Driver', 'Trips', 'Uber or Rapido rides', 'KM', 'Income generated', 'Pay received', 'Cash in hand now'],
+    rows.map(x => tr([h(x.d.name) + `<div class="small muted">${h(x.d.type)} · ${h(x.d.id)}</div>`, num(x.trips), num(x.rides), num(x.km), inr(x.income), inr(x.pay), x.cash ? `<b>${inr(x.cash)}</b>` : inr(0)]))) +
+    '<p class="note">Pay received counts driver pay and food on trips plus salary, on call pay, allowance and advances from Expenses.</p>';
+}
+
+function secTolls(c) {
+  const all = [];
+  c.trips.forEach(r => { if (n(r.toll)) all.push({ car: r.car, date: r.date, amt: n(r.toll), route: r.from + ' to ' + r.to }); });
+  c.plat.forEach(r => { if (n(r.toll)) all.push({ car: r.car, date: r.date, amt: n(r.toll), route: r.platform + ' (city)' }); });
+  c.exps.filter(e => e.category === 'Toll').forEach(r => all.push({ car: r.car, date: r.date, amt: n(r.amount), route: 'Logged as expense' }));
+  const total = all.reduce((a, x) => a + x.amt, 0);
+  const group = key => { const m = {}; all.forEach(x => { const k = key(x); m[k] = (m[k] || 0) + x.amt; }); return Object.keys(m).map(k => [k, m[k]]); };
+  const byCar = group(x => x.car).sort((a, b) => b[1] - a[1]);
+  const byMonth = group(x => x.date.slice(0, 7)).sort((a, b) => a[0].localeCompare(b[0]));
+  const byRoute = group(x => x.route).sort((a, b) => b[1] - a[1]);
+  return `<div class="tiles">${tile('Total tolls', inr(total), '', true)}${tile('Toll entries', num(all.length))}</div>
+    <h2>By car</h2>${table(['Car', 'Tolls'], byCar.map(x => tr([h(x[0] === 'General' ? 'General' : D.carLabel(x[0])), inr(x[1])])))}
+    <h2>By month</h2>${table(['Month', 'Tolls'], byMonth.map(x => tr([fmtMonth(x[0]), inr(x[1])])))}
+    <h2>By route</h2>${table(['Route', 'Tolls'], byRoute.map(x => tr([h(x[0]), inr(x[1])])))}`;
+}
+
+function secSalary(c, f) {
+  const lines = {};
+  const add = (drv, m, k, v) => { if (!v) return; const key = drv + '|' + m; lines[key] = lines[key] || { drv, m, Salary: 0, 'On call pay': 0, 'Per trip pay': 0, 'Allowance or food': 0, Advance: 0 }; lines[key][k] += v; };
+  c.trips.forEach(r => { add(r.driver, r.date.slice(0, 7), 'Per trip pay', n(r.driverPay)); add(r.driver, r.date.slice(0, 7), 'Allowance or food', n(r.driverFood)); });
+  c.exps.filter(e => e.group === 'Driver').forEach(e => {
+    const k = ['Salary', 'On call pay', 'Advance'].includes(e.category) ? e.category : 'Allowance or food';
+    add(e.driver, e.date.slice(0, 7), k, n(e.amount));
+  });
+  const keys = ['Salary', 'On call pay', 'Per trip pay', 'Allowance or food', 'Advance'];
+  const list = Object.values(lines).sort((a, b) => b.m.localeCompare(a.m) || D.driverLabel(a.drv).localeCompare(D.driverLabel(b.drv)));
+  const tot = keys.map(k => list.reduce((a, x) => a + x[k], 0));
+  const rows = list.map(x => tr([h(D.driverLabel(x.drv)) + `<div class="small muted">${fmtMonth(x.m)}</div>`].concat(keys.map(k => inr(x[k]))).concat([`<b>${inr(keys.reduce((a, k) => a + x[k], 0))}</b>`])));
+  if (list.length) rows.push(tr(['Total'].concat(tot.map(inr)).concat([inr(tot.reduce((a, b) => a + b, 0))]), 'tot'));
+  return table(['Driver and month'].concat(keys).concat(['Total']), rows) + '<p class="note">Advances are counted as an expense on the day they are paid.</p>';
+}
+
+function secCash(c) {
+  const cashRows = c.cash.filter(x => x.cash !== 0).sort((a, b) => b.cash - a.cash)
+    .map(x => tr([h(x.d.name) + `<div class="small muted">${h(x.d.id)}</div>`, `<b>${inr(x.cash)}</b>`]));
+  const dueRows = c.dues.sort((a, b) => b.t.date.localeCompare(a.t.date))
+    .map(x => tr([`${fmtDate(x.t.date)}<div class="small muted">${h(x.t.from)} to ${h(x.t.to)} · ${h(x.t.customerName || '')}</div>`, h(D.driverLabel(x.t.driver)), `<b>${inr(x.due)}</b>`]));
+  const plats = S.data.lists.platform.map(p => {
+    const rows = S.data.platform.filter(r => r.platform === p && c.byCar(r));
+    const expected = rows.reduce((a, r) => a + n(r.earnings) - n(r.cashCollected), 0);
+    const got = S.data.settlements.filter(s => s.type === 'Platform payout received' && s.platform === p).reduce((a, s) => a + n(s.amount), 0);
+    return tr([p, inr(rows.reduce((a, r) => a + n(r.earnings), 0)), inr(rows.reduce((a, r) => a + n(r.cashCollected), 0)), inr(expected), inr(got), `<b>${inr(expected - got)}</b>`]);
+  });
+  return `<h2 style="margin-top:4px">Cash held by drivers</h2>${table(['Driver', 'Cash in hand'], cashRows)}
+    <p class="note">Cash and driver UPI collected, minus expenses paid from that cash, minus handovers to the company.</p>
+    <h2>Customer dues</h2>${table(['Trip', 'Driver', 'Due'], dueRows)}
+    <h2>Uber and Rapido payouts</h2>${table(['Platform', 'Earnings', 'Cash with driver', 'Payout expected', 'Payout received', 'Still to come'], plats)}
+    <p class="note">These figures are all time, as of today, so they ignore the period filter.</p>`;
+}
+
+function secRepo(c, f) {
+  const list = D.drivers(true).filter(d => !f.driver || String(d.id) === f.driver).sort((a, b) => a.name.localeCompare(b.name));
+  const rows = list.map(d => {
+    const t = S.data.trips.filter(r => String(r.driver) === String(d.id));
+    const pay = c.sum(t, 'driverPay') + c.sum(t, 'driverFood') + S.data.expenses.filter(e => String(e.driver) === String(d.id) && e.group === 'Driver').reduce((a, e) => a + n(e.amount), 0);
+    return tr([h(d.name) + (d.status === 'Inactive' ? '<span class="tag">inactive</span>' : ''), h(d.id), h(d.type), d.defaultPay !== '' ? inr(d.defaultPay) + ' ' + h(String(d.payBasis || '').toLowerCase()) : '', h(d.upi || ''), num(t.length), inr(pay)]);
+  });
+  return `<input id="repoSearch" placeholder="Search name or mobile" style="width:100%;min-height:44px;padding:10px 12px;border:1.5px solid #d9d3c3;border-radius:12px;margin-bottom:12px;font-size:16px" oninput="filterRepo(this.value)">
+    <div id="repoTable">${table(['Name', 'Mobile', 'Type', 'Default pay', 'UPI ID', 'Lifetime trips', 'Lifetime pay'], rows)}</div>
+    <p class="note">Lifetime figures ignore the period filter. ${D.isAdmin() ? 'Add or edit drivers in Settings.' : 'The super admin adds and edits drivers.'}</p>`;
+}
+function filterRepo(q) {
+  q = q.toLowerCase();
+  $$('#repoTable tbody tr').forEach(r => { r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+}
+
+/* =====================================================================
+   SETTINGS
+   ===================================================================== */
+function renderSettings(app, sec) {
+  const admin = D.isAdmin();
+  const secs = admin ? [['cars', 'Cars'], ['drivers', 'Drivers'], ['categories', 'Expense categories'], ['users', 'Users'], ['password', 'My password']] : [['password', 'My password']];
+  if (!secs.some(s => s[0] === sec)) sec = secs[0][0];
+  const seg = secs.map(s => `<a href="#/settings/${s[0]}" class="${s[0] === sec ? 'on' : ''}">${s[1]}</a>`).join('');
+  app.innerHTML = shell('settings', `<div class="seg">${seg}</div><div id="setBox"></div>`);
+  bindShell();
+  const box = $('#setBox');
+  if (sec === 'password') { box.innerHTML = passwordForm(false); bindPasswordForm(() => renderSettings(app, 'password')); return; }
+  if (sec === 'cars') return masterEditor(box, 'cars');
+  if (sec === 'drivers') return masterEditor(box, 'drivers');
+  if (sec === 'categories') return categoriesEditor(box);
+  if (sec === 'users') return usersEditor(box);
+}
+
+const MASTER = {
+  cars: {
+    title: 'car', fields: () => [
+      { k: 'id', label: 'Registration no', req: 1, hint: () => 'Example: RJ27AB1234. Cannot be changed later.' },
+      { k: 'nickname', label: 'Nickname' },
+      { k: 'model', label: 'Model', req: 1 },
+      { k: 'status', label: 'Status', type: 'select', req: 1, opts: () => opts(S.data.lists.carStatus), def: () => 'Active' }],
+    row: r => ({ l1: h(r.nickname || r.id) + (r.status === 'Inactive' ? '<span class="tag">inactive</span>' : ''), l2: h(r.id + ' · ' + r.model) })
+  },
+  drivers: {
+    title: 'driver', fields: () => [
+      { k: 'id', label: 'Mobile number', type: 'tel', req: 1, hint: () => '10 digits. This is the driver\'s ID and cannot be changed later.' },
+      { k: 'name', label: 'Name', req: 1 },
+      { k: 'type', label: 'Type', type: 'select', req: 1, opts: () => opts(S.data.lists.driverType) },
+      { k: 'status', label: 'Status', type: 'select', req: 1, opts: () => opts(S.data.lists.carStatus), def: () => 'Active' },
+      { k: 'defaultPay', label: 'Default pay (₹)', type: 'number' },
+      { k: 'payBasis', label: 'Pay basis', type: 'select', opts: () => opts(S.data.lists.payBasis) },
+      { k: 'upi', label: 'UPI ID', full: 1 },
+      { k: 'bankAccount', label: 'Bank account', type: 'number' }, { k: 'ifsc', label: 'IFSC' }],
+    row: r => ({ l1: h(r.name) + `<span class="tag">${h(r.type)}</span>` + (r.status === 'Inactive' ? '<span class="tag">inactive</span>' : ''), l2: h(r.id) + (r.defaultPay !== '' ? ' · ' + inr(r.defaultPay) + ' ' + h(String(r.payBasis || '').toLowerCase()) : '') + (r.upi ? ' · ' + h(r.upi) : '') })
+  }
+};
+
+function masterEditor(box, table, editing) {
+  const M = MASTER[table];
+  const fields = M.fields();
+  const rec = editing ? Object.assign({}, editing) : {};
+  if (!editing) fields.forEach(f => { if (f.def) rec[f.k] = f.def(); });
+  const list = S.data[table].slice().sort((a, b) => String(a.name || a.nickname || a.id).localeCompare(String(b.name || b.nickname || b.id)));
+  box.innerHTML = `<form class="card" id="mForm" novalidate><h2 style="margin-top:0">${editing ? 'Edit ' + M.title : 'Add ' + M.title}</h2>
+    <div class="grid">${fields.map(f => fieldHtml(f, rec)).join('')}</div><div id="mMsg"></div>
+    <div class="actions"><button class="btn gold wide" type="submit">${editing ? 'Update' : 'Add ' + M.title}</button>${editing ? '<button class="btn ghost" type="button" id="mCancel">Cancel</button>' : ''}</div></form>
+    <div class="card"><div class="rows">${list.map(r => { const x = M.row(r); return `<div class="row"><div class="main"><div class="l1">${x.l1}</div><div class="l2">${x.l2}</div></div><div class="btns"><button class="btn sm ghost" type="button" data-medit="${h(r.id)}">Edit</button></div></div>`; }).join('') || '<p class="muted small">None yet.</p>'}</div></div>`;
+  const form = $('#mForm');
+  if (editing) form.elements.id.readOnly = true;
+  if ($('#mCancel')) $('#mCancel').onclick = () => masterEditor(box, table);
+  box.querySelectorAll('[data-medit]').forEach(b => b.onclick = () => { masterEditor(box, table, S.data[table].find(x => String(x.id) === b.dataset.medit)); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  form.onsubmit = async ev => {
+    ev.preventDefault();
+    const r = readForm(form, fields);
+    const miss = fields.find(f => f.req && r[f.k] === '');
+    if (miss) { $('#mMsg').innerHTML = `<div class="msg bad">${h(miss.label)} is required.</div>`; return; }
+    try {
+      const saved = await api('save', { table, record: r, isNew: !editing });
+      mergeRecord(table, saved); toast(editing ? 'Updated' : 'Added');
+      masterEditor(box, table);
+    } catch (e) { $('#mMsg').innerHTML = `<div class="msg bad">${h(e.message)}</div>`; }
+  };
+}
+
+function categoriesEditor(box) {
+  const g = S.data.lists.groups;
+  const list = S.data.categories.slice().sort((a, b) => g.indexOf(a.group) - g.indexOf(b.group) || a.id.localeCompare(b.id));
+  box.innerHTML = `<form class="card" id="cForm"><h2 style="margin-top:0">Add a category</h2><div class="grid">
+      <div class="f"><label>Name</label><input name="id" required></div>
+      <div class="f"><label>Group</label><select name="group">${g.map(x => `<option>${h(x)}</option>`).join('')}</select></div></div>
+      <div id="cMsg"></div><div class="actions"><button class="btn gold" type="submit">Add category</button></div></form>
+    <div class="card"><div class="rows">${list.map(c => `<div class="row"><div class="main"><div class="l1">${h(c.id)}${c.hidden === 'Yes' ? '<span class="tag">hidden</span>' : ''}</div><div class="l2">${h(c.group)}</div></div>
+      <div class="btns"><button class="btn sm ghost" type="button" data-cat="${h(c.id)}">${c.hidden === 'Yes' ? 'Show' : 'Hide'}</button></div></div>`).join('')}</div>
+      <p class="note">Categories in use cannot be deleted. Hide them to remove them from the expense form.</p></div>`;
+  $('#cForm').onsubmit = async ev => {
+    ev.preventDefault();
+    const fm = ev.target, name = fm.elements.id.value.trim();
+    if (!name) return;
+    if (S.data.categories.some(c => c.id.toLowerCase() === name.toLowerCase())) { $('#cMsg').innerHTML = '<div class="msg bad">That category already exists.</div>'; return; }
+    try { const s = await api('save', { table: 'categories', record: { id: name, group: fm.elements.group.value, hidden: 'No' }, isNew: true }); mergeRecord('categories', s); toast('Added'); categoriesEditor(box); }
+    catch (e) { $('#cMsg').innerHTML = `<div class="msg bad">${h(e.message)}</div>`; }
+  };
+  box.querySelectorAll('[data-cat]').forEach(b => b.onclick = async () => {
+    const c = S.data.categories.find(x => x.id === b.dataset.cat);
+    try { const s = await api('save', { table: 'categories', record: { id: c.id, group: c.group, hidden: c.hidden === 'Yes' ? 'No' : 'Yes' }, isNew: false }); mergeRecord('categories', s); categoriesEditor(box); }
+    catch (e) { toast(e.message, 4000); }
+  });
+}
+
+async function usersEditor(box) {
+  box.innerHTML = '<div class="loading">Loading users…</div>';
+  let users;
+  try { users = await api('listUsers'); } catch (e) { box.innerHTML = `<div class="msg bad">${h(e.message)}</div>`; return; }
+  const draw = () => {
+    box.innerHTML = `<form class="card" id="uForm"><h2 style="margin-top:0">Add a user</h2><div class="grid">
+        <div class="f"><label>Name</label><input name="name" required></div>
+        <div class="f"><label>Username</label><input name="username" autocapitalize="none" spellcheck="false" required></div>
+        <div class="f full"><label>Temporary password</label><input name="temp" required minlength="10" autocomplete="new-password"><span class="hint">At least 10 characters. They must change it at first login.</span></div></div>
+        <div id="uMsg"></div><div class="actions"><button class="btn gold" type="submit">Add user</button></div></form>
+      <div class="card"><div class="rows">${users.map(u => `<div class="row"><div class="main"><div class="l1">${h(u.name)}<span class="tag">${h(u.role)}</span>${u.status === 'Disabled' ? '<span class="tag">disabled</span>' : ''}${u.locked ? '<span class="tag q">locked</span>' : ''}${u.mustChange ? '<span class="tag q">temporary password</span>' : ''}</div><div class="l2">${h(u.username)}</div></div>
+        ${u.role === 'Super admin' ? '' : `<div class="btns"><button class="btn sm ghost" type="button" data-reset="${h(u.username)}">Reset password</button><button class="btn sm ${u.status === 'Active' ? 'danger' : 'ghost'}" type="button" data-status="${h(u.username)}" data-to="${u.status === 'Active' ? 'Disabled' : 'Active'}">${u.status === 'Active' ? 'Disable' : 'Enable'}</button></div>`}</div>`).join('')}</div></div>
+      <div class="card"><h2 style="margin-top:0">Sign out all sessions</h2><p class="small muted">Logs out every user on every device, including you. Use it for a lost phone or a suspected leak.</p><button class="btn danger" type="button" id="signAll">Sign out everyone</button></div>`;
+    $('#uForm').onsubmit = async ev => {
+      ev.preventDefault();
+      const fm = ev.target;
+      try { users = await api('addUser', { name: fm.elements.name.value.trim(), username: fm.elements.username.value.trim(), tempPassword: fm.elements.temp.value }); toast('User added'); draw(); }
+      catch (e) { $('#uMsg').innerHTML = `<div class="msg bad">${h(e.message)}</div>`; }
+    };
+    box.querySelectorAll('[data-reset]').forEach(b => b.onclick = async () => {
+      const p = prompt('New temporary password for ' + b.dataset.reset + ' (at least 10 characters):');
+      if (!p) return;
+      try { users = await api('resetPassword', { username: b.dataset.reset, tempPassword: p }); toast('Password reset. They are logged out everywhere.'); draw(); }
+      catch (e) { toast(e.message, 4000); }
+    });
+    box.querySelectorAll('[data-status]').forEach(b => b.onclick = async () => {
+      try { users = await api('setUserStatus', { username: b.dataset.status, status: b.dataset.to }); toast(b.dataset.to === 'Disabled' ? 'User disabled and logged out' : 'User enabled'); draw(); }
+      catch (e) { toast(e.message, 4000); }
+    });
+    $('#signAll').onclick = async ev => {
+      const b = ev.target;
+      if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Tap again to confirm'; return; }
+      try { await api('signOutAll'); } catch (e) {}
+      endSession('Everyone has been signed out.');
+    };
+  };
+  draw();
+}
+</script>
+</body>
+</html>
