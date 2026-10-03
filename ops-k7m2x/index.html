@@ -468,8 +468,9 @@ const FORMS = {
       { k: 'ridesRapido', label: 'No of rides Rapido', type: 'number', req: 1 },
       { k: 'ridesUber', label: 'No of rides Uber', type: 'number', req: 1 },
       { sec: 'Collection' },
-      { k: 'cashCollected', label: 'Total cash collected (₹)', type: 'number', req: 1 },
-      { k: 'onlineCollected', label: 'Total online collected (₹)', type: 'number', req: 1, hint: () => 'UPI received by the driver.' },
+      { k: 'cashCollected', label: 'Hard cash collected by driver (₹)', type: 'number', req: 1, hint: () => 'Cash rides paid in cash.' },
+      { k: 'onlineCollected', label: 'UPI collected by driver (₹)', type: 'number', req: 1, hint: () => 'Cash rides paid by UPI to the driver.' },
+      { k: 'appCollected', label: 'Paid in app (₹)', type: 'number', req: 1, full: 1, hint: () => 'Rides paid inside Uber or Rapido. The platform pays this to Aavre.' },
       { k: 'driverExpense', label: 'Driver expense (₹)', type: 'number', hint: () => 'Puncture, parking etc. paid by the driver and deducted.' },
       { k: 'driverExpenseNote', label: 'Driver expense note', req: 1, show: r => n(r.driverExpense) > 0 },
       { sec: 'Odometer and battery' },
@@ -482,10 +483,10 @@ const FORMS = {
       { k: 'toll', label: 'Toll (₹)', type: 'number' }, { k: 'parking', label: 'Parking (₹)', type: 'number' },
       { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
     ],
-    live: r => `<span class="pill">Rides <b>${num(n(r.ridesRapido) + n(r.ridesUber))}</b></span><span class="pill">Total collected <b>${inr(n(r.cashCollected) + n(r.onlineCollected))}</b></span>
+    live: r => `<span class="pill">Rides <b>${num(n(r.ridesRapido) + n(r.ridesUber))}</b></span><span class="pill">Day total <b>${inr(n(r.cashCollected) + n(r.onlineCollected) + n(r.appCollected))}</b></span>
       <span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(n(r.odoEnd) - n(r.odoStart)) : '0'}</b></span><span class="pill">Driver hands over <b>${inr(n(r.cashCollected) + n(r.onlineCollected) - n(r.driverExpense))}</b></span>`,
     row: r => ({ l1: `Uber ${num(r.ridesUber)} · Rapido ${num(r.ridesRapido)}<span class="tag">${num(r.rides)} rides</span>`,
-      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km · cash ${inr(r.cashCollected)} · online ${inr(r.onlineCollected)}${n(r.driverExpense) ? ' · driver expense ' + inr(r.driverExpense) : ''}${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}`, amt: inr(r.earnings) })
+      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km · cash ${inr(r.cashCollected)} · UPI ${inr(r.onlineCollected)} · in app ${inr(r.appCollected)}${n(r.driverExpense) ? ' · driver expense ' + inr(r.driverExpense) : ''}${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}`, amt: inr(r.earnings) })
   },
   expense: {
     table: 'expenses', prefix: 'EX', title: 'Expense', nav: 'Expense',
@@ -969,10 +970,13 @@ function secCash(c) {
     .map(x => tr([h(x.d.name) + `<div class="small muted">${h(x.d.id)}</div>`, `<b>${inr(x.cash)}</b>`]));
   const dueRows = c.dues.sort((a, b) => b.t.date.localeCompare(a.t.date))
     .map(x => tr([`${fmtDate(x.t.date)}<div class="small muted">${h(x.t.from)} to ${h(x.t.to)} · ${h(x.t.customerName || '')}</div>`, h(D.driverLabel(x.t.driver)), `<b>${inr(x.due)}</b>`]));
+  const inApp = S.data.platform.filter(r => c.byCar(r)).reduce((a, r) => a + n(r.appCollected), 0);
+  const paid = S.data.settlements.filter(s => s.type === 'Platform payout received').reduce((a, s) => a + n(s.amount), 0);
   return `<h2 style="margin-top:4px">Cash held by drivers</h2>${table(['Driver', 'Cash in hand'], cashRows)}
     <p class="note">Cash and UPI collected by the driver (trips and Uber or Rapido days), minus expenses he paid from it, minus handovers to the company.</p>
     <h2>Customer dues</h2>${table(['Trip', 'Driver', 'Due'], dueRows)}
-    <p class="note">These figures are all time, as of today, so they ignore the period filter.</p>`;
+    <h2>Uber and Rapido payouts to Aavre</h2>${table(['', 'Amount'], [tr(['Paid in app (owed by platforms)', inr(inApp)]), tr(['Payouts received', inr(paid)]), tr(['Still to come', `<b>${inr(inApp - paid)}</b>`], 'tot')])}
+    <p class="note">These figures are all time, as of today, so they ignore the period filter. Record payouts as a Settlement: Platform payout received.</p>`;
 }
 
 function secRepo(c, f) {
