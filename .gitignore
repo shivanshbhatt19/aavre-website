@@ -3,3 +3,6 @@ CLAUDE.md
 
 # macOS
 .DS_Store
+
+# Apps Script backend code stays out of the public site
+*.gs
