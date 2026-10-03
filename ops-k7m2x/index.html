@@ -509,13 +509,13 @@ const FORMS = {
     table: 'settlements', prefix: 'ST', title: 'Settlement', nav: 'Settlement',
     fields: () => [
       { k: 'date', label: 'Date', type: 'date', req: 1, def: today },
-      { k: 'type', label: 'Type', type: 'select', req: 1, opts: () => opts(S.data.lists.settlementType) },
+      { k: 'type', label: 'Type', type: 'select', req: 1, opts: () => opts(S.data.lists.settlementType.filter(t => t !== 'Driver cash handover' && t !== 'Driver UPI handover')) },
       { k: 'platform', label: 'Platform', type: 'select', req: 1, opts: () => opts(S.data.lists.platform), show: r => r.type === 'Platform payout received' },
       { k: 'tripId', label: 'Trip with amount due', type: 'select', req: 1, full: 1, opts: r => dueTripOpts(r), show: r => r.type === 'Customer due collected' },
       { k: 'collectedBy', label: 'Collected by', type: 'select', req: 1, opts: () => opts(S.data.lists.collectedBy), show: r => r.type === 'Customer due collected' },
       { k: 'driver', label: 'Driver', type: 'select', req: 1, opts: () => driverOpts(true),
         show: r => (r.type === 'Driver cash handover' || r.type === 'Driver UPI handover') || (r.type === 'Customer due collected' && r.collectedBy === 'Driver'),
-        hint: r => r.driver ? 'Cash with this driver now: ' + inr(driverCash(r.driver)) : '' },
+      },
       { k: 'amount', label: 'Amount (₹)', type: 'number', req: 1 },
       { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
     ],
@@ -788,7 +788,7 @@ function unrecordedKm(car, inR) {
   return gap;
 }
 
-const SECTIONS = [['summary', 'Summary'], ['pl', 'P&L'], ['cars', 'By car'], ['drivers', 'By driver'], ['tolls', 'Tolls'], ['salary', 'Salary paid'], ['cash', 'Cash and dues'], ['repo', 'Driver repository']];
+const SECTIONS = [['summary', 'Summary'], ['pl', 'P&L'], ['cars', 'By car'], ['drivers', 'By driver'], ['tolls', 'Tolls'], ['salary', 'Salary paid'], ['cash', 'Dues and payouts'], ['repo', 'Driver repository']];
 
 function renderAnalytics(app, sec) {
   if (!S.af) S.af = { period: 'month', month: today().slice(0, 7), from: '', to: '', car: '', driver: '' };
@@ -830,10 +830,11 @@ const signed = v => `<span style="color:${v < 0 ? 'var(--bad)' : 'var(--good)'}"
 function secSummary(c) {
   const margin = c.income ? Math.round(c.profit / c.income * 100) : 0;
   const dueTotal = c.dues.reduce((a, x) => a + x.due, 0);
-  const cashTotal = c.cash.reduce((a, x) => a + x.cash, 0);
+  const inApp = S.data.platform.filter(r => c.byCar(r)).reduce((a, r) => a + n(r.appCollected), 0);
+  const payoutsDue = inApp - S.data.settlements.filter(s => s.type === 'Platform payout received').reduce((a, s) => a + n(s.amount), 0);
   return `<div class="tiles">
     ${tile('Operating profit', signed(c.profit), '', true)}${tile('Income', inr(c.income))}${tile('Expenses', inr(c.expenses))}${tile('Margin', c.income ? margin + '%' : '0%', margin < 0 ? 'bad' : 'good')}
-    ${tile('Direct trips', num(c.trips.length))}${tile('KM driven', num(c.km))}${tile('Cash with drivers', inr(cashTotal))}${tile('Customer dues', inr(dueTotal), dueTotal > 0 ? 'bad' : '')}
+    ${tile('Direct trips', num(c.trips.length))}${tile('KM driven', num(c.km))}${tile('Platform payouts due', inr(payoutsDue))}${tile('Customer dues', inr(dueTotal), dueTotal > 0 ? 'bad' : '')}
   </div>
   <h2>Where the money came from and went</h2>
   ${table(['', 'Amount'], [
@@ -925,11 +926,11 @@ function secDrivers(c, f) {
     const t = c.trips.filter(r => String(r.driver) === String(d.id)), p = c.plat.filter(r => String(r.driver) === String(d.id));
     const e = c.exps.filter(r => String(r.driver) === String(d.id) && r.group === 'Driver');
     const pay = c.sum(t, 'driverPay') + c.sum(t, 'driverFood') + c.sum(e, 'amount');
-    return { d, trips: t.length, rides: c.sum(p, 'rides'), km: c.sum(t, 'km') + c.sum(p, 'km'), income: c.sum(t, 'fare') + c.sum(p, 'earnings'), pay, cash: driverCash(d.id) };
-  }).filter(x => x.trips || x.rides || x.pay || x.cash || f.driver)
+    return { d, trips: t.length, rides: c.sum(p, 'rides'), km: c.sum(t, 'km') + c.sum(p, 'km'), income: c.sum(t, 'fare') + c.sum(p, 'earnings'), pay };
+  }).filter(x => x.trips || x.rides || x.pay || f.driver)
     .sort((a, b) => b.income - a.income);
-  return table(['Driver', 'Trips', 'Uber or Rapido rides', 'KM', 'Income generated', 'Pay received', 'Cash in hand now'],
-    rows.map(x => tr([h(x.d.name) + `<div class="small muted">${h(x.d.type)} · ${h(x.d.id)}</div>`, num(x.trips), num(x.rides), num(x.km), inr(x.income), inr(x.pay), x.cash ? `<b>${inr(x.cash)}</b>` : inr(0)]))) +
+  return table(['Driver', 'Trips', 'Uber or Rapido rides', 'KM', 'Income generated', 'Pay received'],
+    rows.map(x => tr([h(x.d.name) + `<div class="small muted">${h(x.d.type)} · ${h(x.d.id)}</div>`, num(x.trips), num(x.rides), num(x.km), inr(x.income), inr(x.pay)]))) +
     '<p class="note">Pay received counts driver pay and food on trips plus salary, on call pay, allowance and advances from Expenses.</p>';
 }
 
@@ -966,14 +967,11 @@ function secSalary(c, f) {
 }
 
 function secCash(c) {
-  const cashRows = c.cash.filter(x => x.cash !== 0).sort((a, b) => b.cash - a.cash)
-    .map(x => tr([h(x.d.name) + `<div class="small muted">${h(x.d.id)}</div>`, `<b>${inr(x.cash)}</b>`]));
   const dueRows = c.dues.sort((a, b) => b.t.date.localeCompare(a.t.date))
     .map(x => tr([`${fmtDate(x.t.date)}<div class="small muted">${h(x.t.from)} to ${h(x.t.to)} · ${h(x.t.customerName || '')}</div>`, h(D.driverLabel(x.t.driver)), `<b>${inr(x.due)}</b>`]));
   const inApp = S.data.platform.filter(r => c.byCar(r)).reduce((a, r) => a + n(r.appCollected), 0);
   const paid = S.data.settlements.filter(s => s.type === 'Platform payout received').reduce((a, s) => a + n(s.amount), 0);
-  return `<h2 style="margin-top:4px">Cash held by drivers</h2>${table(['Driver', 'Cash in hand'], cashRows)}
-    <p class="note">Cash and UPI collected by the driver (trips and Uber or Rapido days), minus expenses he paid from it, minus handovers to the company.</p>
+  return `<p class="note" style="margin-top:0">Cash and UPI collected by drivers is treated as handed over to Aavre at the end of each trip or day.</p>
     <h2>Customer dues</h2>${table(['Trip', 'Driver', 'Due'], dueRows)}
     <h2>Uber and Rapido payouts to Aavre</h2>${table(['', 'Amount'], [tr(['Paid in app (owed by platforms)', inr(inApp)]), tr(['Payouts received', inr(paid)]), tr(['Still to come', `<b>${inr(inApp - paid)}</b>`], 'tot')])}
     <p class="note">These figures are all time, as of today, so they ignore the period filter. Record payouts as a Settlement: Platform payout received.</p>`;
