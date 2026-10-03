@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="theme-color" content="#ffffff">
+<title>Aavre Driver</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb;--good:#15803d;--bad:#b91c1c;--warn:#92400e}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.hidden{display:none!important}
+.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:700;font-size:17px}.brand b{font-weight:500;color:var(--muted)}
+.sp{flex:1}
+.top button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:14px}
+main{max-width:520px;margin:0 auto;padding:16px 16px 60px}
+h1{font-size:20px;margin:4px 0 12px}
+h2{font-size:16px;margin:20px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.f{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.f label{font-size:14px;font-weight:600;color:#374151}
+.f input,.f select{width:100%;min-height:52px;padding:12px;border:1px solid #d1d5db;border-radius:10px;background:#fff;font-size:18px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{width:100%;min-height:54px;border:0;border-radius:12px;background:var(--accent);color:#fff;font-size:18px;font-weight:600;cursor:pointer}
+.btn.end{background:#111827}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid #d1d5db;font-size:16px;min-height:48px}
+.btn:disabled{opacity:.55}
+.photo{display:flex;gap:12px;align-items:center}
+.photo img{width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:#f3f4f6}
+.status{font-size:14px;padding:10px 12px;border-radius:10px;margin-bottom:14px}
+.status.ok{background:#f0fdf4;color:var(--good)} .status.bad{background:#fef2f2;color:var(--bad)} .status.wait{background:#f3f4f6;color:var(--muted)}
+.msg{border-radius:10px;padding:11px 13px;margin-top:12px;font-size:15px}
+.msg.bad{background:#fef2f2;color:var(--bad)} .msg.good{background:#f0fdf4;color:var(--good)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px;margin-bottom:14px}
+.check input{width:22px;height:22px;margin-top:1px}
+.open{border-left:4px solid var(--accent)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:15px}
+.kv span:nth-child(odd){color:var(--muted)}
+.log{padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.log:first-child{border-top:0}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;background:#f1f2f4;color:#374151;margin-left:6px}
+.tag.Open{background:#eff4ff;color:var(--accent)} .tag.Pending{background:#fef3c7;color:var(--warn)} .tag.Approved,.tag.Used{background:#f0fdf4;color:var(--good)}
+.muted{color:var(--muted)} .small{font-size:13px}
+.loading{padding:40px 0;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">Loading…</div></div>
+<script>
+'use strict';
+/* Paste the same Apps Script web app URL used by the admin console */
+const API_URL = 'https://script.google.com/macros/s/AKfycbz3Mc7ycLhQWqOTN5ac4X6GxXVTKd18beRuKKKuKVnWdUZ2jlxXVLMd8QBCT_MaWp9vSw/exec';
+
+const $ = s => document.querySelector(s);
+const h = v => String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }, del(k) { try { localStorage.removeItem(k); } catch (e) {} } };
+const fmtTime = iso => { if (!iso) return ''; const d = new Date(iso); return d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); };
+const S = { token: store.get('aavreDrv.token'), home: null, photo: null, loc: null, locErr: '' };
+
+class ApiError extends Error { constructor(m, code) { super(m); this.code = code; } }
+async function api(action, body) {
+  if (!/^https:\/\//.test(API_URL)) throw new ApiError('This page is not connected yet.', 'CONFIG');
+  let res, json;
+  try {
+    res = await fetch(API_URL, { method: 'POST', redirect: 'follow', cache: 'no-store', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({}, body || {}, { action, token: S.token })) });
+  } catch (e) { throw new ApiError('No internet. Check your connection and try again.', 'NETWORK'); }
+  try { json = await res.json(); } catch (e) { throw new ApiError('Server error. Try again.', 'NETWORK'); }
+  if (!json.ok) {
+    if (json.code === 'AUTH') { S.token = null; store.del('aavreDrv.token'); S.loginMsg = json.error; render(); }
+    throw new ApiError(json.error, json.code);
+  }
+  return json.data;
+}
+
+/* ---------- photo: shrink on the phone before upload ---------- */
+function readPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const max = 1280, scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.6));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read the photo. Take it again.')); };
+    img.src = url;
+  });
+}
+
+/* ---------- location ---------- */
+function getLocation() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) { S.loc = null; S.locErr = 'This phone does not support location.'; return resolve(); }
+    navigator.geolocation.getCurrentPosition(
+      p => { S.loc = { lat: p.coords.latitude, lng: p.coords.longitude, acc: Math.round(p.coords.accuracy) }; S.locErr = ''; resolve(); },
+      e => { S.loc = null; S.locErr = e.code === 1 ? 'Location is blocked. Allow location for this site in your browser settings, then tap Retry.' : 'Could not get location. Go outside or turn on GPS, then tap Retry.'; resolve(); },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+}
+function locHtml() {
+  if (S.loc) return `<div class="status ok" id="locBox">Location captured (within ${h(S.loc.acc)} m)</div>`;
+  if (S.locErr) return `<div class="status bad" id="locBox">${h(S.locErr)} <button type="button" class="btn ghost" id="locRetry" style="margin-top:8px">Retry location</button></div>`;
+  return `<div class="status wait" id="locBox">Getting location…</div>`;
+}
+async function refreshLoc() {
+  await getLocation();
+  const b = $('#locBox'); if (!b) return;
+  b.outerHTML = locHtml(); bindLocRetry();
+}
+function bindLocRetry() { const r = $('#locRetry'); if (r) r.onclick = () => { S.locErr = ''; $('#locBox').outerHTML = locHtml(); refreshLoc(); }; }
+
+/* ---------- screens ---------- */
+function render() {
+  const app = $('#app');
+  if (!S.token) return renderLogin(app);
+  if (!S.home) { app.innerHTML = '<div class="loading">Loading…</div>'; load(); return; }
+  renderHome(app);
+}
+async function load() {
+  try { S.home = await api('driverMe'); render(); }
+  catch (e) { if (S.token) $('#app').innerHTML = `<main><div class="msg bad">${h(e.message)}</div><button class="btn ghost" style="margin-top:12px" onclick="S.home=null;render()">Try again</button></main>`; }
+}
+
+function renderLogin(app) {
+  app.innerHTML = `<main style="padding-top:10vh"><h1 style="text-align:center">Aavre <span class="muted" style="font-weight:500">Driver</span></h1>
+    <form class="card" id="lf">
+      <div class="f"><label for="m">Mobile number</label><input id="m" inputmode="numeric" autocomplete="username" maxlength="10" required></div>
+      <div class="f"><label for="p">PIN</label><input id="p" type="password" inputmode="numeric" autocomplete="current-password" maxlength="4" required></div>
+      <button class="btn" type="submit" id="lb">Log in</button>
+      ${S.loginMsg ? `<div class="msg bad">${h(S.loginMsg)}</div>` : ''}<div id="le"></div>
+    </form><p class="muted small" style="text-align:center">Forgot PIN? Ask the office to set a new one.</p></main>`;
+  $('#lf').onsubmit = async e => {
+    e.preventDefault();
+    const b = $('#lb'); b.disabled = true; b.textContent = 'Checking…'; $('#le').innerHTML = '';
+    try {
+      const r = await api('driverLogin', { mobile: $('#m').value.trim(), pin: $('#p').value.trim() });
+      S.token = r.token; store.set('aavreDrv.token', r.token); S.loginMsg = ''; S.home = null; render();
+    } catch (err) { $('#le').innerHTML = `<div class="msg bad">${h(err.message)}</div>`; b.disabled = false; b.textContent = 'Log in'; }
+  };
+}
+
+function readingFields(prefix) {
+  return `<div class="row2">
+      <div class="f"><label for="${prefix}Odo">Odometer (km)</label><input id="${prefix}Odo" inputmode="numeric" autocomplete="off"></div>
+      <div class="f"><label for="${prefix}Soc">Charging %</label><input id="${prefix}Soc" inputmode="numeric" maxlength="3" autocomplete="off"></div>
+    </div>
+    <div class="f"><label>Dashboard photo (odometer and battery %)</label>
+      <div class="photo"><img id="${prefix}Img" alt="" class="${S.photo ? '' : 'hidden'}" src="${S.photo || ''}">
+      <label class="btn ghost" style="display:flex;align-items:center;justify-content:center;flex:1">${S.photo ? 'Retake photo' : 'Take photo'}<input id="${prefix}Photo" type="file" accept="image/*" capture="environment" class="hidden"></label></div></div>
+    ${locHtml()}
+    <label class="check"><input type="checkbox" id="${prefix}Late"><span>I forgot to submit this earlier (submitting late)</span></label>`;
+}
+
+function renderHome(app) {
+  const H = S.home;
+  const open = H.open[0];
+  const carName = id => { const c = H.cars.find(x => x.id === id); return c ? (c.nickname ? c.nickname + ' · ' + c.id : c.id) : id; };
+  let body;
+  if (open) {
+    body = `<div class="card open"><h2 style="margin-top:0">${h(carName(open.car))} is started</h2>
+      <div class="kv"><span>Started</span><span>${h(fmtTime(open.startAt))}${open.startLate === 'Yes' ? ' (late)' : ''}</span><span>Odometer</span><span>${h(open.startOdo)} km</span><span>Charging</span><span>${h(open.startSoc)}%</span></div></div>
+      <form class="card" id="rf"><h2 style="margin-top:0">End</h2>${readingFields('r')}
+      <button class="btn end" type="submit" id="rb">Submit end</button><div id="rm"></div></form>`;
+  } else {
+    body = `<form class="card" id="rf"><h2 style="margin-top:0">Start</h2>
+      <div class="f"><label for="rCar">Car</label><select id="rCar"><option value="">Select car</option>${H.cars.map(c => `<option value="${h(c.id)}"${H.busy[c.id] ? ' disabled' : ''}>${h(carName(c.id))}${H.busy[c.id] ? ' (in use)' : ''}</option>`).join('')}</select></div>
+      ${readingFields('r')}
+      <button class="btn" type="submit" id="rb">Submit start</button><div id="rm"></div></form>`;
+  }
+  const recent = H.recent.filter(l => !open || l.id !== open.id).slice(0, 8).map(l => `<div class="log"><b>${h(carName(l.car))}</b><span class="tag ${h(l.status)}">${h(l.status === 'Pending' ? 'Waiting for approval' : l.status)}</span>
+    <div class="muted">${h(fmtTime(l.startAt))} · ${h(l.startOdo)} km, ${h(l.startSoc)}%${l.endOdo !== '' && l.endOdo !== undefined ? ` to ${h(l.endOdo)} km, ${h(l.endSoc)}%` : ''}</div></div>`).join('');
+  app.innerHTML = `<header class="top"><span class="brand">Aavre <b>Driver</b></span><span class="sp"></span><span class="small muted">${h(H.driver.name)}</span><button id="lo" type="button">Log out</button></header>
+    <main>${body}<h2>Your recent logs</h2><div class="card">${recent || '<span class="muted small">Nothing yet.</span>'}</div></main>`;
+
+  $('#lo').onclick = async () => { try { await api('driverLogout'); } catch (e) {} S.token = null; S.home = null; store.del('aavreDrv.token'); render(); };
+  bindLocRetry();
+  if (!S.loc) refreshLoc();
+  $('#rPhoto').onchange = async e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try { S.photo = await readPhoto(f); $('#rm').innerHTML = ''; const img = $('#rImg'); img.src = S.photo; img.classList.remove('hidden'); e.target.parentElement.firstChild.textContent = 'Retake photo'; }
+    catch (err) { $('#rm').innerHTML = `<div class="msg bad">${h(err.message)}</div>`; }
+  };
+  $('#rf').onsubmit = async e => {
+    e.preventDefault();
+    const msg = t => { $('#rm').innerHTML = `<div class="msg bad">${h(t)}</div>`; };
+    const odo = $('#rOdo').value.trim(), soc = $('#rSoc').value.trim();
+    if (!open && !$('#rCar').value) return msg('Select the car.');
+    if (!odo) return msg('Enter the odometer reading.');
+    if (soc === '' || Number(soc) < 0 || Number(soc) > 100) return msg('Enter charging % between 0 and 100.');
+    if (!S.photo) return msg('Take a photo of the dashboard.');
+    const b = $('#rb'); b.disabled = true; b.textContent = 'Getting location…';
+    await getLocation();
+    if (!S.loc) { b.disabled = false; b.textContent = open ? 'Submit end' : 'Submit start'; $('#locBox').outerHTML = locHtml(); bindLocRetry(); return msg('Location is required.'); }
+    b.textContent = 'Submitting…';
+    try {
+      const payload = { odo, soc, photo: S.photo, lat: S.loc.lat, lng: S.loc.lng, acc: S.loc.acc, late: $('#rLate').checked };
+      S.home = open ? await api('driverEnd', Object.assign({ id: open.id }, payload)) : await api('driverStart', Object.assign({ car: $('#rCar').value }, payload));
+      S.photo = null;
+      render();
+      const top = document.querySelector('main');
+      top.insertAdjacentHTML('afterbegin', `<div class="msg good" style="margin:0 0 12px">${open ? 'End submitted. Thank you.' : 'Start submitted.'}</div>`);
+    } catch (err) { b.disabled = false; b.textContent = open ? 'Submit end' : 'Submit start'; msg(err.message); }
+  };
+}
+
+render();
+</script>
+</body>
+</html>

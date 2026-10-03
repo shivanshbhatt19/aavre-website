@@ -248,10 +248,18 @@ function mergeRecord(table, rec) {
   }
   const list = S.data[table];
   const i = list.findIndex(r => String(r.id) === String(rec.id));
+  if (table === 'trips' || table === 'platform') syncLogLink(i >= 0 ? list[i].driverLogId : '', rec.driverLogId, rec.id);
   if (i >= 0) list[i] = Object.assign({}, list[i], rec); else list.push(rec);
+}
+function syncLogLink(oldId, newId, entryId) {
+  (S.data.driverlogs || []).forEach(l => {
+    if (oldId && l.id === oldId && l.usedIn === entryId) { l.usedIn = ''; l.status = 'Approved'; }
+    if (newId && l.id === newId) { l.usedIn = entryId; l.status = 'Used'; if (!l.approvedBy) l.approvedBy = S.user ? S.user.username : ''; }
+  });
 }
 function removeRecord(table, id) {
   if (!S.data) return;
+  if (table === 'trips' || table === 'platform') { const old = S.data[table].find(r => String(r.id) === String(id)); if (old && old.driverLogId) syncLogLink(old.driverLogId, '', old.id); }
   if (table === 'trips') S.data.charging = (S.data.charging || []).filter(c => c.tripId !== String(id));
   S.data[table] = S.data[table].filter(r => String(r.id) !== String(id));
 }
@@ -271,7 +279,8 @@ document.addEventListener('DOMContentLoaded', () => { render(); });
 
 function shell(active, inner) {
   const u = S.user;
-  const tabs = [['#/home', 'Home', 'home'], ['#/input/trip', 'Input data', 'input'], ['#/analytics/summary', 'Analytics', 'analytics'], ['#/settings', 'Settings', 'settings']];
+  const nLogs = S.data ? (S.data.driverlogs || []).filter(l => l.status === 'Open' || l.status === 'Pending').length : 0;
+  const tabs = [['#/home', 'Home', 'home'], ['#/input/trip', 'Input data', 'input'], ['#/logs', 'Driver logs' + (nLogs ? ' (' + nLogs + ')' : ''), 'logs'], ['#/analytics/summary', 'Analytics', 'analytics'], ['#/settings', 'Settings', 'settings']];
   const q = Q.all().length;
   return `<header class="top"><a class="brand" href="#/home">Aavre <b>Ops</b></a><span class="sp"></span>
     <span class="who">${h(u ? u.name : '')}</span><button id="logoutBtn" type="button">Log out</button></header>
@@ -303,6 +312,7 @@ async function render() {
   if (parts[0] === 'home') renderHome(app);
   else if (parts[0] === 'input') renderInput(app, parts[1] || 'trip');
   else if (parts[0] === 'analytics') renderAnalytics(app, parts[1] || 'summary');
+  else if (parts[0] === 'logs') renderLogs(app, parts[1] || 'action');
   else if (parts[0] === 'settings') renderSettings(app, parts[1] || (D.isAdmin() ? 'cars' : 'password'));
   else { location.hash = '#/home'; }
 }
@@ -424,6 +434,9 @@ const FORMS = {
       { k: 'customerName', label: 'Customer name' }, { k: 'customerMobile', label: 'Customer mobile', type: 'tel' },
       { k: 'bookingRef', label: 'Booking ref', full: 1 },
       { sec: 'Odometer and battery' },
+      { k: 'driverLogId', label: 'Driver log (fills the readings below)', type: 'select', full: 1, none: 'No driver log, type readings', dyn: ['car', 'driver', 'date'],
+        opts: r => logOpts(r), show: r => !!(r.car && r.driver && r.date),
+        hint: r => r.driverLogId ? 'Readings filled from the driver log. You can still change them; saving approves the log.' : (logOpts(r).length ? 'Pick the driver\'s log to fill odometer and charging %.' : 'No driver log for this car, driver and date.') },
       { k: 'odoStart', label: 'Odometer start', type: 'number', req: 1, hint: r => odoHint(r) },
       { k: 'odoEnd', label: 'Odometer end', type: 'number', req: 1 },
       { k: 'odoNote', label: 'Reason the readings overlap', full: 1, show: () => S.odoConfirm, req: 1 },
@@ -462,6 +475,7 @@ const FORMS = {
       if (k === 'fare' && !form.dataset.recvTouched) setVal(form, 'received', r.fare);
       if (k === 'received') form.dataset.recvTouched = '1';
       if (k === 'driver') { const d = D.driver(r.driver); if (d && d.payBasis === 'Per trip' && d.defaultPay !== '' && !r.driverPay) setVal(form, 'driverPay', d.defaultPay); }
+      if (k === 'driverLogId') prefillFromLog(form, r.driverLogId);
     },
     row: r => ({ l1: `${h(r.from)} to ${h(r.to)}<span class="tag">${h(r.tripType)}</span>${n(r.due) > 0 ? '<span class="tag q">due ' + inr(tripDue(r)) + '</span>' : ''}${n(r.commission) > 0 ? '<span class="tag">commission ' + inr(r.commission) + ' to ' + h(r.commissionTo === 'Others' ? r.commissionName : D.driverLabel(r.commissionDriver)) + '</span>' : ''}`,
       l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}${n(r.chargingStops) ? ' · ' + n(r.chargingStops) + ' charging stop' + (n(r.chargingStops) > 1 ? 's' : '') : ''}`, amt: inr(r.fare) })
@@ -482,6 +496,9 @@ const FORMS = {
       { k: 'driverExpense', label: 'Driver expense (₹)', type: 'number', hint: () => 'Puncture, parking etc. paid by the driver and deducted.' },
       { k: 'driverExpenseNote', label: 'Driver expense note', req: 1, show: r => n(r.driverExpense) > 0 },
       { sec: 'Odometer and battery' },
+      { k: 'driverLogId', label: 'Driver log (fills the readings below)', type: 'select', full: 1, none: 'No driver log, type readings', dyn: ['car', 'driver', 'date'],
+        opts: r => logOpts(r), show: r => !!(r.car && r.driver && r.date),
+        hint: r => r.driverLogId ? 'Readings filled from the driver log. You can still change them; saving approves the log.' : (logOpts(r).length ? 'Pick the driver\'s log to fill odometer and charging %.' : 'No driver log for this car, driver and date.') },
       { k: 'odoStart', label: 'Odometer start', type: 'number', req: 1, hint: r => odoHint(r) },
       { k: 'odoEnd', label: 'Odometer end', type: 'number', req: 1 },
       { k: 'odoNote', label: 'Reason the readings overlap', full: 1, show: () => S.odoConfirm, req: 1 },
@@ -491,6 +508,7 @@ const FORMS = {
       { k: 'toll', label: 'Toll (₹)', type: 'number' }, { k: 'parking', label: 'Parking (₹)', type: 'number' },
       { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
     ],
+    onChange: (k, r, form) => { if (k === 'driverLogId') prefillFromLog(form, r.driverLogId); },
     live: r => `<span class="pill">Rides <b>${num(n(r.ridesRapido) + n(r.ridesUber))}</b></span><span class="pill">Day total <b>${inr(n(r.cashCollected) + n(r.onlineCollected) + n(r.appCollected))}</b></span>
       <span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(n(r.odoEnd) - n(r.odoStart)) : '0'}</b></span><span class="pill">Driver hands over <b>${inr(n(r.cashCollected) + n(r.onlineCollected) - n(r.driverExpense))}</b></span>`,
     row: r => ({ l1: `Uber ${num(r.ridesUber)} · Rapido ${num(r.ridesRapido)}<span class="tag">${num(r.rides)} rides</span>`,
@@ -530,6 +548,23 @@ const FORMS = {
     row: r => ({ l1: h(r.type), l2: `${fmtDate(r.date)}${r.driver ? ' · ' + h(D.driverLabel(r.driver)) : ''}${r.platform ? ' · ' + h(r.platform) : ''}${r.tripId ? ' · trip ' + h(r.tripId) : ''}`, amt: inr(r.amount) })
   }
 };
+
+const istDay = iso => iso ? new Date(iso).toLocaleDateString('sv-SE', { timeZone: 'Asia/Kolkata' }) : '';
+const istTime = iso => iso ? new Date(iso).toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) : '';
+const logVal = (l, k) => { const f = l['final' + k[0].toUpperCase() + k.slice(1)]; return f !== '' && f !== undefined && f !== null ? f : l[k]; };
+function logOpts(r) {
+  const edId = S.edit ? S.edit.id : null;
+  return (S.data.driverlogs || []).filter(l => l.car === r.car && String(l.driver) === String(r.driver) && istDay(l.startAt) === r.date && (!l.usedIn || l.usedIn === edId))
+    .sort((a, b) => String(a.startAt).localeCompare(String(b.startAt)))
+    .map(l => [l.id, `${istTime(l.startAt)} · ${logVal(l, 'startOdo')} km, ${logVal(l, 'startSoc')}%` + (logVal(l, 'endOdo') !== '' && logVal(l, 'endOdo') !== undefined ? ` to ${logVal(l, 'endOdo')} km, ${logVal(l, 'endSoc')}%` : ' (no end yet)') + ` · ${l.status === 'Pending' ? 'pending' : l.status === 'Open' ? 'open' : 'approved'}`]);
+}
+function prefillFromLog(form, id) {
+  const l = (S.data.driverlogs || []).find(x => x.id === id);
+  if (!l) return;
+  setVal(form, 'odoStart', logVal(l, 'startOdo')); setVal(form, 'socStart', logVal(l, 'startSoc'));
+  const eo = logVal(l, 'endOdo'), es = logVal(l, 'endSoc');
+  if (eo !== '' && eo !== undefined) { setVal(form, 'odoEnd', eo); setVal(form, 'socEnd', es); }
+}
 
 function catGroup(c) { const x = S.data.categories.find(k => k.id === c); return x ? x.group : ''; }
 function catGroups() {
@@ -583,7 +618,7 @@ function fieldHtml(f, rec) {
   const id = 'f_' + f.k;
   let input;
   if (f.type === 'select') {
-    let o = '<option value="">Select</option>';
+    let o = `<option value="">${h(f.none || 'Select')}</option>`;
     if (f.groups) {
       const g = f.groups();
       Object.keys(g).forEach(name => { if (g[name].length) o += `<optgroup label="${h(name)}">` + g[name].map(x => `<option value="${h(x[0])}"${String(x[0]) === String(v) ? ' selected' : ''}>${h(x[1])}</option>`).join('') + '</optgroup>'; });
@@ -644,6 +679,13 @@ function renderInput(app, kind) {
   const refresh = changed => {
     const r = readForm(form, fields);
     if ($('#stopList', form)) r.chargingStops = readStops(form);
+    fields.forEach(f => {
+      if (!f.dyn || (changed && f.dyn.indexOf(changed) < 0)) return;
+      const sel = form.elements[f.k], cur = sel.value, list = f.opts(r);
+      sel.innerHTML = `<option value="">${h(f.none || 'Select')}</option>` + list.map(x => `<option value="${h(x[0])}">${h(x[1])}</option>`).join('');
+      sel.value = list.some(x => String(x[0]) === String(cur)) ? cur : '';
+      r[f.k] = sel.value;
+    });
     if (changed && F.onChange) { F.onChange(changed, r, form); Object.assign(r, readForm(form, fields)); }
     fields.forEach(f => {
       if (!f.k) return;
@@ -742,6 +784,72 @@ function renderInput(app, kind) {
     }
   });
   draw();
+}
+
+/* =====================================================================
+   DRIVER LOGS (approve, correct, discard)
+   ===================================================================== */
+const MISSING_END_MS = 18 * 3600 * 1000;
+function renderLogs(app, sec) {
+  const segs = [['action', 'Needs action'], ['approved', 'Approved'], ['used', 'Used'], ['all', 'All']];
+  const all = (S.data.driverlogs || []).slice().sort((a, b) => String(b.startAt).localeCompare(String(a.startAt)));
+  const list = all.filter(l => sec === 'all' || (sec === 'action' ? (l.status === 'Open' || l.status === 'Pending') : sec === 'approved' ? l.status === 'Approved' : l.status === 'Used'));
+  const reading = (l, w) => {
+    const at = l[w + 'At'], odo = l[w + 'Odo'];
+    if (odo === '' || odo === undefined) return '<div class="muted small">Not submitted yet</div>';
+    const lat = l[w + 'Lat'], lng = l[w + 'Lng'];
+    return `<div class="l1">${num(odo)} km · ${h(l[w + 'Soc'])}%</div><div class="l2">${fmtDate(istDay(at))} ${istTime(at)}${l[w + 'Late'] === 'Yes' ? '<span class="tag q">submitted late</span>' : ''}${l.endBy === 'admin' && w === 'end' && !l.endPhotoId ? '<span class="tag">by admin</span>' : ''}</div>
+      <div class="btns" style="justify-content:flex-start;margin-top:6px">${l[w + 'PhotoId'] ? `<button class="btn sm ghost" type="button" data-photo="${h(l.id)}|${w}">Photo</button>` : ''}${lat !== '' && lat !== undefined ? `<a class="btn sm ghost" style="text-decoration:none;display:inline-flex;align-items:center" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q=${encodeURIComponent(lat + ',' + lng)}">Map${l[w + 'Acc'] ? ' (' + h(l[w + 'Acc']) + ' m)' : ''}</a>` : ''}</div><div data-photobox="${h(l.id)}|${w}"></div>`;
+  };
+  const card = l => {
+    const missing = l.status === 'Open' && Date.now() - new Date(l.startAt).getTime() > MISSING_END_MS;
+    const tag = missing ? '<span class="tag q">missing end</span>' : `<span class="tag${l.status === 'Pending' ? ' q' : ''}">${h(l.status === 'Pending' ? 'pending approval' : l.status.toLowerCase())}</span>`;
+    const v = k => { const x = logVal(l, k); return x === undefined ? '' : x; };
+    const corrected = ['startOdo', 'startSoc', 'endOdo', 'endSoc'].some(k => { const f = l['final' + k[0].toUpperCase() + k.slice(1)]; return f !== '' && f !== undefined && String(f) !== String(l[k]); });
+    const editable = l.status !== 'Used';
+    return `<div class="card" data-log="${h(l.id)}">
+      <div class="l1" style="font-weight:600">${h(l.driverName)} · ${h(D.carLabel(l.car))}${tag}${corrected ? '<span class="tag">corrected by admin</span>' : ''}</div>
+      <div class="grid" style="margin-top:10px"><div><div class="sec" style="border:0;padding:0;margin:0 0 4px">Start</div>${reading(l, 'start')}</div><div><div class="sec" style="border:0;padding:0;margin:0 0 4px">End</div>${reading(l, 'end')}</div></div>
+      ${editable ? `<div class="grid" style="margin-top:12px">
+        <div class="f"><label>Start odometer</label><input data-lv="startOdo" inputmode="decimal" value="${h(v('startOdo'))}"></div>
+        <div class="f"><label>Start charging %</label><input data-lv="startSoc" inputmode="decimal" value="${h(v('startSoc'))}"></div>
+        <div class="f"><label>End odometer</label><input data-lv="endOdo" inputmode="decimal" value="${h(v('endOdo'))}"></div>
+        <div class="f"><label>End charging %</label><input data-lv="endSoc" inputmode="decimal" value="${h(v('endSoc'))}"></div>
+        <div class="f full"><label>Note (optional)</label><input data-lv="note" value="${h(l.adminNote || '')}"></div></div>
+        <div class="actions"><button class="btn" type="button" data-approve="${h(l.id)}">${l.status === 'Approved' ? 'Save changes' : 'Approve'}</button><button class="btn danger" type="button" data-discard="${h(l.id)}">Discard</button></div><div data-logmsg="${h(l.id)}"></div>`
+      : `<p class="note">Used in entry ${h(l.usedIn)}${l.approvedBy ? ' · approved by ' + h(l.approvedBy) : ''}. To change readings, edit that entry.</p>`}
+    </div>`;
+  };
+  app.innerHTML = shell('logs', `<div class="seg">${segs.map(x => `<a href="#/logs/${x[0]}" class="${x[0] === sec ? 'on' : ''}">${x[1]}</a>`).join('')}</div>
+    <div class="actions" style="margin:0 0 12px"><button class="btn sm ghost" id="logsRefresh" type="button">Refresh</button></div>
+    ${list.map(card).join('') || '<div class="card muted">Nothing here.</div>'}
+    <p class="note">Drivers submit Start and End on the driver screen. Approve, or correct and approve. Logs also get approved automatically when picked in a trip or Uber/Rapido entry. Open logs older than 18 hours show as missing end; type the end reading to complete them.</p>`);
+  bindShell();
+  $('#logsRefresh').onclick = async () => { try { await loadData(true); } catch (e) { toast(e.message, 4000); } if (S.data) renderLogs(app, sec); };
+  app.querySelectorAll('[data-photo]').forEach(b => b.onclick = async () => {
+    const [id, w] = b.dataset.photo.split('|');
+    const box = app.querySelector(`[data-photobox="${id}|${w}"]`);
+    b.disabled = true; box.innerHTML = '<p class="muted small">Loading photo…</p>';
+    try { const src = await api('logPhoto', { id, which: w }); box.innerHTML = `<img src="${h(src)}" alt="Dashboard photo" style="max-width:100%;border-radius:8px;margin-top:8px;border:1px solid var(--line)">`; }
+    catch (e) { box.innerHTML = `<div class="msg bad">${h(e.message)}</div>`; b.disabled = false; }
+  });
+  app.querySelectorAll('[data-approve]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.approve, c = app.querySelector(`[data-log="${id}"]`), val = k => c.querySelector(`[data-lv="${k}"]`).value.trim();
+    const msg = app.querySelector(`[data-logmsg="${id}"]`);
+    if (!val('endOdo') || val('endSoc') === '') { msg.innerHTML = '<div class="msg bad">Enter the end odometer and charging % to approve.</div>'; return; }
+    b.disabled = true;
+    try {
+      const upd = await api('reviewLog', { id, startOdo: val('startOdo'), startSoc: val('startSoc'), endOdo: val('endOdo'), endSoc: val('endSoc'), note: val('note') });
+      const i = S.data.driverlogs.findIndex(x => x.id === id); if (i >= 0) S.data.driverlogs[i] = Object.assign({}, S.data.driverlogs[i], upd);
+      toast('Approved'); renderLogs(app, sec);
+    } catch (e) { b.disabled = false; msg.innerHTML = `<div class="msg bad">${h(e.message)}</div>`; }
+  });
+  app.querySelectorAll('[data-discard]').forEach(b => b.onclick = async () => {
+    if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Tap to confirm'; return; }
+    b.disabled = true;
+    try { await api('discardLog', { id: b.dataset.discard }); S.data.driverlogs = S.data.driverlogs.filter(x => x.id !== b.dataset.discard); toast('Discarded'); renderLogs(app, sec); }
+    catch (e) { b.disabled = false; toast(e.message, 4000); }
+  });
 }
 
 /* =====================================================================
@@ -1053,10 +1161,17 @@ function masterEditor(box, table, editing) {
   box.innerHTML = `<form class="card" id="mForm" novalidate><h2 style="margin-top:0">${editing ? 'Edit ' + M.title : 'Add ' + M.title}</h2>
     <div class="grid">${fields.map(f => fieldHtml(f, rec)).join('')}</div><div id="mMsg"></div>
     <div class="actions"><button class="btn gold wide" type="submit">${editing ? 'Update' : 'Add ' + M.title}</button>${editing ? '<button class="btn ghost" type="button" id="mCancel">Cancel</button>' : ''}</div></form>
-    <div class="card"><div class="rows">${list.map(r => { const x = M.row(r); return `<div class="row"><div class="main"><div class="l1">${x.l1}</div><div class="l2">${x.l2}</div></div><div class="btns"><button class="btn sm ghost" type="button" data-medit="${h(r.id)}">Edit</button></div></div>`; }).join('') || '<p class="muted small">None yet.</p>'}</div></div>`;
+    <div class="card"><div class="rows">${list.map(r => { const x = M.row(r); const pin = table === 'drivers' ? ((S.data.driverPins || {})[String(r.id)] ? '<span class="tag">PIN set</span>' : '<span class="tag q">no PIN</span>') : ''; return `<div class="row"><div class="main"><div class="l1">${x.l1}${pin}</div><div class="l2">${x.l2}</div></div><div class="btns">${table === 'drivers' ? `<button class="btn sm ghost" type="button" data-pin="${h(r.id)}">Set PIN</button>` : ''}<button class="btn sm ghost" type="button" data-medit="${h(r.id)}">Edit</button></div></div>`; }).join('') || '<p class="muted small">None yet.</p>'}</div></div>`;
   const form = $('#mForm');
   if (editing) form.elements.id.readOnly = true;
   if ($('#mCancel')) $('#mCancel').onclick = () => masterEditor(box, table);
+  box.querySelectorAll('[data-pin]').forEach(b => b.onclick = async () => {
+    const d = D.driver(b.dataset.pin);
+    const pin = prompt('New 4 digit PIN for ' + (d ? d.name : b.dataset.pin) + '. Share it with the driver privately.');
+    if (pin === null) return;
+    try { S.data.driverPins = await api('setDriverPin', { mobile: b.dataset.pin, pin: pin.trim() }); toast('PIN set. The driver is logged out of other phones.'); masterEditor(box, table, editing); }
+    catch (e) { toast(e.message, 4000); }
+  });
   box.querySelectorAll('[data-medit]').forEach(b => b.onclick = () => { masterEditor(box, table, S.data[table].find(x => String(x.id) === b.dataset.medit)); window.scrollTo({ top: 0, behavior: 'smooth' }); });
   form.onsubmit = async ev => {
     ev.preventDefault();
