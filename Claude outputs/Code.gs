@@ -55,7 +55,8 @@ const SCHEMA = {
     ['id', 'Entry ID'], ['date', 'Date'], ['car', 'Car'], ['driver', 'Driver mobile'], ['driverName', 'Driver name'],
     ['platform', 'Platform'], ['rides', 'Rides'], ['earnings', 'Earnings (Rs)'],
     ['cashCollected', 'Cash collected by driver (Rs)'], ['odoStart', 'Odometer start'], ['odoEnd', 'Odometer end'],
-    ['km', 'KM'], ['toll', 'Toll (Rs)'], ['parking', 'Parking (Rs)'], ['odoNote', 'Odometer note'], ['notes', 'Notes']] },
+    ['km', 'KM'], ['toll', 'Toll (Rs)'], ['parking', 'Parking (Rs)'], ['odoNote', 'Odometer note'], ['notes', 'Notes'],
+    ['socStart', 'Starting charging %'], ['socEnd', 'End charging %']] },
   expenses: { tab: 'Expenses', cols: [
     ['id', 'Expense ID'], ['date', 'Date paid'], ['group', 'Category group'], ['category', 'Category'],
     ['car', 'Car'], ['driver', 'Driver mobile'], ['driverName', 'Driver name'], ['amount', 'Amount (Rs)'],
@@ -649,6 +650,8 @@ function validate_(ss, table, r, isNew, confirmed) {
       rec.cashCollected = num_(r.cashCollected, 'Cash collected') || 0;
       rec.odoNote = r.odoNote; rec.odoStart = r.odoStart; rec.odoEnd = r.odoEnd;
       checkOdo_(ss, rec, isNew ? null : rec.id, confirmed, unchangedOdo_(ss, table, rec, isNew));
+      rec.socStart = soc_(r.socStart, 'Starting charging %');
+      rec.socEnd = soc_(r.socEnd, 'End charging %');
       rec.toll = num_(r.toll, 'Toll') || 0;
       rec.parking = num_(r.parking, 'Parking') || 0;
       rec.notes = str_(r.notes);
