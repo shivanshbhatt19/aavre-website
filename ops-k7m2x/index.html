@@ -438,6 +438,14 @@ const FORMS = {
       { k: 'stateTax', label: 'State or permit tax (₹)', type: 'number' },
       { k: 'driverFood', label: 'Driver food or allowance (₹)', type: 'number' }, { k: 'driverPay', label: 'Driver pay (₹)', type: 'number', hint: r => payHint(r, 'Per trip') },
       { k: 'otherExp', label: 'Other expense (₹)', type: 'number' }, { k: 'otherExpNote', label: 'Other expense note', show: r => n(r.otherExp) > 0, req: 1 },
+      { sec: 'Commission' },
+      { k: 'commission', label: 'Commission (₹)', type: 'number' },
+      { k: 'commissionTo', label: 'Commission to', type: 'select', req: 1, opts: () => opts(S.data.lists.commissionTo || ['Our driver', 'Others']), show: r => n(r.commission) > 0 },
+      { k: 'commissionDriver', label: 'Driver getting the commission', type: 'select', req: 1, full: 1, opts: () => driverOpts(),
+        show: r => n(r.commission) > 0 && r.commissionTo === 'Our driver',
+        hint: r => { const d = D.driver(r.commissionDriver); return !d ? '' : d.type === 'Permanent' ? 'Permanent driver: paid along with salary.' : 'On call driver: paid at the end of the trip.'; } },
+      { k: 'commissionName', label: 'Person name', req: 1, show: r => n(r.commission) > 0 && r.commissionTo === 'Others' },
+      { k: 'commissionMobile', label: 'Person mobile', type: 'tel', req: 1, show: r => n(r.commission) > 0 && r.commissionTo === 'Others' },
       { sec: 'Public charging' },
       { stops: true },
       { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
@@ -445,7 +453,7 @@ const FORMS = {
     live: r => {
       const km = n(r.odoEnd) - n(r.odoStart);
       const charging = (r.chargingStops || []).reduce((a, st) => a + n(st.amount), 0);
-      const costs = ['toll', 'parking', 'stateTax', 'driverFood', 'otherExp', 'driverPay'].reduce((a, k) => a + n(r[k]), 0) + charging;
+      const costs = ['toll', 'parking', 'stateTax', 'driverFood', 'otherExp', 'driverPay', 'commission'].reduce((a, k) => a + n(r[k]), 0) + charging;
       const profit = n(r.fare) - costs, due = Math.max(0, n(r.fare) - n(r.received));
       return `<span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(km) : '0'}</b></span><span class="pill">Trip costs <b>${inr(costs)}</b></span>
         <span class="pill ${profit >= 0 ? 'good' : 'bad'}">Trip profit <b>${inr(profit)}</b></span>${due > 0 ? `<span class="pill bad">Due <b>${inr(due)}</b></span>` : ''}`;
@@ -455,7 +463,7 @@ const FORMS = {
       if (k === 'received') form.dataset.recvTouched = '1';
       if (k === 'driver') { const d = D.driver(r.driver); if (d && d.payBasis === 'Per trip' && d.defaultPay !== '' && !r.driverPay) setVal(form, 'driverPay', d.defaultPay); }
     },
-    row: r => ({ l1: `${h(r.from)} to ${h(r.to)}<span class="tag">${h(r.tripType)}</span>${n(r.due) > 0 ? '<span class="tag q">due ' + inr(tripDue(r)) + '</span>' : ''}`,
+    row: r => ({ l1: `${h(r.from)} to ${h(r.to)}<span class="tag">${h(r.tripType)}</span>${n(r.due) > 0 ? '<span class="tag q">due ' + inr(tripDue(r)) + '</span>' : ''}${n(r.commission) > 0 ? '<span class="tag">commission ' + inr(r.commission) + ' to ' + h(r.commissionTo === 'Others' ? r.commissionName : D.driverLabel(r.commissionDriver)) + '</span>' : ''}`,
       l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}${n(r.chargingStops) ? ' · ' + n(r.chargingStops) + ' charging stop' + (n(r.chargingStops) > 1 ? 's' : '') : ''}`, amt: inr(r.fare) })
   },
   platform: {
@@ -760,7 +768,7 @@ function compute(f) {
   const exps = S.data.expenses.filter(r => inR(r) && (!f.car || r.car === f.car) && byDrv(r));
   const sum = (l, k) => l.reduce((x, r) => x + n(r[k]), 0);
 
-  const tripCostKeys = ['toll', 'parking', 'stateTax', 'fastCharging', 'driverFood', 'otherExp', 'driverPay'];
+  const tripCostKeys = ['toll', 'parking', 'stateTax', 'fastCharging', 'driverFood', 'otherExp', 'driverPay', 'commission'];
   const fares = sum(trips, 'fare'), earnings = sum(plat, 'earnings');
   const tripCosts = sum(trips, 'tripCosts') + sum(plat, 'toll') + sum(plat, 'parking') + sum(plat, 'driverExpense');
   const expTotal = sum(exps, 'amount');
@@ -864,7 +872,7 @@ function secPL(c) {
   row('Direct trip fares', m => inr(c.sum(pick(c.trips, m), 'fare')));
   row('Uber and Rapido earnings', m => inr(c.sum(pick(c.plat, m), 'earnings')));
   row('Total income', m => inr(inc(m)), 'tot');
-  const tlabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Public charging', driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay on trips' };
+  const tlabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Public charging', driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay on trips', commission: 'Commission' };
   c.tripCostKeys.forEach(k => row('Trip: ' + tlabels[k], m => inr(c.sum(pick(c.trips, m), k) + (k === 'toll' || k === 'parking' ? c.sum(pick(c.plat, m), k) : 0)), 'sub'));
   row('Uber and Rapido: driver expenses', m => inr(c.sum(pick(c.plat, m), 'driverExpense')), 'sub');
   cats.forEach(cat => row(cat, m => inr(c.sum(pick(c.exps, m).filter(e => e.category === cat), 'amount')), 'sub'));
@@ -925,7 +933,7 @@ function secDrivers(c, f) {
   const rows = list.map(d => {
     const t = c.trips.filter(r => String(r.driver) === String(d.id)), p = c.plat.filter(r => String(r.driver) === String(d.id));
     const e = c.exps.filter(r => String(r.driver) === String(d.id) && r.group === 'Driver');
-    const pay = c.sum(t, 'driverPay') + c.sum(t, 'driverFood') + c.sum(e, 'amount');
+    const pay = c.sum(t, 'driverPay') + c.sum(t, 'driverFood') + c.sum(e, 'amount') + c.sum(c.trips.filter(r => String(r.commissionDriver) === String(d.id)), 'commission');
     return { d, trips: t.length, rides: c.sum(p, 'rides'), km: c.sum(t, 'km') + c.sum(p, 'km'), income: c.sum(t, 'fare') + c.sum(p, 'earnings'), pay };
   }).filter(x => x.trips || x.rides || x.pay || f.driver)
     .sort((a, b) => b.income - a.income);
@@ -952,18 +960,18 @@ function secTolls(c) {
 
 function secSalary(c, f) {
   const lines = {};
-  const add = (drv, m, k, v) => { if (!v) return; const key = drv + '|' + m; lines[key] = lines[key] || { drv, m, Salary: 0, 'On call pay': 0, 'Per trip pay': 0, 'Allowance or food': 0, Advance: 0 }; lines[key][k] += v; };
-  c.trips.forEach(r => { add(r.driver, r.date.slice(0, 7), 'Per trip pay', n(r.driverPay)); add(r.driver, r.date.slice(0, 7), 'Allowance or food', n(r.driverFood)); });
+  const add = (drv, m, k, v) => { if (!v) return; const key = drv + '|' + m; lines[key] = lines[key] || { drv, m, Salary: 0, 'On call pay': 0, 'Per trip pay': 0, Commission: 0, 'Allowance or food': 0, Advance: 0 }; lines[key][k] += v; };
+  c.trips.forEach(r => { add(r.driver, r.date.slice(0, 7), 'Per trip pay', n(r.driverPay)); add(r.driver, r.date.slice(0, 7), 'Allowance or food', n(r.driverFood)); if (r.commissionTo === 'Our driver') add(r.commissionDriver, r.date.slice(0, 7), 'Commission', n(r.commission)); });
   c.exps.filter(e => e.group === 'Driver').forEach(e => {
     const k = ['Salary', 'On call pay', 'Advance'].includes(e.category) ? e.category : 'Allowance or food';
     add(e.driver, e.date.slice(0, 7), k, n(e.amount));
   });
-  const keys = ['Salary', 'On call pay', 'Per trip pay', 'Allowance or food', 'Advance'];
+  const keys = ['Salary', 'On call pay', 'Per trip pay', 'Commission', 'Allowance or food', 'Advance'];
   const list = Object.values(lines).sort((a, b) => b.m.localeCompare(a.m) || D.driverLabel(a.drv).localeCompare(D.driverLabel(b.drv)));
   const tot = keys.map(k => list.reduce((a, x) => a + x[k], 0));
   const rows = list.map(x => tr([h(D.driverLabel(x.drv)) + `<div class="small muted">${fmtMonth(x.m)}</div>`].concat(keys.map(k => inr(x[k]))).concat([`<b>${inr(keys.reduce((a, k) => a + x[k], 0))}</b>`])));
   if (list.length) rows.push(tr(['Total'].concat(tot.map(inr)).concat([inr(tot.reduce((a, b) => a + b, 0))]), 'tot'));
-  return table(['Driver and month'].concat(keys).concat(['Total']), rows) + '<p class="note">Advances are counted as an expense on the day they are paid.</p>';
+  return table(['Driver and month'].concat(keys).concat(['Total']), rows) + '<p class="note">Advances are counted as an expense on the day they are paid. Commission to permanent drivers is paid with their salary, so record only the salary amount in Expenses; to on call drivers it is paid at the end of the trip.</p>';
 }
 
 function secCash(c) {
@@ -981,7 +989,7 @@ function secRepo(c, f) {
   const list = D.drivers(true).filter(d => !f.driver || String(d.id) === f.driver).sort((a, b) => a.name.localeCompare(b.name));
   const rows = list.map(d => {
     const t = S.data.trips.filter(r => String(r.driver) === String(d.id));
-    const pay = c.sum(t, 'driverPay') + c.sum(t, 'driverFood') + S.data.expenses.filter(e => String(e.driver) === String(d.id) && e.group === 'Driver').reduce((a, e) => a + n(e.amount), 0);
+    const pay = c.sum(t, 'driverPay') + c.sum(t, 'driverFood') + S.data.expenses.filter(e => String(e.driver) === String(d.id) && e.group === 'Driver').reduce((a, e) => a + n(e.amount), 0) + c.sum(S.data.trips.filter(r => String(r.commissionDriver) === String(d.id)), 'commission');
     return tr([h(d.name) + (d.status === 'Inactive' ? '<span class="tag">inactive</span>' : ''), h(d.id), h(d.type), d.defaultPay !== '' ? inr(d.defaultPay) + ' ' + h(String(d.payBasis || '').toLowerCase()) : '', h(d.upi || ''), num(t.length), inr(pay)]);
   });
   return `<input id="repoSearch" placeholder="Search name or mobile" style="width:100%;min-height:44px;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:12px;font-size:16px" oninput="filterRepo(this.value)">
