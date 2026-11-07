@@ -48,7 +48,7 @@ h2{font-size:15px;font-weight:600;margin:20px 0 8px}
 .bigbtn.alt{background:#fff}
 .bigbtn .t{font-size:17px;font-weight:600;color:var(--accent)}
 .bigbtn .d{color:var(--muted);font-size:13.5px;margin-top:4px}
-@media(min-width:720px){.bigbtns{grid-template-columns:1fr 1fr}}
+@media(min-width:720px){.bigbtns{grid-template-columns:repeat(3,1fr)}}
 
 /* forms */
 .seg{display:inline-flex;gap:2px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none;background:#eceef1;border-radius:8px;padding:3px;max-width:100%}
@@ -429,9 +429,23 @@ function renderHome(app) {
     <div class="bigbtns">
       <a class="bigbtn" href="#/input/trip"><div class="t">Input data</div><div class="d">Trips, Uber and Rapido days, expenses, settlements</div></a>
       <a class="bigbtn alt" href="#/analytics/summary"><div class="t">Analytics</div><div class="d">P&amp;L, cars, drivers, tolls, salaries, cash</div></a>
+      <a class="bigbtn" href="#/calendar"><div class="t">Calendar</div><div class="d">Bookings, cars and drivers by day</div></a>
     </div>
-    <p class="muted small" style="margin-top:18px">Today: ${trips} trip${trips === 1 ? '' : 's'} and ${plat} Uber or Rapido entr${plat === 1 ? 'y' : 'ies'} logged. <a href="#/calendar">${bks} booking${bks === 1 ? '' : 's'} on the calendar</a>.</p>`);
+    <p class="muted small" style="margin-top:18px">Today: ${trips} trip${trips === 1 ? '' : 's'} and ${plat} Uber or Rapido entr${plat === 1 ? 'y' : 'ies'} logged. <a href="#/calendar">${bks} booking${bks === 1 ? '' : 's'} on the calendar</a>.</p>
+    ${homeSchedule(t)}`);
   bindShell();
+  bindBkActions(() => renderHome(app));
+}
+
+function homeSchedule(t) {
+  const tm = addDays(t, 1);
+  const day = (d, label) => {
+    const list = (S.data.bookings || []).filter(b => b.date === d).sort((a, b) => String(a.time).localeCompare(String(b.time)));
+    return `<h2>${label} <span class="muted small" style="font-weight:400">${weekday(d)}, ${fmtDate(d)}</span></h2>
+      <div class="card"><div class="rows">${bkRows(d, list) || '<p class="muted small" style="margin:0">No bookings.</p>'}</div></div>`;
+  };
+  return day(t, 'Today') + day(tm, 'Tomorrow') +
+    `<div class="actions" style="margin-top:0"><a class="btn ghost" href="#/calendar/${t}">Open full calendar</a><a class="btn ghost" href="#/booking/new/${t}">New booking</a></div>`;
 }
 
 /* =====================================================================
@@ -930,25 +944,21 @@ function renderCalendar(app, arg) {
     ${dayPanel(sel, byDate[sel] || [])}`);
   bindShell();
 
-  $('main').addEventListener('click', async e => {
-    const rec = e.target.closest('[data-rec]'), cx = e.target.closest('[data-cxl]');
-    if (rec) { const b = all.find(x => x.id === rec.dataset.rec); if (b) recordTripFromBooking(b); }
-    if (cx) {
-      if (!cx.dataset.armed) { cx.dataset.armed = '1'; cx.textContent = 'Tap to confirm'; setTimeout(() => { if (cx.isConnected) { delete cx.dataset.armed; cx.textContent = 'Cancel booking'; } }, 4000); return; }
-      const b = all.find(x => x.id === cx.dataset.cxl); if (!b) return;
-      cx.disabled = true;
-      try {
-        const saved = await api('save', { table: 'bookings', record: Object.assign({}, b, { status: 'Cancelled' }), isNew: false });
-        mergeRecord('bookings', saved); toast('Booking cancelled'); renderCalendar(app, sel);
-      } catch (err) { cx.disabled = false; toast(err.message, 4000); }
-    }
-  });
+  bindBkActions(() => renderCalendar(app, sel));
 }
 
 function dayPanel(d, list) {
-  const t = today();
   const active = list.filter(b => b.status !== 'Cancelled' && b.status !== 'No show');
-  const rows = list.map(b => {
+  const rows = bkRows(d, list);
+  return `<h2>${weekday(d)}, ${fmtDate(d)}</h2>
+    <div class="card">${active.length ? timelineHtml(active) : ''}
+      <div class="rows">${rows || '<p class="muted small" style="margin:0">No bookings on this day.</p>'}</div>
+      <div class="actions"><a class="btn ghost" href="#/booking/new/${d}">Add a booking on ${fmtDate(d)}</a></div></div>`;
+}
+
+function bkRows(d, list) {
+  const t = today();
+  return list.map(b => {
     const c = clashes(b);
     const past = d < t && bkActive(b);
     const wa = waLink(b.customerMobile);
@@ -960,10 +970,24 @@ function dayPanel(d, list) {
       <div class="btns" style="margin-top:6px"><a class="btn sm ghost" href="#/booking/edit/${h(b.id)}">Edit</a>
       ${bkActive(b) ? `<button class="btn sm" type="button" data-rec="${h(b.id)}">Record trip</button><button class="btn sm danger" type="button" data-cxl="${h(b.id)}">Cancel booking</button>` : ''}</div></div></div>`;
   }).join('');
-  return `<h2>${weekday(d)}, ${fmtDate(d)}</h2>
-    <div class="card">${active.length ? timelineHtml(active) : ''}
-      <div class="rows">${rows || '<p class="muted small" style="margin:0">No bookings on this day.</p>'}</div>
-      <div class="actions"><a class="btn ghost" href="#/booking/new/${d}">Add a booking on ${fmtDate(d)}</a></div></div>`;
+}
+
+/* Record trip and Cancel booking buttons, shared by Calendar and Home */
+function bindBkActions(after) {
+  $('main').addEventListener('click', async e => {
+    const all = S.data.bookings || [];
+    const rec = e.target.closest('[data-rec]'), cx = e.target.closest('[data-cxl]');
+    if (rec) { const b = all.find(x => x.id === rec.dataset.rec); if (b) recordTripFromBooking(b); }
+    if (cx) {
+      if (!cx.dataset.armed) { cx.dataset.armed = '1'; cx.textContent = 'Tap to confirm'; setTimeout(() => { if (cx.isConnected) { delete cx.dataset.armed; cx.textContent = 'Cancel booking'; } }, 4000); return; }
+      const b = all.find(x => x.id === cx.dataset.cxl); if (!b) return;
+      cx.disabled = true;
+      try {
+        const saved = await api('save', { table: 'bookings', record: Object.assign({}, b, { status: 'Cancelled' }), isNew: false });
+        mergeRecord('bookings', saved); toast('Booking cancelled'); after();
+      } catch (err) { cx.disabled = false; toast(err.message, 4000); }
+    }
+  });
 }
 
 function timelineHtml(list) {
