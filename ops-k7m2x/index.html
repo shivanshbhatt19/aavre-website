@@ -278,7 +278,7 @@ async function loadData(force) {
 }
 function mergeRecord(table, rec) {
   if (!S.data || !rec) return;
-  if (table === 'trips' && Array.isArray(rec.stops)) {
+  if ((table === 'trips' || table === 'platform') && Array.isArray(rec.stops)) {
     S.data.charging = (S.data.charging || []).filter(c => c.tripId !== rec.id).concat(rec.stops);
     rec = Object.assign({}, rec); delete rec.stops;
   }
@@ -303,6 +303,7 @@ function syncBooking(oldId, newId, tripId) {
 function removeRecord(table, id) {
   if (!S.data) return;
   if (table === 'trips' || table === 'platform') { const old = S.data[table].find(r => String(r.id) === String(id)); if (old && old.driverLogId) syncLogLink(old.driverLogId, '', old.id); }
+  if (table === 'platform') S.data.charging = (S.data.charging || []).filter(c => c.tripId !== String(id));
   if (table === 'trips') { S.data.charging = (S.data.charging || []).filter(c => c.tripId !== String(id)); const t = S.data.trips.find(r => String(r.id) === String(id)); if (t && t.bookingId) syncBooking(t.bookingId, '', String(id)); }
   S.data[table] = S.data[table].filter(r => String(r.id) !== String(id));
 }
@@ -556,13 +557,15 @@ const FORMS = {
       { k: 'socEnd', label: 'End charging %', type: 'number', req: 1 },
       { sec: 'Costs paid by Aavre' },
       { k: 'toll', label: 'Toll (₹)', type: 'number' }, { k: 'parking', label: 'Parking (₹)', type: 'number' },
+      { sec: 'Public charging' },
+      { stops: true },
       { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
     ],
     onChange: (k, r, form) => { if (k === 'driverLogId') prefillFromLog(form, r.driverLogId); },
     live: r => `<span class="pill">Rides <b>${num(n(r.ridesRapido) + n(r.ridesUber))}</b></span><span class="pill">Day total <b>${inr(n(r.cashCollected) + n(r.onlineCollected) + n(r.appCollected))}</b></span>
-      <span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(n(r.odoEnd) - n(r.odoStart)) : '0'}</b></span><span class="pill">Driver hands over <b>${inr(n(r.cashCollected) + n(r.onlineCollected) - n(r.driverExpense))}</b></span>`,
+      <span class="pill">KM <b>${r.odoEnd && r.odoStart ? num(n(r.odoEnd) - n(r.odoStart)) : '0'}</b></span><span class="pill">Driver hands over <b>${inr(n(r.cashCollected) + n(r.onlineCollected) - n(r.driverExpense))}</b></span>${(r.chargingStops || []).length ? `<span class="pill">Charging <b>${inr((r.chargingStops || []).reduce((a, st) => a + n(st.amount), 0))}</b></span>` : ''}`,
     row: r => ({ l1: `Uber ${num(r.ridesUber)} · Rapido ${num(r.ridesRapido)}<span class="tag">${num(r.rides)} rides</span>`,
-      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km · cash ${inr(r.cashCollected)} · UPI ${inr(r.onlineCollected)} · in app ${inr(r.appCollected)}${n(r.driverExpense) ? ' · driver expense ' + inr(r.driverExpense) : ''}${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}`, amt: inr(r.earnings) })
+      l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km · cash ${inr(r.cashCollected)} · UPI ${inr(r.onlineCollected)} · in app ${inr(r.appCollected)}${n(r.driverExpense) ? ' · driver expense ' + inr(r.driverExpense) : ''}${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}${n(r.chargingStops) ? ' · ' + n(r.chargingStops) + ' charging stop' + (n(r.chargingStops) > 1 ? 's' : '') + ' ' + inr(r.fastCharging) : ''}`, amt: inr(r.earnings) })
   },
   expense: {
     table: 'expenses', prefix: 'EX', title: 'Expense', nav: 'Expense',
@@ -656,7 +659,7 @@ function readStops(form) {
   return $$('.stop', form).map(box => { const o = {}; $$('[data-sf]', box).forEach(i => { o[i.dataset.sf] = i.value.trim(); }); return o; });
 }
 function drawStops(form, list) {
-  $('#stopList', form).innerHTML = list.map(stopHtml).join('') || '<p class="muted small" style="margin:0">No public charging on this trip.</p>';
+  $('#stopList', form).innerHTML = list.map(stopHtml).join('') || '<p class="muted small" style="margin:0">No public charging' + (form.id === 'entryForm' && location.hash.indexOf('platform') >= 0 ? ' on this day.' : ' on this trip.') + '</p>';
 }
 
 function fieldHtml(f, rec) {
@@ -700,7 +703,7 @@ function renderInput(app, kind) {
   if (!S.edit || S.edit._kind !== kind) { S.edit = null; S.odoConfirm = false; }
   const fields = F.fields();
   const rec = S.edit ? Object.assign({}, S.edit) : {};
-  if (kind === 'trip' && S.edit) rec.chargingStops = (S.data.charging || []).filter(c => c.tripId === S.edit.id).sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  if ((kind === 'trip' || kind === 'platform') && S.edit) rec.chargingStops = (S.data.charging || []).filter(c => c.tripId === S.edit.id).sort((a, b) => String(a.id).localeCompare(String(b.id)));
   if (!S.edit && S.prefill && S.prefill._kind === kind) { Object.assign(rec, S.prefill); delete rec._kind; }
   S.prefill = null;
   if (!S.edit) fields.forEach(f => { if (f.def && rec[f.k] === undefined) rec[f.k] = f.def(); });
@@ -1180,7 +1183,7 @@ function compute(f) {
 
   const tripCostKeys = ['toll', 'parking', 'stateTax', 'fastCharging', 'driverFood', 'otherExp', 'driverPay', 'commission'];
   const fares = sum(trips, 'fare'), earnings = sum(plat, 'earnings');
-  const tripCosts = sum(trips, 'tripCosts') + sum(plat, 'toll') + sum(plat, 'parking') + sum(plat, 'driverExpense');
+  const tripCosts = sum(trips, 'tripCosts') + sum(plat, 'toll') + sum(plat, 'parking') + sum(plat, 'driverExpense') + sum(plat, 'fastCharging');
   const expTotal = sum(exps, 'amount');
   const income = fares + earnings, expenses = tripCosts + expTotal;
   const km = sum(trips, 'km') + sum(plat, 'km');
@@ -1277,13 +1280,13 @@ function secPL(c) {
   const row = (label, fnc, cls) => lines.push(tr([label].concat(months.map(m => fnc(m))).concat([fnc(null)]), cls));
   const pick = (list, m) => m ? by(list, m) : list;
   const inc = m => c.sum(pick(c.trips, m), 'fare') + c.sum(pick(c.plat, m), 'earnings');
-  const tcost = m => c.sum(pick(c.trips, m), 'tripCosts') + c.sum(pick(c.plat, m), 'toll') + c.sum(pick(c.plat, m), 'parking') + c.sum(pick(c.plat, m), 'driverExpense');
+  const tcost = m => c.sum(pick(c.trips, m), 'tripCosts') + c.sum(pick(c.plat, m), 'toll') + c.sum(pick(c.plat, m), 'parking') + c.sum(pick(c.plat, m), 'driverExpense') + c.sum(pick(c.plat, m), 'fastCharging');
   const ecost = m => c.sum(pick(c.exps, m), 'amount');
   row('Direct trip fares', m => inr(c.sum(pick(c.trips, m), 'fare')));
   row('Uber and Rapido earnings', m => inr(c.sum(pick(c.plat, m), 'earnings')));
   row('Total income', m => inr(inc(m)), 'tot');
   const tlabels = { toll: 'Toll', parking: 'Parking', stateTax: 'State or permit tax', fastCharging: 'Public charging', driverFood: 'Driver food or allowance', otherExp: 'Other trip expense', driverPay: 'Driver pay on trips', commission: 'Commission' };
-  c.tripCostKeys.forEach(k => row('Trip: ' + tlabels[k], m => inr(c.sum(pick(c.trips, m), k) + (k === 'toll' || k === 'parking' ? c.sum(pick(c.plat, m), k) : 0)), 'sub'));
+  c.tripCostKeys.forEach(k => row('Trip: ' + tlabels[k], m => inr(c.sum(pick(c.trips, m), k) + (k === 'toll' || k === 'parking' || k === 'fastCharging' ? c.sum(pick(c.plat, m), k) : 0)), 'sub'));
   row('Uber and Rapido: driver expenses', m => inr(c.sum(pick(c.plat, m), 'driverExpense')), 'sub');
   cats.forEach(cat => row(cat, m => inr(c.sum(pick(c.exps, m).filter(e => e.category === cat), 'amount')), 'sub'));
   row('Total expenses', m => inr(tcost(m) + ecost(m)), 'tot');
@@ -1324,7 +1327,7 @@ function secCars(c, f) {
     const t = c.trips.filter(r => r.car === car.id), p = c.plat.filter(r => r.car === car.id), e = c.exps.filter(r => r.car === car.id);
     const km = c.sum(t, 'km') + c.sum(p, 'km'), gap = unrecordedKm(car.id, r => c.inR(r));
     const direct = c.sum(t, 'fare'), plat = c.sum(p, 'earnings');
-    const cost = c.sum(t, 'tripCosts') + c.sum(p, 'toll') + c.sum(p, 'parking') + c.sum(p, 'driverExpense') + c.sum(e, 'amount');
+    const cost = c.sum(t, 'tripCosts') + c.sum(p, 'toll') + c.sum(p, 'parking') + c.sum(p, 'driverExpense') + c.sum(p, 'fastCharging') + c.sum(e, 'amount');
     T.trips += t.length; T.km += km; T.gap += gap; T.direct += direct; T.plat += plat; T.cost += cost;
     return tr([h(car.nickname || car.id) + `<div class="small muted">${h(car.id)}</div>`, num(t.length), num(km), gap ? `<span style="color:var(--warn)">${num(gap)}</span>` : '0', inr(direct), inr(plat), inr(cost), signed(direct + plat - cost), km ? '₹' + (Math.round((direct + plat) / km * 10) / 10).toLocaleString('en-IN') : '']);
   });
