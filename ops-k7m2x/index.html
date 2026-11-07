@@ -131,6 +131,41 @@ td.neg{color:var(--bad)} td.pos{color:var(--good)}
 .stop{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;background:#fafbfc}
 .stophead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .loading{padding:40px 0;text-align:center;color:var(--muted)}
+
+/* calendar */
+.calbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.calbar h1{margin:0;flex:1;min-width:140px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.cal .dow{background:#f9fafb;font-size:11.5px;color:var(--muted);padding:6px 4px;text-align:center;font-weight:500}
+.cal .d{background:#fff;min-height:96px;padding:5px 6px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:3px;min-width:0}
+.cal .d:hover{background:#fafcff}
+.cal .d.out{background:#fafbfc}.cal .d.out .dn{color:#b8bdc6}
+.cal .d.sel{box-shadow:inset 0 0 0 2px var(--accent)}
+.cal .dn{font-size:12.5px;font-weight:500;align-self:flex-start;padding:0 5px;border-radius:999px;line-height:20px}
+.cal .d.today .dn{background:var(--accent);color:#fff}
+.chip{font-size:11.5px;line-height:1.35;padding:2px 5px;border-radius:4px;background:var(--accent-soft);color:#1e3a8a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip.tent{background:#fef3c7;color:#92400e}.chip.done{background:#f0fdf4;color:var(--good)}
+.chip.cxl{background:var(--line2);color:var(--muted);text-decoration:line-through}
+.chip.clash{box-shadow:inset 3px 0 0 var(--bad)}
+.more{font-size:11px;color:var(--muted)}
+.dots{display:none;gap:3px;flex-wrap:wrap;justify-content:center}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.dots i.tent{background:#f59e0b}.dots i.done{background:var(--good)}.dots i.cxl{background:#d1d5db}.dots i.clash{background:var(--bad)}
+@media(max-width:719px){.cal .d{min-height:52px;align-items:center;padding:4px 2px}.cal .dn{align-self:center}.cal .chip,.cal .more{display:none}.cal .dots{display:flex}}
+.tag.blue{background:var(--accent-soft);color:#1e3a8a}.tag.good{background:#f0fdf4;color:var(--good)}.tag.bad{background:#fef2f2;color:var(--bad)}
+.tlw{overflow-x:auto;margin:4px 0 6px}
+.tl{min-width:620px}
+.tlr{display:flex;align-items:stretch;border-top:1px solid var(--line2)}
+.tlr.head{border-top:0}
+.tll{flex:none;width:118px;font-size:12.5px;padding:9px 8px 9px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlt{flex:1;position:relative;min-height:38px;background-image:linear-gradient(to right,var(--line2) 1px,transparent 1px)}
+.tlr.head .tlt{min-height:18px;background:none}
+.tlr.head span{position:absolute;top:0;font-size:11px;color:var(--muted);transform:translateX(-50%)}
+.blk{position:absolute;top:5px;bottom:5px;border-radius:5px;background:var(--accent);color:#fff;font-size:11.5px;line-height:28px;padding:0 6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-decoration:none;min-width:6px}
+a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.bkrow{flex-wrap:wrap}.bkrow .side{text-align:right}
+@media(max-width:719px){.bkrow .side{flex-basis:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;gap:8px}.bkrow .side .btns{margin-top:0!important}}
+.blk.tent{background:#f59e0b}.blk.done{background:#16a34a}.blk.clash{outline:2px solid var(--bad);outline-offset:-1px}
 @media(max-width:380px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -238,6 +273,7 @@ async function loadData(force) {
   if (S.data && !force) return S.data;
   S.data = await api('getAll');
   if (!S.data.charging) S.data.charging = [];
+  if (!S.data.bookings) S.data.bookings = [];
   return S.data;
 }
 function mergeRecord(table, rec) {
@@ -249,6 +285,7 @@ function mergeRecord(table, rec) {
   const list = S.data[table];
   const i = list.findIndex(r => String(r.id) === String(rec.id));
   if (table === 'trips' || table === 'platform') syncLogLink(i >= 0 ? list[i].driverLogId : '', rec.driverLogId, rec.id);
+  if (table === 'trips') syncBooking(i >= 0 ? list[i].bookingId : '', rec.bookingId, rec.id);
   if (i >= 0) list[i] = Object.assign({}, list[i], rec); else list.push(rec);
 }
 function syncLogLink(oldId, newId, entryId) {
@@ -257,10 +294,16 @@ function syncLogLink(oldId, newId, entryId) {
     if (newId && l.id === newId) { l.usedIn = entryId; l.status = 'Used'; if (!l.approvedBy) l.approvedBy = S.user ? S.user.username : ''; }
   });
 }
+function syncBooking(oldId, newId, tripId) {
+  (S.data.bookings || []).forEach(b => {
+    if (oldId && oldId !== newId && b.id === oldId && b.tripId === tripId) { b.tripId = ''; b.status = 'Confirmed'; }
+    if (newId && b.id === newId) { b.tripId = tripId; b.status = 'Completed'; }
+  });
+}
 function removeRecord(table, id) {
   if (!S.data) return;
   if (table === 'trips' || table === 'platform') { const old = S.data[table].find(r => String(r.id) === String(id)); if (old && old.driverLogId) syncLogLink(old.driverLogId, '', old.id); }
-  if (table === 'trips') S.data.charging = (S.data.charging || []).filter(c => c.tripId !== String(id));
+  if (table === 'trips') { S.data.charging = (S.data.charging || []).filter(c => c.tripId !== String(id)); const t = S.data.trips.find(r => String(r.id) === String(id)); if (t && t.bookingId) syncBooking(t.bookingId, '', String(id)); }
   S.data[table] = S.data[table].filter(r => String(r.id) !== String(id));
 }
 const D = {
@@ -280,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => { render(); });
 function shell(active, inner) {
   const u = S.user;
   const nLogs = S.data ? (S.data.driverlogs || []).filter(l => l.status === 'Open' || l.status === 'Pending').length : 0;
-  const tabs = [['#/home', 'Home', 'home'], ['#/input/trip', 'Input data', 'input'], ['#/logs', 'Driver logs' + (nLogs ? ' (' + nLogs + ')' : ''), 'logs'], ['#/analytics/summary', 'Analytics', 'analytics'], ['#/settings', 'Settings', 'settings']];
+  const tabs = [['#/home', 'Home', 'home'], ['#/calendar', 'Calendar', 'calendar'], ['#/input/trip', 'Input data', 'input'], ['#/logs', 'Driver logs' + (nLogs ? ' (' + nLogs + ')' : ''), 'logs'], ['#/analytics/summary', 'Analytics', 'analytics'], ['#/settings', 'Settings', 'settings']];
   const q = Q.all().length;
   return `<header class="top"><a class="brand" href="#/home">Aavre <b>Ops</b></a><span class="sp"></span>
     <span class="who">${h(u ? u.name : '')}</span><button id="logoutBtn" type="button">Log out</button></header>
@@ -310,6 +353,8 @@ async function render() {
     catch (e) { app.innerHTML = shell(parts[0], `<div class="msg bad">${h(e.message)}</div><div class="actions"><button class="btn" onclick="render()">Try again</button></div>`); bindShell(); return; }
   }
   if (parts[0] === 'home') renderHome(app);
+  else if (parts[0] === 'calendar') renderCalendar(app, parts[1]);
+  else if (parts[0] === 'booking') renderBooking(app, parts[1], parts[2]);
   else if (parts[0] === 'input') renderInput(app, parts[1] || 'trip');
   else if (parts[0] === 'analytics') renderAnalytics(app, parts[1] || 'summary');
   else if (parts[0] === 'logs') renderLogs(app, parts[1] || 'action');
@@ -378,12 +423,13 @@ function renderHome(app) {
   const t = today();
   const trips = S.data.trips.filter(r => r.date === t).length;
   const plat = S.data.platform.filter(r => r.date === t).length;
+  const bks = (S.data.bookings || []).filter(b => b.date === t && bkActive(b)).length;
   app.innerHTML = shell('home', `<h1>Hello, ${h(S.user.name.split(' ')[0])}</h1>
     <div class="bigbtns">
       <a class="bigbtn" href="#/input/trip"><div class="t">Input data</div><div class="d">Trips, Uber and Rapido days, expenses, settlements</div></a>
       <a class="bigbtn alt" href="#/analytics/summary"><div class="t">Analytics</div><div class="d">P&amp;L, cars, drivers, tolls, salaries, cash</div></a>
     </div>
-    <p class="muted small" style="margin-top:18px">Today: ${trips} trip${trips === 1 ? '' : 's'} and ${plat} Uber or Rapido entr${plat === 1 ? 'y' : 'ies'} logged.</p>`);
+    <p class="muted small" style="margin-top:18px">Today: ${trips} trip${trips === 1 ? '' : 's'} and ${plat} Uber or Rapido entr${plat === 1 ? 'y' : 'ies'} logged. <a href="#/calendar">${bks} booking${bks === 1 ? '' : 's'} on the calendar</a>.</p>`);
   bindShell();
 }
 
@@ -433,6 +479,9 @@ const FORMS = {
       { k: 'from', label: 'From', req: 1 }, { k: 'to', label: 'To', req: 1 },
       { k: 'customerName', label: 'Customer name' }, { k: 'customerMobile', label: 'Customer mobile', type: 'tel' },
       { k: 'bookingRef', label: 'Booking ref', full: 1 },
+      { k: 'bookingId', label: 'Calendar booking', type: 'select', full: 1, none: 'Not from the calendar', dyn: ['date'],
+        opts: r => bookingOpts(r), show: r => !!r.bookingId || bookingOpts(r).length > 0,
+        hint: r => r.bookingId ? 'Saving marks this booking as completed.' : 'Pick the booking this trip was for. It fills the details above.' },
       { sec: 'Odometer and battery' },
       { k: 'driverLogId', label: 'Driver log (fills the readings below)', type: 'select', full: 1, none: 'No driver log, type readings', dyn: ['car', 'driver', 'date'],
         opts: r => logOpts(r), show: r => !!(r.car && r.driver && r.date),
@@ -476,6 +525,7 @@ const FORMS = {
       if (k === 'received') form.dataset.recvTouched = '1';
       if (k === 'driver') { const d = D.driver(r.driver); if (d && d.payBasis === 'Per trip' && d.defaultPay !== '' && !r.driverPay) setVal(form, 'driverPay', d.defaultPay); }
       if (k === 'driverLogId') prefillFromLog(form, r.driverLogId);
+      if (k === 'bookingId') prefillFromBooking(form, r.bookingId);
     },
     row: r => ({ l1: `${h(r.from)} to ${h(r.to)}<span class="tag">${h(r.tripType)}</span>${n(r.due) > 0 ? '<span class="tag q">due ' + inr(tripDue(r)) + '</span>' : ''}${n(r.commission) > 0 ? '<span class="tag">commission ' + inr(r.commission) + ' to ' + h(r.commissionTo === 'Others' ? r.commissionName : D.driverLabel(r.commissionDriver)) + '</span>' : ''}`,
       l2: `${fmtDate(r.date)} · ${h(D.carLabel(r.car))} · ${h(D.driverLabel(r.driver))} · ${num(r.km)} km${r.socStart !== undefined && r.socStart !== '' ? ' · battery ' + h(r.socStart) + '% to ' + h(r.socEnd) + '%' : ''}${n(r.chargingStops) ? ' · ' + n(r.chargingStops) + ' charging stop' + (n(r.chargingStops) > 1 ? 's' : '') : ''}`, amt: inr(r.fare) })
@@ -651,6 +701,8 @@ function renderInput(app, kind) {
   const fields = F.fields();
   const rec = S.edit ? Object.assign({}, S.edit) : {};
   if (kind === 'trip' && S.edit) rec.chargingStops = (S.data.charging || []).filter(c => c.tripId === S.edit.id).sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  if (!S.edit && S.prefill && S.prefill._kind === kind) { Object.assign(rec, S.prefill); delete rec._kind; }
+  S.prefill = null;
   if (!S.edit) fields.forEach(f => { if (f.def && rec[f.k] === undefined) rec[f.k] = f.def(); });
   const seg = Object.keys(FORMS).map(k => `<a href="#/input/${k}" class="${k === kind ? 'on' : ''}">${FORMS[k].nav}</a>`).join('');
 
@@ -784,6 +836,256 @@ function renderInput(app, kind) {
     }
   });
   draw();
+}
+
+/* =====================================================================
+   CALENDAR (bookings)
+   ===================================================================== */
+const BK_HOURS = { 'Airport transfer': 1.5, 'Day hire': 8, 'Custom route': 4, 'Other': 2 };
+const BK_STATUS = ['Confirmed', 'Tentative', 'Completed', 'Cancelled', 'No show'];
+const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const WEEKDAY = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const bkStatuses = () => (S.data.lists && S.data.lists.bookingStatus) || BK_STATUS;
+const bkActive = b => b.status === 'Confirmed' || b.status === 'Tentative';
+const bkCls = b => b.status === 'Tentative' ? 'tent' : b.status === 'Completed' ? 'done' : (b.status === 'Cancelled' || b.status === 'No show') ? 'cxl' : '';
+const tMin = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
+const addDays = (iso, k) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + k); return d.toISOString().slice(0, 10); };
+const weekday = iso => WEEKDAY[new Date(iso + 'T00:00:00Z').getUTCDay()];
+function bkSpan(b) { const s = tMin(b.time); if (s === null) return null; return [s, s + Math.round((n(b.hours) || BK_HOURS[b.tripType] || 2) * 60)]; }
+function bkEnd(b) { const sp = bkSpan(b); if (!sp) return ''; const e = sp[1] % 1440; return String(Math.floor(e / 60)).padStart(2, '0') + ':' + String(e % 60).padStart(2, '0'); }
+function clashes(b, key) {
+  const sp = bkSpan(b);
+  if (!sp || !bkActive(b)) return [];
+  return (S.data.bookings || []).filter(o => {
+    if (o.id === b.id || o.date !== b.date || !bkActive(o)) return false;
+    const sameCar = b.car && o.car === b.car, sameDrv = b.driver && String(o.driver) === String(b.driver);
+    if (key === 'car' ? !sameCar : key === 'driver' ? !sameDrv : !(sameCar || sameDrv)) return false;
+    const q = bkSpan(o); return q && sp[0] < q[1] && q[0] < sp[1];
+  });
+}
+function bookingOpts(r) {
+  const edId = S.edit ? S.edit.id : null;
+  return (S.data.bookings || []).filter(b => b.date === r.date && (b.id === r.bookingId || (bkActive(b) && (!b.tripId || b.tripId === edId))))
+    .sort((a, b) => String(a.time).localeCompare(String(b.time)))
+    .map(b => [b.id, `${b.time} · ${b.from} to ${b.to} · ${b.customerName}`]);
+}
+function prefillFromBooking(form, id) {
+  const b = (S.data.bookings || []).find(x => x.id === id);
+  if (!b) return;
+  const map = { startTime: b.time, car: b.car, driver: b.driver, tripType: b.tripType, source: b.source, partner: b.partner, from: b.from, to: b.to,
+    customerName: b.customerName, customerMobile: b.customerMobile, bookingRef: b.bookingRef, fare: b.fare };
+  Object.keys(map).forEach(k => { const el = form.elements[k]; if (el && !el.value && map[k] !== '' && map[k] !== undefined) el.value = map[k]; });
+  if (form.elements.received && !form.dataset.recvTouched && b.fare !== '') form.elements.received.value = form.elements.fare.value;
+}
+function recordTripFromBooking(b) {
+  S.edit = null;
+  S.prefill = { _kind: 'trip', date: b.date, startTime: b.time, car: b.car, driver: b.driver, tripType: b.tripType, source: b.source, partner: b.partner,
+    from: b.from, to: b.to, customerName: b.customerName, customerMobile: b.customerMobile, bookingRef: b.bookingRef, fare: b.fare, received: b.fare, bookingId: b.id };
+  location.hash = '#/input/trip';
+}
+const waLink = m => { const d = String(m || '').replace(/\D/g, ''); return d ? 'https://wa.me/' + (d.length === 10 ? '91' + d : d) : ''; };
+
+function renderCalendar(app, arg) {
+  const t = today();
+  const sel = /^\d{4}-\d{2}-\d{2}$/.test(arg || '') ? arg : t;
+  const Y = Number(sel.slice(0, 4)), M = Number(sel.slice(5, 7));
+  const first = sel.slice(0, 8) + '01';
+  const dim = new Date(Date.UTC(Y, M, 0)).getUTCDate();
+  const off = (new Date(first + 'T00:00:00Z').getUTCDay() + 6) % 7;
+  const cells = Math.ceil((off + dim) / 7) * 7;
+  const all = (S.data.bookings || []);
+  const byDate = {};
+  all.forEach(b => { (byDate[b.date] = byDate[b.date] || []).push(b); });
+  Object.keys(byDate).forEach(d => byDate[d].sort((a, b) => String(a.time).localeCompare(String(b.time))));
+  const prevM = addDays(first, -1).slice(0, 8) + '01', nextM = addDays(first, dim);
+
+  let grid = DOW.map(d => `<div class="dow">${d}</div>`).join('');
+  for (let i = 0; i < cells; i++) {
+    const d = addDays(first, i - off);
+    const list = byDate[d] || [];
+    const shown = list.slice(0, 3);
+    grid += `<a class="d${d.slice(0, 7) !== first.slice(0, 7) ? ' out' : ''}${d === t ? ' today' : ''}${d === sel ? ' sel' : ''}" href="#/calendar/${d}">
+      <span class="dn">${Number(d.slice(8, 10))}</span>
+      ${shown.map(b => `<span class="chip ${bkCls(b)}${clashes(b).length ? ' clash' : ''}">${h(b.time)} ${h(b.customerName || b.from)}</span>`).join('')}
+      ${list.length > 3 ? `<span class="more">+${list.length - 3} more</span>` : ''}
+      ${list.length ? `<span class="dots">${list.slice(0, 5).map(b => `<i class="${bkCls(b)}${clashes(b).length ? ' clash' : ''}"></i>`).join('')}</span>` : ''}</a>`;
+  }
+
+  const week = all.filter(b => b.date >= t && b.date <= addDays(t, 6) && bkActive(b));
+  const unassigned = week.filter(b => !b.car || !b.driver).length;
+  const clashN = week.filter(b => clashes(b).length).length;
+  const notRecorded = all.filter(b => b.date < t && bkActive(b)).length;
+
+  app.innerHTML = shell('calendar', `<div class="calbar"><h1>${MONTHS[M - 1]} ${Y}</h1>
+      <a class="btn sm ghost" href="#/calendar/${prevM}" aria-label="Previous month">‹</a>
+      <a class="btn sm ghost" href="#/calendar/${t}">Today</a>
+      <a class="btn sm ghost" href="#/calendar/${nextM}" aria-label="Next month">›</a>
+      <a class="btn sm" href="#/booking/new/${sel < t ? t : sel}">New booking</a></div>
+    <p class="muted small" style="margin:-4px 0 12px">Next 7 days: <b>${week.length}</b> booking${week.length === 1 ? '' : 's'}${unassigned ? ` · <span style="color:var(--warn)">${unassigned} without a car or driver</span>` : ''}${clashN ? ` · <span style="color:var(--bad)">${clashN} clashing</span>` : ''}${notRecorded ? ` · ${notRecorded} past booking${notRecorded === 1 ? '' : 's'} not recorded as trips` : ''}</p>
+    <div class="cal">${grid}</div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Confirmed</span><span><i style="background:#f59e0b"></i>Tentative</span><span><i style="background:var(--good)"></i>Trip recorded</span><span><i style="background:#d1d5db"></i>Cancelled</span><span><i style="background:var(--bad)"></i>Clash</span></div>
+    ${dayPanel(sel, byDate[sel] || [])}`);
+  bindShell();
+
+  $('main').addEventListener('click', async e => {
+    const rec = e.target.closest('[data-rec]'), cx = e.target.closest('[data-cxl]');
+    if (rec) { const b = all.find(x => x.id === rec.dataset.rec); if (b) recordTripFromBooking(b); }
+    if (cx) {
+      if (!cx.dataset.armed) { cx.dataset.armed = '1'; cx.textContent = 'Tap to confirm'; setTimeout(() => { if (cx.isConnected) { delete cx.dataset.armed; cx.textContent = 'Cancel booking'; } }, 4000); return; }
+      const b = all.find(x => x.id === cx.dataset.cxl); if (!b) return;
+      cx.disabled = true;
+      try {
+        const saved = await api('save', { table: 'bookings', record: Object.assign({}, b, { status: 'Cancelled' }), isNew: false });
+        mergeRecord('bookings', saved); toast('Booking cancelled'); renderCalendar(app, sel);
+      } catch (err) { cx.disabled = false; toast(err.message, 4000); }
+    }
+  });
+}
+
+function dayPanel(d, list) {
+  const t = today();
+  const active = list.filter(b => b.status !== 'Cancelled' && b.status !== 'No show');
+  const rows = list.map(b => {
+    const c = clashes(b);
+    const past = d < t && bkActive(b);
+    const wa = waLink(b.customerMobile);
+    return `<div class="row bkrow"><div class="main">
+      <div class="l1">${h(b.time)}–${h(bkEnd(b))} · ${h(b.from)} to ${h(b.to)}<span class="tag ${bkCls(b) === 'done' ? 'good' : bkCls(b) === 'tent' ? 'q' : bkCls(b) === 'cxl' ? '' : 'blue'}">${h(b.status)}</span><span class="tag">${h(b.tripType)}</span>${past ? '<span class="tag q">trip not recorded</span>' : ''}${c.length ? `<span class="tag bad">clash with ${c.map(o => h(o.time)).join(', ')}</span>` : ''}</div>
+      <div class="l2">${h(b.customerName)}${b.customerMobile ? ' · <a href="tel:' + h(b.customerMobile) + '">' + h(b.customerMobile) + '</a>' : ''}${wa ? ' · <a href="' + h(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' : ''}${b.pax !== '' && b.pax !== undefined && n(b.pax) ? ' · ' + num(b.pax) + ' pax' : ''}${b.flight ? ' · flight ' + h(b.flight) : ''}${b.source ? ' · ' + h(b.source === 'Hotel or homestay partner' ? b.partner : b.source) : ''}</div>
+      <div class="l2">${b.car ? h(D.carLabel(b.car)) : '<span style="color:var(--warn)">No car yet</span>'} · ${b.driver ? h(D.driverLabel(b.driver)) : '<span style="color:var(--warn)">No driver yet</span>'}${b.bookingRef ? ' · ref ' + h(b.bookingRef) : ''}${n(b.advance) ? ' · advance ' + inr(b.advance) : ''}${b.cancelReason ? ' · ' + h(b.cancelReason) : ''}${b.notes ? ' · ' + h(b.notes) : ''}</div>
+      </div><div class="side"><div class="amt">${b.fare !== '' && b.fare !== undefined ? inr(b.fare) : ''}</div>
+      <div class="btns" style="margin-top:6px"><a class="btn sm ghost" href="#/booking/edit/${h(b.id)}">Edit</a>
+      ${bkActive(b) ? `<button class="btn sm" type="button" data-rec="${h(b.id)}">Record trip</button><button class="btn sm danger" type="button" data-cxl="${h(b.id)}">Cancel booking</button>` : ''}</div></div></div>`;
+  }).join('');
+  return `<h2>${weekday(d)}, ${fmtDate(d)}</h2>
+    <div class="card">${active.length ? timelineHtml(active) : ''}
+      <div class="rows">${rows || '<p class="muted small" style="margin:0">No bookings on this day.</p>'}</div>
+      <div class="actions"><a class="btn ghost" href="#/booking/new/${d}">Add a booking on ${fmtDate(d)}</a></div></div>`;
+}
+
+function timelineHtml(list) {
+  const spans = list.map(bkSpan).filter(Boolean);
+  if (!spans.length) return '';
+  const h0 = Math.min(6, Math.floor(Math.min.apply(null, spans.map(s => s[0])) / 60));
+  const h1 = Math.min(24, Math.max(23, Math.ceil(Math.max.apply(null, spans.map(s => s[1])) / 60)));
+  const total = (h1 - h0) * 60;
+  const pos = m => Math.max(0, Math.min(100, (m - h0 * 60) / total * 100));
+  const lanes = [];
+  const carIds = D.cars().map(c => c.id);
+  list.forEach(b => { if (b.car && carIds.indexOf(b.car) < 0) carIds.push(b.car); });
+  carIds.forEach(id => lanes.push([D.carLabel(id), list.filter(b => b.car === id)]));
+  const un = list.filter(b => !b.car);
+  if (un.length) lanes.push(['No car yet', un]);
+  const bg = `background-size:${100 / (h1 - h0)}% 100%`;
+  let head = '';
+  for (let x = h0; x <= h1; x += 2) head += `<span style="left:${pos(x * 60)}%">${String(x % 24).padStart(2, '0')}:00</span>`;
+  return `<div class="tlw"><div class="tl"><div class="tlr head"><div class="tll"></div><div class="tlt">${head}</div></div>` +
+    lanes.map(([label, bs]) => `<div class="tlr"><div class="tll" title="${h(label)}">${h(label)}</div><div class="tlt" style="${bg}">` +
+      bs.map(b => { const sp = bkSpan(b); if (!sp) return ''; const l = pos(sp[0]), w = Math.max(pos(sp[1]) - l, 1.5);
+        return `<a class="blk ${bkCls(b)}${clashes(b).length ? ' clash' : ''}" style="left:${l}%;width:${w}%" href="#/booking/edit/${h(b.id)}" title="${h(b.time + ' ' + b.from + ' to ' + b.to + ' · ' + b.customerName)}">${h(b.time)} ${h(b.customerName || b.to)}</a>`; }).join('') +
+      '</div></div>').join('') + '</div></div>';
+}
+
+const BK_FIELDS = () => [
+  { k: 'date', label: 'Pickup date', type: 'date', req: 1, def: today },
+  { k: 'time', label: 'Pickup time', type: 'time', req: 1 },
+  { k: 'tripType', label: 'Trip type', type: 'select', req: 1, opts: () => opts(S.data.lists.tripType) },
+  { k: 'hours', label: 'Estimated hours', type: 'number', req: 1, hint: () => 'Blocks the car and driver on the calendar.' },
+  { k: 'from', label: 'Pickup', req: 1 }, { k: 'to', label: 'Drop', req: 1 },
+  { k: 'flight', label: 'Flight no', show: r => r.tripType === 'Airport transfer' },
+  { k: 'pax', label: 'Passengers', type: 'number' },
+  { k: 'customerName', label: 'Customer name', req: 1 }, { k: 'customerMobile', label: 'Customer mobile', type: 'tel', req: 1 },
+  { k: 'source', label: 'Booking source', type: 'select', req: 1, opts: () => opts(S.data.lists.source) },
+  { k: 'partner', label: 'Partner name', req: 1, show: r => r.source === 'Hotel or homestay partner' },
+  { k: 'bookingRef', label: 'Booking ref', full: 1 },
+  { sec: 'Car and driver' },
+  { k: 'car', label: 'Car', type: 'select', none: 'Not assigned yet', opts: () => carOpts(), hint: r => freeHint(r, 'car') },
+  { k: 'driver', label: 'Driver', type: 'select', none: 'Not assigned yet', opts: () => driverOpts(), hint: r => freeHint(r, 'driver') },
+  { sec: 'Fare and status' },
+  { k: 'fare', label: 'Quoted fare (₹)', type: 'number' }, { k: 'advance', label: 'Advance received (₹)', type: 'number' },
+  { k: 'status', label: 'Status', type: 'select', req: 1, opts: () => opts(bkStatuses()), def: () => 'Confirmed' },
+  { k: 'cancelReason', label: 'Reason', show: r => r.status === 'Cancelled' || r.status === 'No show' },
+  { k: 'notes', label: 'Notes', type: 'textarea', full: 1 }
+];
+function freeHint(r, key) {
+  if (!r[key] || !r.date || !r.time) return '';
+  const c = clashes(Object.assign({ status: r.status || 'Confirmed', hours: r.hours, tripType: r.tripType }, r), key);
+  return c.length ? 'Busy: ' + c.map(o => o.time + '–' + bkEnd(o) + ' ' + o.customerName).join('; ') : 'Free at this time.';
+}
+
+function renderBooking(app, mode, arg) {
+  const editing = mode === 'edit' ? (S.data.bookings || []).find(b => String(b.id) === String(arg)) : null;
+  if (mode === 'edit' && !editing) { location.hash = '#/calendar'; return; }
+  const fields = BK_FIELDS();
+  const rec = editing ? Object.assign({}, editing) : {};
+  if (!editing) {
+    fields.forEach(f => { if (f.def && rec[f.k] === undefined) rec[f.k] = f.def(); });
+    if (/^\d{4}-\d{2}-\d{2}$/.test(arg || '')) rec.date = arg;
+  }
+  const back = '#/calendar/' + (rec.date || today());
+  app.innerHTML = shell('calendar', `<p style="margin:0 0 8px"><a class="small muted" href="${back}">‹ Back to calendar</a></p>
+    <form class="card" id="bkForm" novalidate>
+      <h2 style="margin-top:0">${editing ? 'Edit booking' : 'New booking'}${editing && editing.tripId ? `<span class="tag good">trip ${h(editing.tripId)}</span>` : ''}</h2>
+      <div class="grid">${fields.map(f => fieldHtml(f, rec)).join('')}</div>
+      <div id="clashMsg"></div><div id="formMsg"></div>
+      <div class="actions"><button class="btn gold wide" type="submit" id="saveBtn">${editing ? 'Update' : 'Save booking'}</button>
+      ${editing ? '<button class="btn danger" type="button" id="delBtn">Delete</button>' : ''}</div>
+    </form>`);
+  bindShell();
+  const form = $('#bkForm');
+  if (editing) form.dataset.hrsTouched = '1';
+  const refresh = changed => {
+    if (changed === 'tripType' && !form.dataset.hrsTouched && BK_HOURS[form.elements.tripType.value]) setVal(form, 'hours', BK_HOURS[form.elements.tripType.value]);
+    if (changed === 'hours') form.dataset.hrsTouched = '1';
+    const r = readForm(form, fields);
+    r.id = editing ? editing.id : '_new';
+    fields.forEach(f => {
+      if (!f.k) return;
+      const box = form.querySelector(`[data-k="${f.k}"]`);
+      if (f.show) box.classList.toggle('hidden', !f.show(r));
+      if (f.hint) form.querySelector(`[data-hint="${f.k}"]`).textContent = f.hint(r);
+    });
+    const c = clashes(r);
+    $('#clashMsg').innerHTML = c.length ? `<div class="msg warn">Clashes with ${c.map(o => h(o.time + '–' + bkEnd(o) + ' ' + o.customerName + ' (' + (o.car === r.car && r.car ? 'same car' : 'same driver') + ')')).join('; ')}. You can still save.</div>` : '';
+  };
+  form.addEventListener('input', e => { if (e.target.name) { e.target.closest('.f').classList.remove('err'); $('#formMsg').innerHTML = ''; refresh(e.target.name); } });
+  form.addEventListener('change', e => { if (e.target.name) refresh(e.target.name); });
+  refresh();
+
+  form.onsubmit = async ev => {
+    ev.preventDefault();
+    const r = readForm(form, fields);
+    let missing = null;
+    fields.forEach(f => {
+      if (!f.k || !f.req) return;
+      const box = form.querySelector(`[data-k="${f.k}"]`);
+      if (box.classList.contains('hidden')) return;
+      if (r[f.k] === '') { box.classList.add('err'); if (!missing) missing = f; }
+    });
+    fields.forEach(f => { if (f.k && f.show && !f.show(r)) r[f.k] = ''; });
+    if (missing) { $('#formMsg').innerHTML = `<div class="msg bad">${h(missing.label)} is required.</div>`; form.elements[missing.k].focus(); return; }
+    const isNew = !editing;
+    r.id = isNew ? newId('BK') : editing.id;
+    const payload = { table: 'bookings', record: r, isNew };
+    const btn = $('#saveBtn'); btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      const saved = await api('save', payload);
+      mergeRecord('bookings', saved);
+      toast(isNew ? 'Booking saved' : 'Booking updated');
+      location.hash = '#/calendar/' + saved.date;
+    } catch (e) {
+      btn.disabled = false; btn.textContent = isNew ? 'Save booking' : 'Update';
+      if (e.code === 'NETWORK' && isNew) { Q.add(payload); toast('No connection. Kept on this phone and will sync.', 4000); location.hash = '#/calendar/' + r.date; return; }
+      $('#formMsg').innerHTML = `<div class="msg bad">${h(e.message)}</div>`;
+    }
+  };
+  const del = $('#delBtn');
+  if (del) del.onclick = async () => {
+    if (!del.dataset.armed) { del.dataset.armed = '1'; del.textContent = 'Tap to confirm'; setTimeout(() => { if (del.isConnected) { delete del.dataset.armed; del.textContent = 'Delete'; } }, 4000); return; }
+    del.disabled = true;
+    try { await api('remove', { table: 'bookings', id: editing.id }); removeRecord('bookings', editing.id); toast('Booking deleted'); location.hash = back; }
+    catch (err) { del.disabled = false; toast(err.message, 4000); }
+  };
 }
 
 /* =====================================================================
