@@ -1584,6 +1584,173 @@
     .founder-badge { font-size: 0.56rem; letter-spacing: 0.06em; white-space: normal; }
     .founder-bio { font-size: 0.82rem; line-height: 1.75; }
   }
+
+  /* ── PHOTO STORY (Nov 2026) ── */
+  .hero-right .hero-slide {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(0.86) saturate(0.95);
+    opacity: 0;
+    transition: opacity 1.4s ease;
+  }
+  .hero-right .hero-slide.is-on { opacity: 1; }
+  .hero-right .hero-slide.s-byd { object-position: 52% 60%; }
+  .hero-right .hero-slide.s-punch { object-position: 40% 60%; }
+  .hero-slide-label {
+    position: absolute; right: 1.75rem; bottom: 1.5rem; z-index: 2;
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(247,243,236,0.85);
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .hero-slide-label::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+  /* Inside every ride */
+  .inside { padding: 0 4rem 7rem; }
+  .inside-inner { max-width: 1200px; margin: 0 auto; }
+  .inside-top {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+    align-items: end; margin-bottom: 2.75rem;
+    padding-top: 4.5rem; border-top: 1px solid rgba(44,47,53,0.1);
+  }
+  .inside-top h2 {
+    font-family: var(--serif); font-size: clamp(1.9rem, 3vw, 2.7rem);
+    font-weight: 500; line-height: 1.2; color: var(--slate-deep); text-wrap: balance;
+  }
+  .inside-top p { font-size: 0.95rem; font-weight: 300; color: var(--muted); line-height: 1.85; }
+  .inside-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, minmax(200px, 17vw)); gap: 0.75rem;
+  }
+  .inside-tile {
+    position: relative; overflow: hidden; margin: 0; cursor: zoom-in;
+    background: var(--slate-mid);
+  }
+  .inside-tile.is-lead { grid-column: span 2; grid-row: span 2; }
+  .inside-tile img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.8s ease;
+  }
+  .inside-tile:hover img { transform: scale(1.04); }
+  .inside-tile figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 2.5rem 1.1rem 1rem;
+    background: linear-gradient(to top, rgba(20,22,27,0.82), rgba(20,22,27,0));
+    color: var(--cream);
+  }
+  .inside-tile .t-label {
+    display: block; font-size: 0.64rem; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold-light); margin-bottom: 0.3rem;
+  }
+  .inside-tile .t-text { display: block; font-family: var(--serif); font-size: 1.02rem; line-height: 1.35; }
+  .inside-tile.is-lead .t-text { font-size: 1.35rem; }
+
+  /* Lightbox */
+  .lb {
+    position: fixed; inset: 0; z-index: 500; background: rgba(16,18,22,0.96);
+    display: flex; align-items: center; justify-content: center;
+    padding: 4rem max(16px, env(safe-area-inset-right, 0px)) 5rem max(16px, env(safe-area-inset-left, 0px));
+  }
+  .lb[hidden] { display: none; }
+  .lb img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .lb-cap {
+    position: absolute; left: 0; right: 0; bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    text-align: center; color: rgba(247,243,236,0.8); font-size: 0.85rem; font-weight: 300; padding: 0 4rem;
+  }
+  .lb-btn {
+    position: absolute; background: none; border: 1px solid rgba(201,169,110,0.4); color: var(--cream);
+    width: 46px; height: 46px; cursor: pointer; font-size: 1.1rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lb-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .lb-close { top: calc(1rem + env(safe-area-inset-top, 0px)); right: max(1rem, env(safe-area-inset-right, 0px)); }
+  .lb-prev { left: max(1rem, env(safe-area-inset-left, 0px)); top: 50%; transform: translateY(-50%); }
+  .lb-next { right: max(1rem, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); }
+
+  @media (max-width: 900px) {
+    .inside { padding: 0 1.5rem 4.5rem; }
+    .inside-top { grid-template-columns: 1fr; gap: 1.25rem; padding-top: 3.5rem; margin-bottom: 2rem; }
+    .inside-grid { grid-template-columns: 1fr 1fr; grid-template-rows: none; grid-auto-rows: 44vw; gap: 0.5rem; }
+    .inside-tile.is-lead { grid-column: span 2; grid-row: span 1; }
+    .inside-tile.is-lead { grid-auto-rows: auto; }
+    .lt-top { grid-template-columns: 1fr; gap: 1rem; }
+    .lt-row { grid-template-columns: 1fr 1fr; }
+    .lt-info { grid-column: 1 / -1; padding: 0.75rem 0.5rem 0.5rem; }
+    .car-gallery { margin: -2.5rem -2.25rem 2rem; }
+  }
+  @media (max-width: 560px) {
+    .car-gallery { margin: -2rem -1.5rem 1.75rem; }
+    .cg-tabs, .cg-thumbs, .cg-caption { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .cg-tabs { gap: 1.2rem; }
+    .inside-tile .t-text { font-size: 0.92rem; }
+    .inside-tile.is-lead .t-text { font-size: 1.15rem; }
+    .inside-tile figcaption { padding: 2rem 0.8rem 0.75rem; }
+    .lt-shot figcaption { left: 0.5rem; top: 0.5rem; font-size: 0.58rem; padding: 0.35rem 0.55rem; }
+    .lb-prev, .lb-next { top: auto; bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); transform: none; }
+    .lb-cap { bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); padding: 0 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-right .hero-slide, .inside-tile img, .cg-main img { transition: none; }
+  }
+
+  /* ── CARS: SHOWROOM (Nov 2026) ── */
+  .cars.sr { background: var(--slate-deep); color: var(--cream); }
+  .sr-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 2rem; }
+  .sr-top h2 { font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 500; color: var(--cream); line-height: 1.15; margin-top: 0.2rem; }
+  .sr-intro { max-width: 40rem; font-size: 0.95rem; font-weight: 300; color: rgba(247,243,236,0.6); line-height: 1.85; margin: 1.5rem 0 3rem; }
+  .sr-toggle { display: inline-flex; border: 1px solid rgba(201,169,110,0.35); }
+  .sr-toggle button {
+    background: none; border: 0; color: rgba(247,243,236,0.6); cursor: pointer; font-family: var(--sans);
+    padding: 0.85rem 1.4rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; transition: background 0.2s, color 0.2s;
+  }
+  .sr-toggle button:hover { color: var(--cream); }
+  .sr-toggle button.on { background: var(--cream); color: var(--slate-deep); }
+  .sr-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 3.5rem; align-items: start; }
+  .sr-media { min-width: 0; }
+  .sr-stage { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--slate-mid); border: 0; padding: 0; cursor: zoom-in; }
+  .sr-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.45s ease; }
+  .sr-tag {
+    position: absolute; left: 1.1rem; bottom: 1.1rem; z-index: 2; background: rgba(20,22,27,0.72); color: var(--cream);
+    font-size: 0.66rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; padding: 0.5rem 0.8rem;
+  }
+  .sr-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
+  .sr-chip { position: relative; border: 0; padding: 0; cursor: pointer; aspect-ratio: 1 / 1; overflow: hidden; background: var(--slate-mid); opacity: 0.5; transition: opacity 0.2s; }
+  .sr-chip img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sr-chip span {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 1.2rem 0.45rem 0.45rem; text-align: left;
+    background: linear-gradient(to top, rgba(16,18,22,0.88), transparent);
+    color: var(--cream); font-size: 0.56rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.3;
+  }
+  .sr-chip:hover { opacity: 0.85; }
+  .sr-chip.on { opacity: 1; box-shadow: inset 0 0 0 2px var(--gold); }
+  .sr-chip:focus-visible, .sr-toggle button:focus-visible, .sr-stage:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .sr-cap { font-size: 0.82rem; font-weight: 300; color: rgba(247,243,236,0.55); margin-top: 0.9rem; min-height: 1.4rem; }
+  .sr-info { display: grid; gap: 2rem; padding-top: 0.25rem; min-width: 0; }
+  .sr-kicker { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+  .sr-name { font-family: var(--serif); font-size: clamp(2.2rem, 3.6vw, 3.1rem); font-weight: 500; line-height: 1.05; margin-top: 0.6rem; color: var(--cream); }
+  .sr-specs { display: flex; gap: 2.5rem; padding-block: 1.5rem; border-top: 1px solid rgba(201,169,110,0.2); border-bottom: 1px solid rgba(201,169,110,0.2); }
+  .sr-num { font-family: var(--serif); font-size: 3rem; line-height: 1; color: var(--gold); font-variant-numeric: lining-nums; }
+  .sr-lab { font-size: 0.72rem; color: rgba(247,243,236,0.55); margin-top: 0.4rem; letter-spacing: 0.04em; }
+  .sr-list { list-style: none; display: grid; gap: 0.6rem; }
+  .sr-list li { position: relative; padding-left: 1.1rem; font-size: 0.88rem; font-weight: 300; line-height: 1.7; color: rgba(247,243,236,0.78); }
+  .sr-list li::before { content: ''; position: absolute; left: 0; top: 0.68rem; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+  .sr-cta { align-self: start; }
+  .sr-note { color: rgba(247,243,236,0.5); margin-top: 3rem; }
+  @media (max-width: 900px) {
+    .sr-grid { grid-template-columns: 1fr; gap: 2.25rem; }
+    .sr-intro { margin: 1.25rem 0 2rem; }
+    .sr-strip { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .sr-toggle { width: 100%; }
+    .sr-toggle button { flex: 1; padding: 0.8rem 0.5rem; }
+    .sr-num { font-size: 2.4rem; }
+    .sr-chip span { font-size: 0.54rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .sr-stage img { transition: none; } }
+  .rev-dots { flex-wrap: nowrap; gap: 4px; }
+  .rev-dots button { flex: 1 1 0; min-width: 6px; }
+  .rev-dots button.active { flex: 2.5 1 0; }
 </style>
 </head>
 <body>
@@ -1638,8 +1805,10 @@
     </div>
   </div>
   <div class="hero-right">
-    <img src="image01.png" alt="Aavre cab at Udaipur Airport">
+    <img class="hero-slide s-byd is-on" src="images/cars/byd-e6-exterior-hills.webp" alt="Aavre BYD e6 on a hill road outside Udaipur" fetchpriority="high">
+    <img class="hero-slide s-punch" src="images/cars/punch-ev-exterior-front.webp" alt="Aavre Tata Punch EV on a hill road outside Udaipur" loading="lazy">
     <div class="hero-right-overlay"></div>
+    <div class="hero-slide-label" id="heroSlideLabel">BYD e6</div>
 
   </div>
 </section>
@@ -1663,6 +1832,42 @@
     <h2>We got tired of bad cab experiences. So we built a better one.</h2>
     <p>Udaipur is our home. For a decade, we dealt with the same frustrations every traveller does. Drivers negotiating fares mid-booking, unclean cars, someone glued to their phone the whole ride.</p>
     <p>You are already exhausted from travelling. The last thing you need is that. So we built the experience we always wanted: reliable cabs, fixed prices, drivers who actually take care of you. That is Aavre.</p>
+  </div>
+</section>
+
+
+<!-- INSIDE EVERY RIDE -->
+<section class="inside" id="inside">
+  <div class="inside-inner">
+    <div class="inside-top">
+      <div>
+        <div class="section-eyebrow">Inside every ride</div>
+        <h2>The little things, already in the car.</h2>
+      </div>
+      <p>You should not have to ask for anything. Every Aavre car is stocked with amenities and checked before it leaves for your pickup, so the ride starts the moment you sit down.</p>
+    </div>
+    <div class="inside-grid" data-lb-group="inside">
+      <figure class="inside-tile is-lead" data-full="images/cars/punch-ev-snacks-water.webp">
+        <img src="images/cars/punch-ev-snacks-water-sm.webp" srcset="images/cars/punch-ev-snacks-water-sm.webp 900w, images/cars/punch-ev-snacks-water.webp 1800w" sizes="(max-width: 900px) 100vw, 50vw" alt="In car amenities ready on the back seat of an Aavre cab" loading="lazy">
+        <figcaption><span class="t-label">Amenities</span><span class="t-text">Stocked and ready before you step in.</span></figcaption>
+      </figure>
+      <figure class="inside-tile" data-full="images/cars/byd-e6-door-water-close.webp">
+        <img src="images/cars/byd-e6-door-water-close-sm.webp" alt="Amenities in the rear door pocket of the BYD e6" loading="lazy">
+        <figcaption><span class="t-label">Every seat</span><span class="t-text">Taken care of, front to back.</span></figcaption>
+      </figure>
+      <figure class="inside-tile" data-full="images/cars/punch-ev-back-seat-detail.webp">
+        <img src="images/cars/punch-ev-back-seat-detail-sm.webp" alt="Back seat of the Tata Punch EV" loading="lazy">
+        <figcaption><span class="t-label">Back seat</span><span class="t-text">Room to settle in.</span></figcaption>
+      </figure>
+      <figure class="inside-tile" data-full="images/cars/punch-ev-dashcam.webp">
+        <img src="images/cars/punch-ev-dashcam-sm.webp" alt="Dashcam mounted behind the rear view mirror" loading="lazy">
+        <figcaption><span class="t-label">Dashcam</span><span class="t-text">The road ahead, on record.</span></figcaption>
+      </figure>
+      <figure class="inside-tile" data-full="images/cars/byd-e6-seat-back-card.webp">
+        <img src="images/cars/byd-e6-seat-back-card-sm.webp" alt="Aavre Cabs card in the seat back pocket" loading="lazy">
+        <figcaption><span class="t-label">The Aavre card</span><span class="t-text">Fares and how to book again, in the seat pocket.</span></figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
@@ -1785,59 +1990,46 @@
 </section>
 
 <!-- CARS -->
-<section class="cars" id="cars">
+<section class="cars sr" id="cars">
   <div class="cars-inner">
-    <div class="cars-top">
+    <div class="sr-top">
       <div>
         <div class="section-eyebrow">Our cars</div>
         <h2>Two choices.<br>One standard.</h2>
       </div>
-      <p>Every Aavre ride arrives in one of two models. Both sit up to 4 guests. What changes is how much luggage travels with you, so tell us what you are carrying and we send the right one.</p>
+      <div class="sr-toggle" role="tablist" aria-label="Choose a car">
+        <button type="button" class="on" data-car="byd" role="tab" aria-selected="true">BYD e6</button>
+        <button type="button" data-car="punch" role="tab" aria-selected="false">Tata Punch EV</button>
+      </div>
     </div>
-    <div class="cars-grid">
-
-      <div class="car-card">
-        <div class="car-eyebrow">The spacious one</div>
-        <div class="car-name">BYD E6</div>
-        <div class="car-specs">
-          <div>
-            <div class="car-spec-val">4</div>
-            <div class="car-spec-label">guests</div>
-          </div>
-          <div>
-            <div class="car-spec-val">6</div>
-            <div class="car-spec-label">suitcases and cabin bags</div>
-          </div>
+    <p class="sr-intro">Every Aavre ride arrives in one of two models. Both sit up to 4 guests. What changes is how much luggage travels with you, so tell us what you are carrying and we send the right one.</p>
+    <div class="sr-grid">
+      <div class="sr-media">
+        <button type="button" class="sr-stage" id="srStage" aria-label="Open photo full screen">
+          <img id="srImg" src="images/cars/byd-e6-exterior-front.webp" alt="BYD e6, front view on a hill road outside Udaipur">
+          <span class="sr-tag" id="srTag">Outside</span>
+        </button>
+        <div class="sr-strip" id="srStrip"></div>
+        <p class="sr-cap" id="srCap"></p>
+      </div>
+      <div class="sr-info">
+        <div>
+          <div class="sr-kicker" id="srKick">The spacious one</div>
+          <div class="sr-name" id="srName">BYD e6</div>
         </div>
-        <ul class="car-list">
+        <div class="sr-specs">
+          <div><div class="sr-num">4</div><div class="sr-lab">guests</div></div>
+          <div><div class="sr-num" id="srBags">6</div><div class="sr-lab">suitcases and cabin bags</div></div>
+        </div>
+        <ul class="sr-list" id="srList">
           <li>Four large suitcases, two cabin suitcases and a bunch of backpacks, with all four seats taken</li>
           <li>Full size MPV cabin with generous knee room in the rear</li>
           <li>Our first choice for airport runs with full luggage, outstation days and families</li>
         </ul>
+        <div><a class="btn-wa sr-cta" id="srCta" href="https://wa.me/919414343817?text=Hi%2C%20I%27d%20like%20to%20book%20a%20cab" target="_blank" rel="noopener noreferrer">Book on WhatsApp</a></div>
       </div>
-
-      <div class="car-card">
-        <div class="car-eyebrow">The city one</div>
-        <div class="car-name">Tata Punch EV</div>
-        <div class="car-specs">
-          <div>
-            <div class="car-spec-val">4</div>
-            <div class="car-spec-label">guests</div>
-          </div>
-          <div>
-            <div class="car-spec-val">3</div>
-            <div class="car-spec-label">suitcases and cabin bags</div>
-          </div>
-        </div>
-        <ul class="car-list">
-          <li>Two medium suitcases, one cabin bag and a couple of backpacks</li>
-          <li>Compact on the old city lanes, easy to park at every ghat and gate</li>
-          <li>Our first choice for city transfers, sightseeing and travelling light</li>
-        </ul>
-      </div>
-
     </div>
-    <p class="cars-note">Carrying more than a single car takes? Tell us on WhatsApp when you book. We will put the right car on your ride, or send two, and quote the fixed fare before you confirm.</p>
+    <p class="cars-note sr-note">Carrying more than a single car takes? Tell us on WhatsApp when you book. We will put the right car on your ride, or send two, and quote the fixed fare before you confirm.</p>
   </div>
 </section>
 
@@ -2101,14 +2293,142 @@
       <span class="rev-stars" aria-label="5 out of 5 stars">
         <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
       </span>
-      <span class="rev-agg-count">across 20+ reviews on Google</span>
+      <span class="rev-agg-count">across 30+ reviews on Google</span>
     </div>
 
     <div class="rev-viewport">
       <div class="rev-track" id="revTrack">
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">We had a really smooth experience with Aavre during our Udaipur trip. We used their services for our airport transfer, local sightseeing and the Udaipur to Jodhpur transfer via Ranakpur. The team coordinated the bookings, shared driver details and kept us updated throughout the trip. Communication over WhatsApp was quick and hassle free. Our driver in Udaipur was punctual, polite, patient and drove very comfortably. Since we were travelling with our 3 year old, his flexibility and understanding made things much easier for us. The fares were very reasonable and quite competitive compared with Uber and other cab platforms. Would happily recommend Aavre Cabs to anyone visiting Udaipur, especially families.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">H</div>
+              <div>
+                <div class="rev-name">HemaBhargava Reddy</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">Had an excellent experience with Aavre Cabs and their team! I had an early morning flight, and the cab arrived right on time, making the airport transfer completely stress free. Got a premium BYD e6 for just ₹500, which was amazing value. Other local operators were charging around ₹1,000 for regular cars like Dzire and Etios. Really impressed with the service, punctuality, comfort and pricing. Highly recommended!</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">S</div>
+              <div>
+                <div class="rev-name">Sanjay Mrinal</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">It was my first travel experience with Aavre cabs and I must appreciate their neat and hygienic cabs. The team was thorough and quite cordial in communication. I availed an EV cab from Udaipur to Ahmedabad Airport and the journey was very smooth and comfortable. Our driver was also polite and skilled. Highly recommend and will definitely book the service again.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">N</div>
+              <div>
+                <div class="rev-name">Niyatee Ayyar</div>
+                <div class="rev-meta">Google review</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">The cab service is amazing and I 100% recommend it. Cabs were clean and nice, the drivers were cordial and all in all it was a very good and safe experience.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">V</div>
+              <div>
+                <div class="rev-name">Vani Sharma</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">Our driver provided the best service and made the trip pleasant and easy, and gave us information about the places. His friendly, familial behaviour was excellent. He is an expert driver who puts safety first.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">D</div>
+              <div>
+                <div class="rev-name">Dev Kumar</div>
+                <div class="rev-meta">Google review</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">Very nice service. Cars are clean and prices are reasonable. Must try when in Udaipur.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">S</div>
+              <div>
+                <div class="rev-name">Shikhar Sood</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">Great service and great cars. Drivers are very good and very helpful. Highly recommended if you are visiting Udaipur.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">P</div>
+              <div>
+                <div class="rev-name">Piyush Kumar</div>
+                <div class="rev-meta">Local Guide on Google</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
+            <div class="rev-stars" aria-label="5 out of 5 stars">
+              <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
+            </div>
+            <p class="rev-text">We booked the cab for a full day. The driver was extremely polite and very helpful.</p>
+            <div class="rev-foot">
+              <div class="rev-avatar">S</div>
+              <div>
+                <div class="rev-name">Shivam Srivastava</div>
+                <div class="rev-meta">Google review</div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="rev-slide">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2124,7 +2444,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2140,7 +2460,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2156,7 +2476,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2172,7 +2492,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2188,7 +2508,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2204,7 +2524,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2220,7 +2540,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2236,7 +2556,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2252,7 +2572,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2268,7 +2588,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2284,7 +2604,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2300,7 +2620,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2316,7 +2636,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2332,7 +2652,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2348,7 +2668,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2364,7 +2684,7 @@
         </div>
 
         <div class="rev-slide">
-          <a class="rev-card" href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">
+          <a class="rev-card" href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">
             <div class="rev-stars" aria-label="5 out of 5 stars">
               <svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg><svg viewBox="0 0 24 24"><use href="#revStar"/></svg>
             </div>
@@ -2389,7 +2709,7 @@
     </div>
 
     <div class="reviews-cta">
-      <a href="https://www.google.com/maps/search/?api=1&amp;query=Aavre+Cabs+Udaipur" target="_blank" rel="noopener">Read all reviews on Google</a>
+      <a href="https://maps.google.com/?cid=6633337805485676668" target="_blank" rel="noopener">Read all reviews on Google</a>
     </div>
   </div>
 </section>
@@ -2542,6 +2862,176 @@
     <div class="cta-note">No registration required. Instant confirmation. Available 24 hours a day.</div>
   </div>
 </section>
+
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <img id="lbImg" alt="">
+  <p class="lb-cap" id="lbCap"></p>
+  <button type="button" class="lb-btn lb-close" id="lbClose" aria-label="Close">&#10005;</button>
+  <button type="button" class="lb-btn lb-prev" id="lbPrev" aria-label="Previous photo">&#8592;</button>
+  <button type="button" class="lb-btn lb-next" id="lbNext" aria-label="Next photo">&#8594;</button>
+</div>
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Hero crossfade between the two cars */
+  var slides = document.querySelectorAll('.hero-right .hero-slide');
+  var label = document.getElementById('heroSlideLabel');
+  var names = ['BYD e6', 'Tata Punch EV'];
+  if (slides.length > 1 && !reduce) {
+    var cur = 0;
+    setInterval(function () {
+      slides[cur].classList.remove('is-on');
+      cur = (cur + 1) % slides.length;
+      slides[cur].classList.add('is-on');
+      if (label) label.textContent = names[cur];
+    }, 6000);
+  }
+
+  /* Lightbox */
+  var lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'), lbCap = document.getElementById('lbCap');
+  var list = [], idx = 0, lastFocus = null;
+  function show(i) {
+    idx = (i + list.length) % list.length;
+    lbImg.src = list[idx].src; lbImg.alt = list[idx].cap; lbCap.textContent = list[idx].cap;
+    var many = list.length > 1;
+    document.getElementById('lbPrev').hidden = !many; document.getElementById('lbNext').hidden = !many;
+  }
+  function open(items, i) {
+    list = items; lastFocus = document.activeElement; lb.hidden = false;
+    document.body.style.overflow = 'hidden'; show(i); document.getElementById('lbClose').focus();
+  }
+  window.aavreLightbox = open;
+  function close() { lb.hidden = true; document.body.style.overflow = ''; lbImg.src = ''; if (lastFocus) lastFocus.focus(); }
+  document.getElementById('lbClose').addEventListener('click', close);
+  document.getElementById('lbPrev').addEventListener('click', function () { show(idx - 1); });
+  document.getElementById('lbNext').addEventListener('click', function () { show(idx + 1); });
+  lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+  document.addEventListener('keydown', function (e) {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(idx - 1);
+    if (e.key === 'ArrowRight') show(idx + 1);
+  });
+  var tx = null;
+  lb.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', function (e) {
+    if (tx === null) return; var dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+  });
+
+  /* Static photo groups (inside strip, luggage test) */
+  document.querySelectorAll('[data-lb-group]').forEach(function (group) {
+    var figs = Array.prototype.slice.call(group.querySelectorAll('[data-full]'));
+    var items = figs.map(function (f) { var im = f.querySelector('img'); return { src: f.getAttribute('data-full'), cap: im ? im.alt : '' }; });
+    figs.forEach(function (f, i) {
+      f.setAttribute('tabindex', '0'); f.setAttribute('role', 'button');
+      f.addEventListener('click', function () { open(items, i); });
+      f.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(items, i); } });
+    });
+  });
+
+  /* Car galleries */
+  document.querySelectorAll('.car-gallery').forEach(function (g) {
+    var sets = JSON.parse(g.querySelector('.cg-data').textContent);
+    var base = 'images/cars/';
+    var mainImg = g.querySelector('.cg-main img'), count = g.querySelector('.cg-count');
+    var thumbs = g.querySelector('.cg-thumbs'), cap = g.querySelector('.cg-caption');
+    var tabs = g.querySelectorAll('.cg-tab');
+    var t = 0, p = 0;
+    function setPhoto(i) {
+      p = i; var it = sets[t].items[p];
+      mainImg.src = base + it.f + '-sm.webp';
+      mainImg.srcset = base + it.f + '-sm.webp 900w, ' + base + it.f + '.webp 1800w';
+      mainImg.alt = it.c; mainImg.style.objectPosition = it.p;
+      cap.textContent = it.c;
+      count.textContent = (p + 1) + ' / ' + sets[t].items.length;
+      thumbs.querySelectorAll('.cg-thumb').forEach(function (b, j) { b.classList.toggle('is-on', j === p); b.setAttribute('aria-pressed', j === p ? 'true' : 'false'); });
+    }
+    function setTab(i) {
+      t = i;
+      tabs.forEach(function (b, j) { b.classList.toggle('is-on', j === t); b.setAttribute('aria-selected', j === t ? 'true' : 'false'); });
+      thumbs.innerHTML = '';
+      sets[t].items.forEach(function (it, j) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'cg-thumb';
+        b.setAttribute('aria-label', it.c);
+        var im = document.createElement('img'); im.src = base + it.f + '-sm.webp'; im.alt = ''; im.loading = 'lazy'; im.style.objectPosition = it.p;
+        b.appendChild(im); b.addEventListener('click', function () { setPhoto(j); }); thumbs.appendChild(b);
+      });
+      setPhoto(0);
+    }
+    tabs.forEach(function (b, j) { b.setAttribute('role', 'tab'); b.addEventListener('click', function () { setTab(j); }); });
+    g.querySelector('.cg-main').addEventListener('click', function () {
+      open(sets[t].items.map(function (it) { return { src: base + it.f + '.webp', cap: it.c }; }), p);
+    });
+    setTab(0);
+  });
+})();
+</script>
+
+<script>
+(function () {
+  var base = 'images/cars/';
+  var cars = {
+    byd: { kick: 'The spacious one', name: 'BYD e6', bags: 6,
+      list: ['Four large suitcases, two cabin suitcases and a bunch of backpacks, with all four seats taken', 'Full size MPV cabin with generous knee room in the rear', 'Our first choice for airport runs with full luggage, outstation days and families'],
+      shots: [
+        ['Outside', 'byd-e6-exterior-front', 'BYD e6, front view on a hill road outside Udaipur', '50% 85%'],
+        ['Inside', 'byd-e6-rear-seat', 'The back seat of the BYD e6', '50% 50%'],
+        ['Up front', 'byd-e6-cockpit', 'Driver cockpit and touchscreen', '50% 50%'],
+        ['Bags out', 'byd-e6-luggage-outside-close', 'Four large suitcases, two cabin suitcases and backpacks', '50% 60%'],
+        ['In the boot', 'byd-e6-luggage-in-boot', 'All of it, packed into the boot', '50% 50%'],
+        ['Amenities', 'byd-e6-door-water-close', 'Amenities, stocked before every ride', '50% 50%']] },
+    punch: { kick: 'The city one', name: 'Tata Punch EV', bags: 3,
+      list: ['Two medium suitcases, one cabin bag and a couple of backpacks', 'Compact on the old city lanes, easy to park at every ghat and gate', 'Our first choice for city transfers, sightseeing and travelling light'],
+      shots: [
+        ['Outside', 'punch-ev-exterior-front', 'Tata Punch EV on a hill road outside Udaipur', '45% 60%'],
+        ['Inside', 'punch-ev-rear-seat', 'The back seat of the Tata Punch EV', '50% 60%'],
+        ['Up front', 'punch-ev-dashboard', 'Dashboard, touchscreen and dashcam', '50% 60%'],
+        ['Bags out', 'punch-ev-luggage-outside', 'Two medium suitcases, a cabin bag and a backpack', '50% 92%'],
+        ['In the boot', 'punch-ev-luggage-in-boot', 'All of it, packed into the boot', '50% 50%'],
+        ['Amenities', 'punch-ev-snacks-water', 'Amenities, stocked before every ride', '50% 50%']] }
+  };
+  var img = document.getElementById('srImg'); if (!img) return;
+  var tag = document.getElementById('srTag'), cap = document.getElementById('srCap'), strip = document.getElementById('srStrip');
+  var cur = null, idx = 0, timer = null;
+  function photo(i) {
+    idx = i; var s = cars[cur].shots[i];
+    strip.querySelectorAll('.sr-chip').forEach(function (b, j) { b.classList.toggle('on', j === i); b.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    img.style.opacity = 0; clearTimeout(timer);
+    timer = setTimeout(function () {
+      img.src = base + s[1] + '.webp'; img.alt = s[2]; img.style.objectPosition = s[3];
+      img.onload = function () { img.style.opacity = 1; };
+      if (img.complete) img.style.opacity = 1;
+    }, 160);
+    tag.textContent = s[0]; cap.textContent = s[2];
+  }
+  function car(k) {
+    cur = k; var c = cars[k];
+    document.querySelectorAll('.sr-toggle button').forEach(function (b) { var on = b.dataset.car === k; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    document.getElementById('srKick').textContent = c.kick;
+    document.getElementById('srName').textContent = c.name;
+    document.getElementById('srBags').textContent = c.bags;
+    document.getElementById('srList').innerHTML = c.list.map(function (t) { return '<li>' + t + '</li>'; }).join('');
+    document.getElementById('srCta').textContent = 'Book the ' + c.name;
+    strip.innerHTML = '';
+    c.shots.forEach(function (s, i) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'sr-chip';
+      b.setAttribute('aria-label', s[0] + ': ' + s[2]);
+      b.innerHTML = '<img src="' + base + s[1] + '-sm.webp" alt="" style="object-position:' + s[3] + '"><span>' + s[0] + '</span>';
+      b.addEventListener('click', function () { photo(i); });
+      strip.appendChild(b);
+    });
+    photo(0);
+  }
+  document.querySelectorAll('.sr-toggle button').forEach(function (b) { b.addEventListener('click', function () { car(b.dataset.car); }); });
+  document.getElementById('srStage').addEventListener('click', function () {
+    if (!window.aavreLightbox) return;
+    window.aavreLightbox(cars[cur].shots.map(function (s) { return { src: base + s[1] + '.webp', cap: s[2] }; }), idx);
+  });
+  car('byd');
+})();
+</script>
 
 <!-- FOOTER -->
 <footer>
