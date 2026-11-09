@@ -1595,7 +1595,8 @@
     transition: opacity 1.4s ease;
   }
   .hero-right .hero-slide.is-on { opacity: 1; }
-  .hero-right .hero-slide.s-byd { object-position: 52% 60%; }
+  .hero-right .hero-slide.s-byd { object-position: 50% 80%; }
+  @media (max-width: 900px) { .hero-right .hero-slide.s-byd { object-position: 50% 100%; } .hero-right .hero-slide-label { bottom: auto; top: 1rem; right: 1rem; } }
   .hero-right .hero-slide.s-punch { object-position: 40% 60%; }
   .hero-slide-label {
     position: absolute; right: 1.75rem; bottom: 1.5rem; z-index: 2;
@@ -1805,7 +1806,7 @@
     </div>
   </div>
   <div class="hero-right">
-    <img class="hero-slide s-byd is-on" src="images/cars/byd-e6-exterior-hills.webp" alt="Aavre BYD e6 on a hill road outside Udaipur" fetchpriority="high">
+    <img class="hero-slide s-byd is-on" src="images/cars/byd-e6-exterior-front.webp" alt="Aavre BYD e6 on a hill road outside Udaipur" fetchpriority="high">
     <img class="hero-slide s-punch" src="images/cars/punch-ev-exterior-front.webp" alt="Aavre Tata Punch EV on a hill road outside Udaipur" loading="lazy">
     <div class="hero-right-overlay"></div>
     <div class="hero-slide-label" id="heroSlideLabel">BYD e6</div>
